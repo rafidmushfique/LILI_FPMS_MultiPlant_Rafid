@@ -1,0 +1,86 @@
+﻿@model LILI_IMS.Models.tblRMRate
+
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
+
+
+
+
+@*<script src="~/lib/JQuery-unobtrusive-Ajax/jquery-ajax-unobtrusive-master/src/jquery.unobtrusive-ajax.js"></script>*@
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    @*<h1>
+            Shift Setup
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">RM Rate</li>
+        <li class="active">Upload Rate</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px;">        
+        <form class="form-horizontal" asp-controller="RmRate" method="post" asp-action="UploadRate" enctype="multipart/form-data" >
+            <div class="box-body">
+                <div class="form-group text-center" style="padding:1.5em;color:red;">
+                    @Html.ValidationSummary()
+                </div>
+                
+                <div class="form-group" style="padding:1.5em">
+                    <label for="files" class="col-sm-2 control-label">Upload Excel File: </label>
+                    <div class="col-sm-10">
+                        <input type="file" id="fileupload" name="files" class="form-control" required/>
+                    </div>
+
+                    
+                </div>
+             
+            </div>
+
+
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/RmRate/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-info pull-right">Upload</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+    <!-- /.box -->
+</section>
+
+
+
+
+<script type="text/javascript">
+
+
+    var arrHead = new Array();
+    arrHead = ['Id','EmpId','ExamId','Result','Comments','Action'];      // SIMPLY ADD OR REMOVE VALUES IN THE ARRAY FOR TABLE HEADERS.
+    // ADD A NEW ROW TO THE TABLE.s
+
+
+    // EXTRACT AND SUBMIT TABLE DATA.
+    function sumbitData() {
+        var myTab = document.getElementById('htEmployeeEducationDetail');
+        var values = new Array();
+
+        // LOOP THROUGH EACH ROW OF THE TABLE.
+        for (row = 1; row < myTab.rows.length - 1; row++) {
+            for (c = 0; c < myTab.rows[row].cells.length; c++) {   // EACH CELL IN A ROW.
+
+                var element = myTab.rows.item(row).cells[c];
+                if (element.childNodes[0].getAttribute('type') == 'text') {
+                    values.push("'" + element.childNodes[0].value + "'");
+                }
+            }
+        }
+        console.log(values);
+    }
+
+</script>
+

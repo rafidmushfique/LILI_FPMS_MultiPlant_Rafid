@@ -1,0 +1,1834 @@
+﻿    @model LILI_FPMS.Models.TblProductionProcess
+
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder">
+    @{
+      
+            //string str = ViewData["Error"].ToString();
+            //<script>alert(@str);</script>
+        
+      
+    }
+</div>
+
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    @*<h1>
+    @*<h1>
+            Production
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Production Process</li>
+        <li class="active">Add Process Information</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+        @*<div class="box-header with-border">
+                <h3 class="box-title">Add Process</h3>
+        </div>*@
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" asp-controller="Production" method="post" asp-action="CreateProduction" onsubmit="return FloorStockCheck(this);">
+
+            <div class="box-body">
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Section</label>
+                    <div class="col-sm-4">
+                        <select  asp-for="SectionCode" id="Section" class="form-control">
+                            @foreach(var item in ViewBag.ListofSection)
+                            {
+                                 <option value="@item.SectionCode">@item.SectionName</option>
+                            }
+                           
+                      </select>
+                    </div>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Process No.</label>
+                    <div class="col-sm-3">
+                        <select  id="processNoField" class="form-control"> </select>
+                    </div>
+                </div>
+               
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Process No.</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="ProcessNo" class="form-control" placeholder="Process No." readonly="readonly">
+                        <span asp-validation-for="ProcessNo"></span>
+                    </div>
+
+                    <label asp-for="ProcessDate" class="col-sm-2 control-label">Process Date</label>
+                    <div class='col-sm-3 input-group date' id='ProcessDate' style="padding-left:15px;">
+                        <input asp-for="ProcessDate" type='text' class="form-control" />
+                        <span asp-validation-for="ProcessDate" class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Requisition No.</label>
+                    <div class="col-sm-2">
+                        <input type="hidden" asp-for="ProductCode"  class="form-control" readonly="readonly"></input>
+                        <input type="text" asp-for="RequisitionNo" class="form-control" placeholder="Requisition No." readonly="readonly">
+                        <span asp-validation-for="RequisitionNo"></span>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-mini btn-primary" id="requisitionSrchBtn"data-toggle="ajax-modal" data-target="#add-Requisition" data-url="@Url.Action("SearchRequisition")">
+                            Search Requisition
+                        </button>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="ProductName" class="form-control" placeholder="Product Name" readonly="readonly">
+                        <span asp-validation-for="ProductName"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Batch Size</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="BatchSize" class="form-control" readonly="readonly">
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Standard Output / Batch</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="StandardOutput" class="form-control" readonly="readonly" placeholder="Standard Output/Batch">
+                        <span asp-validation-for="StandardOutput"></span>
+                    </div>
+                </div>
+                
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">No Of Batch In Requisition</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="NoOfBatchInRequisition" class="form-control" readonly="readonly">
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Previous Processed No of Batch</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="PreviousProcessedBatchNo" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Batch No.</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="BatchNo" class="form-control" placeholder="Batch No.">
+                        <span asp-validation-for="BatchNo"></span>
+                    </div>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Previous Production Quantity</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="PreviousProcessedProductionQty" class="form-control" readonly="readonly">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @*<label for="inputEmail3" class="col-sm-2 control-label">Produced Qty Before Conversion</label>
+                    <div class="col-sm-1">
+                        <input type="text" asp-for="ProductionQtyBeforeConversion" class="form-control" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Conversion Factor</label>
+                    <div class="col-sm-1">
+                        <input type="text" asp-for="ProductionQtyConversionFactor" class="form-control" onkeypress='return isNumberKey(event)'>
+                    </div>*@
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">No Of Batch</label>
+                    <div class="col-sm-1">
+                        <input type="text" asp-for="NumberOfBatch" class="form-control" >
+                    </div>
+                    <div id="prevSecPQty" style="visibility:hidden">
+                    <label for="inputEmail3" class="col-sm-2 control-label" >Previous Section Produced Quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" asp-for="PrevSecProductionQty" class="form-control"  readonly>
+                    </div>
+                    </div>
+                    <label asp-for="QCReferenceSampleQty" class="col-sm-2 control-label">QC Sample Quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" Id="QCReferenceSampleQty" asp-for="QCReferenceSampleQty" class="form-control" onkeypress='return isNumberKey(event)' >
+                    </div>
+                    <label asp-for="LumpQty" class="col-sm-2 control-label">Lump Quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" Id="LumpQty" asp-for="LumpQty" class="form-control" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                </div>
+
+                <div class="form-group" >
+
+                    <label asp-for="ManufacShiftCode" class="col-sm-2 control-label">By-product Name</label>
+                    <div class="col-sm-4">
+                        <select asp-for="SFGCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfSFG,"SFGCode","SFGName"))"></select>
+                        <span asp-validation-for="SFGCode"></span>
+                    </div>
+                    <label for="inputEmail3" class="col-sm-2 control-label">By-product Production Quantity</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="SFGProductionQty" class="form-control" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                </div>
+                <div class="form-group">
+
+                   @* <label for="inputEmail3" class="col-sm-2 control-label">Production Quantity</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="ProductionQty" class="form-control" onkeypress='return isNumberKey(event)'>
+                    </div>*@
+                </div>
+
+                 @*Manufactaring start*@
+                <div id="ManuFactaringDetail" class="panel-group" >
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a id="sectionHeader"data-toggle="collapse" href="#collapse1"></a>
+                            </h4>
+                        </div>
+
+                                <div id="collapse1" class="collapse">
+                                <div class="col-md-12" style="padding-top:10px">
+                                    <div class="col-md-6">
+                                        <div class="form-group control-group">
+                                            <label asp-for="ManufacBatchStartTime" class="col-sm-4 control-label">Batch Start Time</label>
+                                            <div class='col-sm-8 date input-group ' id='ManufacBatchStartTimeDTP' style="padding-left:15px;">
+                                                    <input asp-for="ManufacBatchStartTime" type='text' class="form-control" />
+                                                    <span asp-validation-for="ManufacBatchStartTime" class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group control-group">
+                                            <label asp-for="ManufacShiftCode" class="col-sm-4 control-label">Shift Name</label>
+                                            <div class="col-sm-8">
+                                                <select asp-for="ManufacShiftCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfShift,"ShiftCode","ShiftName"))"></select>
+                                                <span asp-validation-for="ManufacShiftCode"></span>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="form-group control-group">
+                                            <label asp-for="BreakeDownCauseId" class="col-sm-4 control-label">Break Down/Change-Over Cause</label>
+                                            <div class="col-sm-8">
+                                                <select asp-for="BreakeDownCauseId" class="form-control" asp-items="@(new SelectList(ViewBag.ManufacturingBreakDownCauseList,"BreakeDownCauseId","BreakeDownCause"))"></select>
+                                                <span asp-validation-for="BreakeDownCauseId"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group control-group">
+                                            <label for="inputEmail3" class="col-sm-4 control-label">Shift Break/Change Time(Hr.)</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" asp-for="ManufacShiftBreakDownChangeTime" class="form-control" placeholder="Shift Break Down/Change Time" onkeypress='return isNumberKey(event)'>
+                                                <span asp-validation-for="ManufacShiftBreakDownChangeTime"></span>
+                                                <div style="padding-top:7px"></div>
+                                                <a class="btn btn-sm btn-primary" onclick="addNewRowToManufacturingShiftGrid()"> Add </a>
+                                            </div>
+                                        </div>
+
+
+
+                                        <div class="form-group control-group">
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-10">
+                                                <table id = "tblProductionManufacturingShift" class="table table-responsive table-striped table-bordered">
+                                                    <thead class="thead-dark">
+                                                        <tr>
+                                                            <th scope="col">Shift Name</th>
+                                                            <th scope="col" width="40%">Machine Name</th>
+                                                            <th scope="col">Break-Down/<br />Change-Over Cause </th>
+                                                            <th scope="col">Break-Down/<br />Change-Over Time (Hr.)</th>
+                                                            <th scope="col">Action</th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tblProductionManufacturingShiftDetail" class="js_tblManufacturingDetail_body">
+                                                        @foreach (var item in Model.TblManufacturingShift)
+                                                        {
+                                                            int i = 0; //To make unique Id
+                                                            <tr>
+                                                                <td>@Html.EditorFor(modelItem => item.ShiftCode)</td>
+                                                                <td>@Html.DisplayFor(modelItem => item.ShiftCode)</td>
+                                                                <td>@Html.EditorFor(modelItem => item.MachineCode)</td>
+                                                                <td>@Html.DisplayFor(modelItem => item.MachineName)</td>
+                                                                <td>@Html.EditorFor(modelItem => item.BreakeDownCauseId)</td>
+                                                                <td>@Html.DisplayFor(modelItem => item.BreakeDownCauseName)</td>
+                                                                <td style="text-align:right; width:70px;">@Html.EditorFor(modelItem => item.BreakeDownTime)</td>
+                                                                <td><a href="" class="fa fa-trash" onclick="Delete('@item.Id')">X</a></td>
+                                                            </tr>
+                                                            i++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group control-group">
+                                            <label asp-for="ManufacLineCode" class="col-sm-4 control-label">Line Code</label>
+                                            <div class="col-sm-8">
+                                                <select asp-for="ManufacLineCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfLine,"LineCode","LineName"))"></select>
+                                                <span asp-validation-for="ManufacLineCode"></span>
+                                                <div style="padding-top:7px"></div>
+                                                <a class="btn btn-sm btn-primary" style="float:right" onclick="addNewRowToManufacturingLineGrid()"> Add Line</a>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group control-group">
+                                            <div class="col-md-2"></div>
+                                            <div class="col-sm-10">
+
+                                                <table class="table table-responsive table-bordered table-striped">
+                                                    <thead class="thead-dark">
+                                                        <tr>
+                                                            <th scope="col">Line Name</th>
+                                                            <th scope="col">Action</th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tblProductionManufacturingLineDetail" class="js_tblManufacturingDetailLine_body">
+                                                        @foreach (var item in Model.TblManufacturingLine)
+                                                        {
+                                                            int i = 0; //To make unique Id
+                                                            <tr>
+                                                                <td>@Html.EditorFor(modelItem => item.LineCode)</td>
+                                                                <td>@Html.DisplayFor(modelItem => item.LineCode)</td>
+                                                                <td><a href="" class="fa fa-trash" onclick="Delete('@item.Id')">X</a></td>
+                                                            </tr>
+                                                            i++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group control-group">
+                                            <label asp-for="ManufacBatchEndTime" class="col-sm-4 control-label">Batch End Time</label>
+                                            <div class='col-sm-6 input-group date' id='ManufacBatchEndTimeDTP' style="padding-left:15px;">
+                                                <input asp-for="ManufacBatchEndTime" type='text' class="form-control" />
+                                                <span asp-validation-for="ManufacBatchEndTime" class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group control-group">
+                                            <label asp-for="ManufacMachineCode" class="col-sm-4 control-label">Machine Name</label>
+                                            <div class="col-sm-4">
+                                                <select asp-for="ManufacMachineCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfMachine,"MachineCode","MachineName"))"></select>
+                                                <span asp-validation-for="ManufacMachineCode"></span>
+                                            </div>
+
+                                            <label for="inputEmail3" class="col-sm-2 control-label">Capacity</label>
+                                            <div class="col-sm-2">
+                                                <input type="text" asp-for="ManufacMachineCapacity" class="form-control" readonly="readonly" placeholder="Machine Capacity">
+                                                <span asp-validation-for="ManufacMachineCapacity"></span>
+                                            </div>
+                                        </div>
+
+                                    
+
+                                        <div class="form-group control-group">
+                                            <label for="inputEmail3" class="col-sm-4 control-label">Machine Hour</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" asp-for="ManufacMachineHour" class="form-control" placeholder="Machine Hour" onkeypress='return isNumberKey(event)'>
+                                                <span asp-validation-for="ManufacMachineHour"></span>
+                                                
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group control-group">                                            
+                                            <label for="inputEmail3" class="col-sm-4 control-label">Machine Wise No. of Worker</label>
+                                            <div class="col-sm-2">
+                                                <input type="text" asp-for="ManufacMachineNoOfWorker" class="form-control" placeholder="No. of Worker" onkeypress='return isNumberKey(event)'>
+                                                <span asp-validation-for="ManufacMachineNoOfWorker"></span>
+                                            </div>
+
+                                        <label for="inputEmail3" class="col-sm-4 control-label">Man Hour</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" asp-for="ManufacMachineManHour" class="form-control" placeholder="Man Hour" onkeypress='return isNumberKey(event)'>
+                                            <span asp-validation-for="ManufacMachineManHour"></span>
+                                            <div style="padding-top:10px"></div>
+                                                <a class="btn btn-sm btn-primary" onclick="addNewRowToManufacturingMachineGrid()"> Add Machine</a>
+                                        </div>
+                                        
+                                        </div>
+
+
+                                        <div class="form-group control-group">
+                                            <div class="col-md-2"></div>
+                                            <div class="col-sm-10">
+                                                <table class="table table-responsive table-bordered table-striped">
+                                                    <thead class="thead-dark">
+                                                        <tr>
+                                                        <th scope="col" style='width:35%'>Machine Name</th>
+                                                            <th scope="col">Machine Hour</th>
+                                                            <th scope="col">No of Worker</th>
+                                                            <th scope="col">Man Hour</th>
+                                                            <th scope="col">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tblProductionManufacturingMachineDetail" class="js_tblManufacturingDetailMachine_body">
+                                                        @foreach (var item in Model.TblManufacturingMachine)
+                                                        {
+                                                            int i = 0; //To make unique Id
+                                                            <tr>
+                                                                <td>@Html.EditorFor(modelItem => item.MachineCode)</td>
+                                                                <td>@Html.DisplayFor(modelItem => item.MachineName)</td>
+                                                                <td>@Html.EditorFor(modelItem => item.MachineHour)</td>
+                                                                <td>@Html.EditorFor(modelItem => item.ManufacMachineNoOfWorker)</td>
+                                                                <td>@Html.EditorFor(modelItem => item.ManufacMachineManHour)</td>
+                                                                <td><a href="" onclick="Delete('@item.Id')">X</a></td>
+                                                            </tr>
+                                                            i++;
+                                                        }
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+                                        </div>
+                                    <div class="form-group control-group">
+                                        <label for="inputEmail3" class="col-sm-4 control-label">Staff List</label>
+                                        <div class="col-sm-4">
+                                            <select id="ManufacManPowerStaffId" style="width:100%" for="ManufacManPowerStaffId" class="form-control select2" @* asp-items="@(new SelectList(ViewBag.ListofStaff,"StaffId","Name"))"*@>
+                                                <option value=""> Select Staff </option>
+                                                @{
+                                                    foreach (var staff in ViewBag.ListofStaff)
+                                                    {
+                                                            <option value="@staff.StaffId"> @staff.StaffId || @staff.Name</option>
+
+                                                    }
+                                                }
+                                            </select>
+                                          @*  <span asp-validation-for="ManufacManPowerStaffId"></span>*@
+                                            @*   <input type="text" asp-for="ManufacManPowerStaffId" class="form-control" readonly="readonly" placeholder="" >
+
+                                            @(new SelectList(ViewBag.ListOfShift,"ShiftCode","ShiftName"))
+                                            *@
+                                        </div>
+
+
+                                        <div class="col-sm-2">
+                                            <a class="btn btn-sm btn-primary" onclick="addNewRowToManufacturingStaffGrid()"> Add Staff</a>
+                                            @*  <button type="button" class="btn btn-mini btn-primary" data-toggle="ajax-modal" onclick="addNewRowToManufacturingStaffGrid()">Add Staff</button>*@
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group control-group">
+                                        <div class="col-md-2"></div>
+                                        <div class="col-sm-10">
+
+                                            <table class="table table-responsive table-bordered table-striped">
+                                                <thead class="thead-dark">
+                                                    <tr>
+                                                        <th scope="col">Staff</th>
+                                                        <th scope="col">Action</th>
+                                                      
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tblManufacturingManPowerDetail" class="js_tblManufacturingDetailLine_body">
+                                                    @foreach (var item in Model.TblManufacturingManPower)
+                                                    {
+                                                        int i = 0; //To make unique Id
+                                                        <tr>
+                                                            <td>@Html.EditorFor(modelItem => item.StaffId)</td>
+                                                            <td>@Html.DisplayFor(modelItem => item.StaffId)</td>
+                                                            <td><a class="fa fa-trash" onclick="Delete('@item.Id')">X</a></td>
+                                                        </tr>
+                                                        i++;
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+
+                                        <div class="form-group control-group">                                            
+                                            <label for="inputEmail3" class="col-sm-4 control-label">No. of Worker</label>
+                                            <div class="col-sm-2">
+                                                <input type="text" asp-for="ManufacNoOfWorker" class="form-control" placeholder="No. of Worker" onkeypress='return isNumberKey(event)'>
+                                                <span asp-validation-for="ManufacNoOfWorker"></span>
+                                            </div>
+
+                                        <label for="inputEmail3" class="col-sm-4 control-label">Man Hour</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" asp-for="ManufacManHour" class="form-control" placeholder="Man Hour" onkeypress='return isNumberKey(event)'>
+                                            <span asp-validation-for="ManufacManHour"></span>
+                                        </div>
+                                        </div>
+
+
+                                        <div class="form-group control-group">
+                                            <label for="inputEmail3" class="col-sm-4 control-label">Common No. of Worker</label>
+                                            <div class="col-sm-2">
+                                                <input type="text" asp-for="ManufacCommonNoOfWorker" class="form-control" placeholder="No. of Worker" onkeypress='return isNumberKey(event)'>
+                                                <span asp-validation-for="ManufacCommonNoOfWorker"></span>
+                                            </div>
+                                            <label for="inputEmail3" class="col-sm-4 control-label">Common Man Hour</label>
+                                            <div class="col-sm-2">
+                                                <input type="text" asp-for="ManufacCommonManHour" class="form-control" placeholder="Man Hour" onkeypress='return isNumberKey(event)'>
+                                                <span asp-validation-for="ManufacCommonManHour"></span>
+                                            </div>
+                                            
+                                        </div>
+
+                                        
+                                    
+                                    </div>
+                                </div>
+                                <div class="form-group"></div>
+
+
+                            </div>
+                    </div>
+                </div>
+ 
+
+
+
+            
+
+            <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label" style="">Current Section Produced Quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" asp-for="ProductionQty" class="form-control" onkeypress='return isNumberKey(event)' >
+                    </div>
+
+                <label asp-for="Comments" class="col-sm-2 control-label"></label>
+                <div class="col-sm-4">
+                    <textarea type="text" asp-for="Comments" class="form-control" placeholder="Comments"></textarea>
+                </div>
+            </div>
+            <div style="border:1px solid #e5dbff; padding:10px;">
+                <div class="box-body">
+                        
+                        <table id="htProductionMaterialDetail" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:10%; !important">RMPM Code</th>
+                                    <th style="width:30%;">RMPM Name</th>
+                                    <th style="width:10%;">Unit</th>
+                                    <th style="width:10%;">Required Quantity</th>
+                                    <th style="width:10%; display:none;">Issued Quantity</th>
+                                    <th style="display: none; width:10%;">Previous Consumption Quantity</th>
+                                    <th style="width:10%;">Std.Consumption</th>
+                                    <th style="width:10%;">Current Use Quantity</th>
+                                    <th style="width:10%;">Std. Process Loss</th>
+                                    <th style="width:10%;">Wastage</th>
+                                    <th style="display: none; width:10%;">Total Consumption</th>
+                                    <th style="display: none; width:10%;">Floor Stock</th>
+                                <th style="width:10%; display: none;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblProductionBOMDtl" class="js_tblBOMDtl_body">
+                                @foreach (var item in Model.TblProductionProcessDetail)
+                                {
+                                    int i = 0; //To make unique Id
+                                <tr>
+                                    <td>@Html.EditorFor(modelItem => item.MaterialCode)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.MaterialName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Unit)</td>
+                                    <td style="text-align:right; width:70px;">@Html.EditorFor(modelItem => item.ReqQuantity)</td>
+                                    <td style="display:none; text-align:right; width:70px;">@Html.EditorFor(modelItem => item.IssuedQty)</td>
+                                    <td style="display:none; text-align:right; width:70px;">@Html.EditorFor(modelItem => item.PreviousUsedQty)</td>
+                                    <td style="text-align:right; width:70px;">@Html.EditorFor(modelItem => item.StdConsumptionQty)</td>
+                                    <td style="text-align:right; width:70px;" class="numeric">@Html.EditorFor(modelItem => item.CurrentUseQty)</td>
+                                    <td style="text-align:right; width:70px;">@Html.EditorFor(modelItem => item.ProcessLoss)</td>
+                                    <td style="text-align:right; width:70px;">@Html.EditorFor(modelItem => item.Wastage)</td>
+                                    <td style="display: none; text-align:right; width:70px;">@Html.EditorFor(modelItem => item.TotalConsumption)</td>
+                                    <td style="display: none; text-align:right; width:70px;">@Html.EditorFor(modelItem => item.FloorStock)</td>
+                                    <td style="display: none;"><a href="" onclick="Delete('@item.Id')">Delete</a></td>
+                                </tr>
+                                    i++;
+                                }
+
+                            </tbody>
+
+                            <tfoot>
+                              <tr>
+                                  <td colspan="5" style="text-align:left; font-weight:bold">Total Consumption:</td>
+                                  <td id="sum" style="text-align:right; font-weight:bold;" class="numeric">&nbsp;</td>
+                              </tr>
+                            </tfoot>
+                        </table>
+                        
+                </div>
+            </div>
+            
+
+
+            <!-- /.box-body -->
+            <div class="box-footer">
+
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/Production/Index")'>Cancel</a>
+
+                @*<a Id="btnCheckFloorStock" class="btn btn-sm btn-primary" > Check Floor Stock</a>*@
+                <button id="submitBtn" type="submit" class="btn btn-sm btn-primary pull-right">Create</button>
+
+            </div>
+                        <!-- /.box-footer -->
+</form>
+    </div>
+    <!-- /.box -->
+</section>
+
+
+
+
+<script type="text/javascript">
+
+
+
+
+    $("#Section").on('change', function () {
+
+        
+
+        var text=$("#Section option:selected").text();
+        var sectioncode = $("#Section option:selected").val();
+        $.ajax({
+
+            url: '@Url.Action("SetSectionCode", "Production")',
+            data: {
+                SectionCode: sectioncode
+            },
+            error: function (result) {
+                alert("error");
+            },
+            success: function (result) {
+                $("#sectionHeader").text(text);
+            }
+        });
+
+        if (sectioncode == "S0001") {
+           
+            $("#requisitionSrchBtn").prop("disabled", null);
+            $("#processNoField").prop("disabled","true");
+            $("#prevSecPQty").css("visibility", "hidden");
+        }
+        else{
+           
+            $("#prevSecPQty").css("visibility", "visible");
+            $("#requisitionSrchBtn").prop("disabled", "true");
+            $("#processNoField").prop("disabled", null);
+            $.ajax({
+
+                url: '@Url.Action("GetProcessNoList", "Production")',
+                data: {
+                    SectionCode: sectioncode
+                },
+                error: function (result) {
+                    alert("error");
+                },
+                success: function (result) {
+                    var formoption = "<option value='" + 0 + "'>" + "-- Select Process --" + "</option>";
+                    for (var i = 0; i < result.length; i++) {
+                        if (result[i].ProcessNo != '') {
+                            if (result[i].ProcessNo != undefined) {
+                                formoption += "<option value='" + result[i].RequisitionNo + "'>" + result[i].ProcessNo + "</option>";
+                            }
+                        }
+                    }
+                    
+                    $('#processNoField').html(formoption);
+                }
+            });
+        }
+
+    });
+
+    function FloorStockCheck()
+    {
+        let count = 0;
+        var table = $("#htProductionMaterialDetail tbody");
+        
+        let productCode = $("#ProductCode").val().substring(0, 3);
+        let manufacShiftCode = $("#ManufacShiftCode").val();
+        let packingShiftCode = $("#PackShiftCode").val();
+
+        let noOfBatchInRequisition = $("#NoOfBatchInRequisition").val();
+        let standardOutput = $("#StandardOutput").val();
+        let maxProcessableProductionQty = Number(noOfBatchInRequisition)*Number(standardOutput);
+        let previousProcessedProductionQty = $("#PreviousProcessedProductionQty").val();
+        let productionQty = $("#ProductionQty").val();
+        let currMaxProductionQty = Number(maxProcessableProductionQty)-Number(previousProcessedProductionQty);
+        
+        table.find('tr').each(function (i, el) {                
+            var $tds = $(this).find('td');                
+            var rmpmName = $(this).find("td").eq(2).find(":text").val();
+            var floorStock = 0;
+            floorStock = $('.calFloorStock', $tds).val(); // Current row Standard Consumption.
+            if ($('.calTotalCon', $tds).val() > Number(floorStock)) {
+                alert("Current use quantity should not exceed Floor Stock->" + rmpmName + ":" + floorStock);
+                count = count+1;
+            }                
+        }); 
+
+
+        // Check ManufacturingShiftDetail Table
+        var manufacturingShiftRecordCount = $("#tblProductionManufacturingShift tbody tr").length;
+
+        // Check PackingShiftDetail Table
+        var packingShiftRecordCount = $("#tblProductionPackingShift tbody tr").length;
+
+
+        if(Number(productionQty) <=0)
+        {
+            alert("Please provide Produced Quantity.");
+            return false;
+        }
+
+        else
+        {
+            if(count>0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }  
+               
+        }
+
+        if(@ViewBag.IsCodingDetailVisible==0 && (productCode=="SFG" || productCode=="sfg")){                
+            if (manufacturingShiftRecordCount<1){
+                alert("Please Select a Manufacturer Shift");
+                return false;
+            }
+        }
+        else{                
+            if (packingShiftRecordCount<1){
+                alert("Please Select a Packing Shift");
+                return false;
+            }
+
+        }
+        
+    }
+
+    function CalculateTotalConsumption()
+    {
+        var sum_population = 0;
+        //$( "#htProductionMaterialDetail tbody tr ).each( function( index ) {
+        //  sum_population += $( this )children().eq( 1 ).text() * 1;
+        //});
+
+        $( "td#sum" ).text( sum_population );
+    }
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode != 46 && (charCode < 48 || charCode > 57)))
+            return false;
+        return true;
+    }
+
+    function addNewRowToManufacturingShiftGrid() {
+
+        var ManufacShiftCode = $("#ManufacShiftCode").val();
+        var ManufacShiftName = $("#ManufacShiftCode option:selected").text();
+
+        var ManufacMachineCode = $("#ManufacMachineCode").val();
+        var ManufacMachineName = $("#ManufacMachineCode option:selected").text();
+
+        var BreakeDownCauseId = $("#BreakeDownCauseId").val();
+        var BreakeDownCause = $("#BreakeDownCauseId option:selected").text();
+
+
+        var ManufacShiftBreakDownChangeTime = $("#ManufacShiftBreakDownChangeTime").val();
+        ManufacShiftBreakDownChangeTime = ManufacShiftBreakDownChangeTime===""?0:ManufacShiftBreakDownChangeTime
+
+
+
+            @{
+                Model.TblManufacturingShift.Add(new LILI_FPMS.Models.TblManufacturingShift());
+            }
+
+        var index = $("#tblProductionManufacturingShiftDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblManufacturingShift.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblManufacturingShift_" + index + "_Id' name='TblManufacturingShift[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var ManufacShiftCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblManufacturingShift_" + index + "_ShiftCode' name='TblManufacturingShift[" + index + "].ShiftCode' type='text' value='" + ManufacShiftCode + "' /></td>";
+        var ManufacShiftNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblManufacturingShift_" + index + "_ManufacShiftName' name='TblManufacturingShift[" + index + "].ManufacShiftName' type='text' value='" + ManufacShiftName + "' /></td>";
+
+        var ManufacMachineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblManufacturingShift_" + index + "_MachineCode' name='TblManufacturingShift[" + index + "].MachineCode' type='text' value='" + ManufacMachineCode + "' /></td>";
+        var ManufacMachineNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblManufacturingShift_" + index + "_MachineName' name='TblManufacturingShift[" + index + "].MachineName' type='text' value='" + ManufacMachineName + "' /></td>";
+
+        var BreakeDownCauseIdCell = "<td style='display:none'> <input id='TblManufacturingShift_" + index + "_BreakeDownCauseId' name='TblManufacturingShift[" + index + "].BreakeDownCauseId' type='text' value='" + BreakeDownCauseId + "' /></td>";
+        var BreakeDownCauseCell = "<td><input style='width:100%' class='nothing' readonly id='TblManufacturingShift_" + index + "_BreakeDownCauseName' name='TblManufacturingShift[" + index + "].BreakeDownCauseName' type='text' value='" + BreakeDownCause + "' /></td>";
+        var ManufacShiftBreakDownChangeTimeellCell = "<td><input style='text-align:right; width:100%' class='calManufacShiftBreakDownTime' id='TblManufacturingShift_" + index + "_BreakeDownTime' name='TblManufacturingShift[" + index + "].BreakeDownTime' type='text' value='" + ManufacShiftBreakDownChangeTime +"' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeShiftRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionManufacturingShiftDetail" + index + "'>" + indexCell + ManufacShiftCodeCell + ManufacShiftNameCell + ManufacMachineCodeCell + ManufacMachineNameCell + BreakeDownCauseIdCell + BreakeDownCauseCell + ManufacShiftBreakDownChangeTimeellCell + removeCell + "</tr>";
+        $("#tblProductionManufacturingShiftDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+    }
+    
+    function addNewRowToManufacturingStaffGrid() {
+
+        var ManufacStaffId = $("#ManufacManPowerStaffId").val();
+        var ManufacStaffName = $("#ManufacManPowerStaffId option:selected").text().split('||')[1];
+
+        @{
+        Model.TblManufacturingManPower.Add(new LILI_FPMS.Models.TblManufacturingManPower());
+        }
+
+        
+            var index = $("#tblManufacturingManPowerDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblManufacturingManPower.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblManufacturingManPower" + index + "_Id' name='TblManufacturingManPower[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var ManufacStaffIdCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblManufacturingManPower_" + index + "_LineCode' name='TblManufacturingManPower[" + index + "].StaffId' type='text' value='" + ManufacStaffId + "' /></td>";
+        var ManufacStaffNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblManufacturingManPower_" + index + "_Name' name='TblManufacturingManPower[" + index + "].Name' type='text' value='" + ManufacStaffName + "' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeManPowerRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblManufacturingManPowerDetail" + index + "'>" + indexCell + ManufacStaffIdCell + ManufacStaffNameCell + removeCell + "</tr>";
+        $("#tblManufacturingManPowerDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+    }
+    function addNewRowToPackingStaffGrid() {
+
+        var PackStaffId = $("#PackManPowerStaffId").val();
+        var PackStaffName = $("#PackManPowerStaffId option:selected").text().split('||')[1];
+
+        @{
+        Model.TblPackingManPower.Add(new LILI_FPMS.Models.TblPackingManPower());
+        }
+         
+            var index = $("#tblPackingManPowerDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblPackingManPower.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblPackingManPower" + index + "_Id' name='TblPackingManPower[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var PackStaffIdCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblPackingManPower_" + index + "_LineCode' name='TblPackingManPower[" + index + "].StaffId' type='text' value='" + PackStaffId + "' /></td>";
+        var PackStaffNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblPackingManPower_" + index + "_Name' name='TblPackingManPower[" + index + "].Name' type='text' value='" + PackStaffName + "' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removePackingManPowerRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblPackingManPowerDetail" + index + "'>" + indexCell + PackStaffIdCell + PackStaffNameCell + removeCell + "</tr>";
+        $("#tblPackingManPowerDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+    }
+
+
+    function addNewRowToManufacturingLineGrid() {
+
+        var ManufacLineCode = $("#ManufacLineCode").val();
+        var ManufacLineName = $("#ManufacLineCode option:selected").text();
+
+        @{
+            Model.TblManufacturingLine.Add(new LILI_FPMS.Models.TblManufacturingLine());
+        }
+
+        var index = $("#tblProductionManufacturingLineDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblManufacturingLine.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblManufacturingLine_" + index + "_Id' name='TblManufacturingLine[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var ManufacLineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblManufacturingLine_" + index + "_LineCode' name='TblManufacturingLine[" + index + "].LineCode' type='text' value='" + ManufacLineCode + "' /></td>";
+        var ManufacLineNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblManufacturingLine_" + index + "_LineName' name='TblManufacturingLine[" + index + "].LineName' type='text' value='" + ManufacLineName + "' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeLineRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionManufacturingLineDetail" + index + "'>" + indexCell + ManufacLineCodeCell + ManufacLineNameCell + removeCell + "</tr>";
+        $("#tblProductionManufacturingLineDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+    }
+
+    function addNewRowToManufacturingMachineGrid() {
+
+        var ManufacMachineCode = $("#ManufacMachineCode").val();
+        var ManufacMachineName = $("#ManufacMachineCode option:selected").text();
+        var ManufacMachineHour = $("#ManufacMachineHour").val();
+        var ManufacMachineNoOfWorker = $("#ManufacMachineNoOfWorker").val();
+        var ManufacMachineManHour = $("#ManufacMachineManHour").val();
+
+
+            @{
+                Model.TblManufacturingMachine.Add(new LILI_FPMS.Models.TblManufacturingMachine());
+            }
+
+        var index = $("#tblProductionManufacturingMachineDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblManufacturingMachine.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblManufacturingMachine_" + index + "_Id' name='TblManufacturingMachine[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var ManufacMachineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblManufacturingMachine_" + index + "_MachineCode' name='TblManufacturingMachine[" + index + "].MachineCode' type='text' value='" + ManufacMachineCode + "' /></td>";
+        var ManufacMachineNameCell = "<td style='width:35%'><input style='width:100%' class='nothing' readonly id='TblManufacturingMachine_" + index + "_MachineName' name='TblManufacturingMachine[" + index + "].MachineName' type='text' value='" + ManufacMachineName + "' /></td>";
+        var ManufacMachineHourCell = "<td><input style='text-align:right; width:100%' id='TblManufacturingMachine_" + index + "_MachineHour' name='TblManufacturingMachine[" + index + "].MachineHour' type='text' value='" + ManufacMachineHour + "' /></td>";
+        var ManufacMachineNoOfWorkerCell = "<td><input style='text-align:right; width:100%'  class='calManufacMachineWiseNoOfWorker' id='TblManufacturingMachine_" + index + "_ManufacMachineNoOfWorker' name='TblManufacturingMachine[" + index + "].ManufacMachineNoOfWorker' type='text' value='" + ManufacMachineNoOfWorker + "' /></td>";
+        var ManufacMachineManHourCell = "<td><input style='text-align:right; width:100%' class='calManufacMachineWiseManHour' id='TblManufacturingMachine_" + index + "_ManufacMachineManHour' name='TblManufacturingMachine[" + index + "].ManufacMachineManHour' type='text' value='" + ManufacMachineManHour + "' /></td>";
+        ////===========
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeMachineRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionManufacturingMachineDetail" + index + "'>" + indexCell + ManufacMachineCodeCell + ManufacMachineNameCell + ManufacMachineHourCell + ManufacMachineNoOfWorkerCell + ManufacMachineManHourCell + removeCell + "</tr>";
+        $("#tblProductionManufacturingMachineDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+
+        calTotalNoOfWorkerAndTotalManHour();
+
+    }
+
+    function calTotalNoOfWorkerAndTotalManHour() {
+        calManufacMachineWiseNoOfWorker = 0;
+        $(".calManufacMachineWiseNoOfWorker").each(function(index,value) {
+            tdvalue = this.value;
+            calManufacMachineWiseNoOfWorker += parseFloat(tdvalue);
+        });
+        document.getElementById("ManufacNoOfWorker").value = calManufacMachineWiseNoOfWorker;
+
+        calManufacMachineWiseManHour = 0;
+        $(".calManufacMachineWiseManHour").each(function (index, value) {
+            tdvalue = this.value;
+            calManufacMachineWiseManHour += parseFloat(tdvalue);
+        });
+        document.getElementById("ManufacManHour").value = calManufacMachineWiseManHour;
+    }
+
+    function removeShiftRow(id) {
+        var controlToBeRemoved = "#tblProductionManufacturingShiftDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removeLineRow(id) {
+        var controlToBeRemoved = "#tblProductionManufacturingLineDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+
+    function removeMachineRow(id) {
+        var controlToBeRemoved = "#tblProductionManufacturingMachineDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+
+    function addNewRowToPackingShiftGrid() {
+
+        var ManufacShiftCode = $("#PackShiftCode").val();
+        var ManufacShiftName = $("#PackShiftCode option:selected").text();
+
+        var PackingMachineCode = $("#PackMachineCode").val();
+        var PackingMachineName = $("#PackMachineCode option:selected").text();
+
+        var BreakeDownCauseId = $("#PackingBreakeDownCauseId").val();
+        var BreakeDownCause = $("#PackingBreakeDownCauseId option:selected").text();
+        var ManufacShiftBreakDownChangeTime = $("#PackShiftBreakDownChangeTime").val();
+        ManufacShiftBreakDownChangeTime = ManufacShiftBreakDownChangeTime===""?0:ManufacShiftBreakDownChangeTime;
+
+        @{
+            Model.TblPackingDetailShift.Add(new LILI_FPMS.Models.TblPackingDetailShift());
+        }
+
+        var index = $("#tblProductionpackingShiftDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblPackingDetailShift.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblPackingDetailShift_" + index + "_Id' name='TblPackingDetailShift[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var PackingShiftCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblPackingDetailShift_" + index + "_ShiftCode' name='TblPackingDetailShift[" + index + "].ShiftCode' type='text' value='" + ManufacShiftCode + "' /></td>";
+        var PackingShiftNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblPackingDetailShift_" + index + "_ShiftName' name='TblPackingDetailShift[" + index + "].ShiftName' type='text' value='" + ManufacShiftName + "' /></td>";
+        
+        var PackingMachineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblPackingDetailShift_" + index + "_MachineCode' name='TblPackingDetailShift[" + index + "].MachineCode' type='text' value='" + PackingMachineCode + "' /></td>";
+        var PackingMachineNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblPackingDetailShift_" + index + "_MachineName' name='TblPackingDetailShift[" + index + "].MachineName' type='text' value='" + PackingMachineName + "' /></td>";
+
+
+        var BreakeDownCauseIdCell = "<td style='display:none'> <input id='TblPackingDetailShift_" + index + "_BreakeDownCauseId' name='TblPackingDetailShift[" + index + "].BreakeDownCauseId' type='text' value='" + BreakeDownCauseId + "' /></td>";
+        var BreakeDownCauseCell = "<td><input style='width:100%' class='nothing' readonly id='TblPackingDetailShift_" + index + "_BreakeDownCauseName' name='TblPackingDetailShift[" + index + "].BreakeDownCauseName' type='text' value='" + BreakeDownCause + "' /></td>";
+        var PackingShiftBreakDownChangeTimeellCell = "<td><input style='text-align:right; width:100%' id='TblPackingDetailShift_" + index + "_BreakeDownTime' class='calPackShiftBreakDownTime' name='TblPackingDetailShift[" + index + "].BreakeDownTime' type='text' value='" + ManufacShiftBreakDownChangeTime +"' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removePackingShiftRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionPackingShiftDetail" + index + "'>" + indexCell + PackingShiftCodeCell + PackingShiftNameCell + PackingMachineCodeCell + PackingMachineNameCell + BreakeDownCauseIdCell + BreakeDownCauseCell + PackingShiftBreakDownChangeTimeellCell + removeCell + "</tr>";
+        $("#tblProductionpackingShiftDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+    }
+
+
+    function addNewRowToPackingLineGrid() {
+
+
+
+        var PackLineCode = $("#PackLineCode").val();
+        var PackLineName = $("#PackLineCode option:selected").text();
+
+        @{
+            Model.TblPackingDetailLine.Add(new LILI_FPMS.Models.TblPackingDetailLine());
+        }
+
+        var index = $("#tblProductionPackingLineDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblPackingDetailLine.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblPackingDetailLine_" + index + "_Id' name='TblPackingDetailLine[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var PackLineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblPackingDetailLine_" + index + "_LineCode' name='TblPackingDetailLine[" + index + "].LineCode' type='text' value='" + PackLineCode + "' /></td>";
+        var PackLineNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblPackingDetailLine_" + index + "_LineName' name='TblPackingDetailLine[" + index + "].LineName' type='text' value='" + PackLineName + "' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removePackLineRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionPackingLineDetail" + index + "'>" + indexCell + PackLineCodeCell + PackLineNameCell + removeCell + "</tr>";
+
+
+        $("#tblProductionPackingLineDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+    }
+
+
+    function addNewRowToPackingMachineGrid() {
+
+        var ManufacMachineCode = $("#PackMachineCode").val();
+        var ManufacMachineName = $("#PackMachineCode option:selected").text();
+        var ManufacMachineHour = $("#PackMachineHour").val();
+        var PackMachineNoOfWorker = $("#PackMachineNoOfWorker").val();
+        var PackMachineManHour = $("#PackMachineManHour").val();
+
+
+            @{
+                Model.TblPackingDetailMachine.Add(new LILI_FPMS.Models.TblPackingDetailMachine());
+            }
+
+        var index = $("#tblProductionPackingMachineDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblPackingDetailMachine.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblPackingDetailMachine_" + index + "_Id' name='TblPackingDetailMachine[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var ManufacMachineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblPackingDetailMachine_" + index + "_MachineCode' name='TblPackingDetailMachine[" + index + "].MachineCode' type='text' value='" + ManufacMachineCode + "' /></td>";
+        var ManufacMachineNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblPackingDetailMachine_" + index + "_MachineName' name='TblPackingDetailMachine[" + index + "].MachineName' type='text' value='" + ManufacMachineName + "' /></td>";
+        var ManufacMachineHourCell = "<td><input style='text-align:right; width:100%' id='TblPackingDetailMachine_" + index + "_MachineHour' name='TblPackingDetailMachine[" + index + "].MachineHour' type='text' value='" + ManufacMachineHour + "' /></td>";
+        var PackMachineNoOfWorkerCell = "<td><input style='text-align:right; width:100%'  class='calPackMachineNoOfWorker' id='TblPackingDetailMachine_" + index + "_PackMachineNoOfWorker' name='TblPackingDetailMachine[" + index + "].PackMachineNoOfWorker' type='text' value='" + PackMachineNoOfWorker + "' /></td>";
+        var PackMachineManHourCell = "<td><input style='text-align:right; width:100%' class='calPackMachineManHour' id='TblPackingDetailMachine_" + index + "_PackMachineManHour' name='TblPackingDetailMachine[" + index + "].PackMachineManHour' type='text' value='" + PackMachineManHour + "' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removePackMachineRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionPackingMachineDetail" + index + "'>" + indexCell + ManufacMachineCodeCell + ManufacMachineNameCell + ManufacMachineHourCell + PackMachineNoOfWorkerCell + PackMachineManHourCell + removeCell + "</tr>";
+        $("#tblProductionPackingMachineDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+
+        calTotalNoOfWorkerAndTotalManHourPack();
+    }
+    function calTotalNoOfWorkerAndTotalManHourPack() {
+        calPackMachineWiseNoOfWorker = 0;
+        $(".calPackMachineNoOfWorker").each(function(index,value) {
+            tdvalue = this.value;
+            calPackMachineWiseNoOfWorker += parseFloat(tdvalue);
+        });
+        document.getElementById("PackNoOfWorker").value = calPackMachineWiseNoOfWorker;
+
+        calPackMachineWiseManHour = 0;
+        $(".calPackMachineManHour").each(function (index, value) {
+            tdvalue = this.value;
+            calPackMachineWiseManHour += parseFloat(tdvalue);
+        });
+        document.getElementById("PackManHour").value = calPackMachineWiseManHour;
+    }
+
+
+    function removePackingShiftRow(id) {
+        var controlToBeRemoved = "#tblProductionPackingShiftDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removePackLineRow(id) {
+        var controlToBeRemoved = "#tblProductionPackingLineDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removePackMachineRow(id) {
+        var controlToBeRemoved = "#tblProductionPackingMachineDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+    
+    function removePackingManPowerRow(id) {
+        var controlToBeRemoved = "#tblPackingManPowerDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+
+    function addNewRowToCodingShiftGrid() {
+
+        var ManufacShiftCode = $("#CodeShiftCode").val();
+        var ManufacShiftName = $("#CodeShiftCode option:selected").text();
+
+        var CodingMachineCode = $("#CodeMachineCode").val();
+        var CodingMachineName = $("#CodeMachineCode option:selected").text();
+
+        var BreakeDownCauseId = $("#CodingBreakeDownCauseId").val();
+        var BreakeDownCause = $("#CodingBreakeDownCauseId option:selected").text();
+        var ManufacShiftBreakDownChangeTime = $("#CodeShiftBreakDownChangeTime").val();
+        ManufacShiftBreakDownChangeTime = ManufacShiftBreakDownChangeTime===""?0:ManufacShiftBreakDownChangeTime;
+
+        @{
+            Model.TblCodingDetailShift.Add(new LILI_FPMS.Models.TblCodingDetailShift());
+        }
+
+        var index = $("#tblProductionCodingShiftDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblCodingDetailShift.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblCodingDetailShift_" + index + "_Id' name='TblCodingDetailShift[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var CodingShiftCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblCodingDetailShift_" + index + "_ShiftCode' name='TblCodingDetailShift[" + index + "].ShiftCode' type='text' value='" + ManufacShiftCode + "' /></td>";
+        var CodingShiftNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblCodingDetailShift_" + index + "_ShiftName' name='TblCodingDetailShift[" + index + "].ShiftName' type='text' value='" + ManufacShiftName + "' /></td>";
+        
+        var CodingMachineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblCodingDetailShift_" + index + "_MachineCode' name='TblCodingDetailShift[" + index + "].MachineCode' type='text' value='" + CodingMachineCode + "' /></td>";
+        var CodingMachineNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblCodingDetailShift_" + index + "_MachineName' name='TblCodingDetailShift[" + index + "].MachineName' type='text' value='" + CodingMachineName + "' /></td>";
+
+
+        var BreakeDownCauseIdCell = "<td style='display:none'> <input id='TblCodingDetailShift_" + index + "_BreakeDownCauseId' name='TblCodingDetailShift[" + index + "].BreakeDownCauseId' type='text' value='" + BreakeDownCauseId + "' /></td>";
+        var BreakeDownCauseCell = "<td><input style='width:100%' class='nothing' readonly id='TblCodingDetailShift_" + index + "_BreakeDownCauseName' name='TblCodingDetailShift[" + index + "].BreakeDownCauseName' type='text' value='" + BreakeDownCause + "' /></td>";
+        var CodingShiftBreakDownChangeTimeellCell = "<td><input style='text-align:right; width:100%' id='TblCodingDetailShift_" + index + "_BreakeDownTime' class='calCodeShiftBreakDownTime' name='TblCodingDetailShift[" + index + "].BreakeDownTime' type='text' value='" + ManufacShiftBreakDownChangeTime +"' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeCodingShiftRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionCodingShiftDetail" + index + "'>" + indexCell + CodingShiftCodeCell + CodingShiftNameCell + CodingMachineCodeCell + CodingMachineNameCell + BreakeDownCauseIdCell + BreakeDownCauseCell + CodingShiftBreakDownChangeTimeellCell + removeCell + "</tr>";
+        $("#tblProductionCodingShiftDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+    }
+
+
+    function addNewRowToCodingLineGrid() {
+
+
+
+        var CodeLineCode = $("#CodeLineCode").val();
+        var CodeLineName = $("#CodeLineCode option:selected").text();
+
+        @{
+            Model.TblCodingDetailLine.Add(new LILI_FPMS.Models.TblCodingDetailLine());
+        }
+
+        var index = $("#tblProductionCodingLineDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblCodingDetailLine.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblCodingDetailLine_" + index + "_Id' name='TblCodingDetailLine[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var CodeLineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblCodingDetailLine_" + index + "_LineCode' name='TblCodingDetailLine[" + index + "].LineCode' type='text' value='" + CodeLineCode + "' /></td>";
+        var CodeLineNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblCodingDetailLine_" + index + "_LineName' name='TblCodingDetailLine[" + index + "].LineName' type='text' value='" + CodeLineName + "' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeCodeLineRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionCodingLineDetail" + index + "'>" + indexCell + CodeLineCodeCell + CodeLineNameCell + removeCell + "</tr>";
+
+
+        $("#tblProductionCodingLineDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+    }
+
+
+    function addNewRowToCodingMachineGrid() {
+
+        var ManufacMachineCode = $("#CodeMachineCode").val();
+        var ManufacMachineName = $("#CodeMachineCode option:selected").text();
+        var ManufacMachineHour = $("#CodeMachineHour").val();
+        var CodeMachineNoOfWorker = $("#CodeMachineNoOfWorker").val();
+        var CodeMachineManHour = $("#CodeMachineManHour").val();
+
+
+            @{
+                Model.TblCodingDetailMachine.Add(new LILI_FPMS.Models.TblCodingDetailMachine());
+            }
+
+        var index = $("#tblProductionCodingMachineDetail").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblCodingDetailMachine.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'> <input id='TblCodingDetailMachine_" + index + "_Id' name='TblCodingDetailMachine[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var ManufacMachineCodeCell = "<td style='display:none'><input style='width:100%' class='nothing' readonly id='TblCodingDetailMachine_" + index + "_MachineCode' name='TblCodingDetailMachine[" + index + "].MachineCode' type='text' value='" + ManufacMachineCode + "' /></td>";
+        var ManufacMachineNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblCodingDetailMachine_" + index + "_MachineName' name='TblCodingDetailMachine[" + index + "].MachineName' type='text' value='" + ManufacMachineName + "' /></td>";
+        var ManufacMachineHourCell = "<td><input style='text-align:right; width:100%' id='TblCodingDetailMachine_" + index + "_MachineHour' name='TblCodingDetailMachine[" + index + "].MachineHour' type='text' value='" + ManufacMachineHour + "' /></td>";
+        var CodeMachineNoOfWorkerCell = "<td><input style='text-align:right; width:100%'  class='calCodeMachineNoOfWorker' id='TblCodingDetailMachine_" + index + "_CodeMachineNoOfWorker' name='TblCodingDetailMachine[" + index + "].CodeMachineNoOfWorker' type='text' value='" + CodeMachineNoOfWorker + "' /></td>";
+        var CodeMachineManHourCell = "<td><input style='text-align:right; width:100%' class='calCodeMachineManHour' id='TblCodingDetailMachine_" + index + "_CodeMachineManHour' name='TblCodingDetailMachine[" + index + "].CodeMachineManHour' type='text' value='" + CodeMachineManHour + "' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeCodeMachineRow(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductionCodingMachineDetail" + index + "'>" + indexCell + ManufacMachineCodeCell + ManufacMachineNameCell + ManufacMachineHourCell + CodeMachineNoOfWorkerCell + CodeMachineManHourCell + removeCell + "</tr>";
+        $("#tblProductionCodingMachineDetail").append(newRow);
+
+        //$("#MaterialCodeSearch").val('');
+        //$("#MaterialNameSearch").val('');
+        //$("#MaterialUnit").val('');
+        //$("#RequiredQty").val('');
+
+        calTotalNoOfWorkerAndTotalManHourCode();
+    }
+
+    function calTotalNoOfWorkerAndTotalManHourCode() {
+        calCodeMachineWiseNoOfWorker = 0;
+        $(".calCodeMachineNoOfWorker").each(function(index,value) {
+            tdvalue = this.value;
+            calCodeMachineWiseNoOfWorker += parseFloat(tdvalue);
+        });
+        document.getElementById("CodeNoOfWorker").value = calCodeMachineWiseNoOfWorker;
+
+        calCodeMachineWiseManHour = 0;
+        $(".calCodeMachineManHour").each(function (index, value) {
+            tdvalue = this.value;
+            calCodeMachineWiseManHour += parseFloat(tdvalue);
+        });
+        document.getElementById("CodeManHour").value = calCodeMachineWiseManHour;
+    }
+
+
+    function removeCodingShiftRow(id) {
+        var controlToBeRemoved = "#tblProductionCodingShiftDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removeCodeLineRow(id) {
+        var controlToBeRemoved = "#tblProductionCodingLineDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removeCodeMachineRow(id) {
+        var controlToBeRemoved = "#tblProductionCodingMachineDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removeManPowerRow(id) {
+        var controlToBeRemoved = "#tblManufacturingManPowerDetail" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+
+
+    $(document).ready(function () {
+        //$("#prevSecPQty").css("visibility", "hidden");
+        if($("#Section").val() != null)
+        {
+          var text= $("#Section option:selected").text();
+            $("#sectionHeader").text(text);
+            $("#processNoField").prop("disabled", "true")
+
+        }
+        else{
+          $("#ManuFactaringDetail").hide();
+            $("#submitBtn").prop("disabled", "true");
+            $("#processNoField").prop("disabled", "true")
+        }
+         
+
+
+        $('.select2').select2();
+
+             $('#ManufacBatchStartTime').change( function () {
+            fnCalManufacBatchTimeDiff();
+            });
+        $('#ManufacBatchStartTime').on('dp.change', function (e) {
+            fnCalManufacBatchTimeDiff(); 
+        });
+        $('#ManufacBatchEndTime').on('dp.change', function (e) {
+            fnCalManufacBatchTimeDiff();
+        });
+        $('#ManufacNoOfWorker').on('change', function (e) {
+            fnCalManufacBatchTimeDiff();
+        });
+
+        $('#ManufacCommonNoOfWorker').on('change', function (e) {
+            fnCalManufacBatchTimeDiff();
+        });
+         $('#ProductCode').change(function (e) {
+           
+           fnSetDetailContinersVisibility();
+        });
+        $('#ManufacShiftCode').change(function(e){
+            
+            fnSetManufactBatchTimeBasedOnShift();
+        });
+        $('#PackShiftCode').change(function (e) {
+            
+            fnSetPackBatchTimeBasedOnShift();
+        });
+        function fnCalManufacBatchTimeDiff() {
+            var str2 = document.getElementById("ManufacBatchEndTime").value;
+            var str1 = document.getElementById("ManufacBatchStartTime").value;            
+
+            var diffMiliSec = Math.abs(new Date(str2) - new Date(str1));
+            var diffMin = Math.floor((diffMiliSec/1000)/60);
+            var diffHour = Math.floor(diffMin / 60);
+            document.getElementById("ManufacMachineHour").value = diffHour;
+            var noOfWorker = document.getElementById("ManufacNoOfWorker").value;
+
+            calManufacShiftBreakDownTimeSum = 0;
+            $(".calManufacShiftBreakDownTime").each(function(index,value) {
+               tdvalue = this.value;
+               calManufacShiftBreakDownTimeSum += parseFloat(tdvalue);   
+             });
+            //var manufacManHour = (diffHour * noOfWorker)-calManufacShiftBreakDownTimeSum;            
+            var manufacManHour = (diffHour * noOfWorker);      
+            document.getElementById("ManufacManHour").value = manufacManHour;
+
+
+            var noOfCommonWorker = document.getElementById("ManufacCommonNoOfWorker").value;
+            if(noOfCommonWorker>0)
+            {
+                //var manufacCommonManHour = (diffHour * noOfCommonWorker) - calManufacShiftBreakDownTimeSum;
+                var manufacCommonManHour = (diffHour * noOfCommonWorker);
+                document.getElementById("ManufacCommonManHour").value = manufacCommonManHour;
+            }
+        }
+
+        $('#ManufacMachineNoOfWorker').on('change', function (e) {
+            var machinneWiseNoOfWorker = document.getElementById("ManufacMachineNoOfWorker").value;
+            var manufacMachineHour = document.getElementById("ManufacMachineHour").value;
+            var machineWisemanufacManHour = (machinneWiseNoOfWorker*manufacMachineHour)
+            document.getElementById("ManufacMachineManHour").value = machineWisemanufacManHour;
+
+            
+            ////////////////////////////=====
+        })
+
+        $('#PackMachineNoOfWorker').on('change', function (e) {
+            var machinneWiseNoOfWorker = document.getElementById("PackMachineNoOfWorker").value;
+            var packMachineHour = document.getElementById("PackMachineHour").value;
+            var machineWisePackManHour = (machinneWiseNoOfWorker*packMachineHour)
+            document.getElementById("PackMachineManHour").value = machineWisePackManHour;
+
+            
+            ////////////////////////////=====
+        })
+
+        $('#PackBatchStartTime').on('dp.change', function (e) {
+            fnCalPackBatchTimeDiff();
+        });
+        $('#PackBatchEndTime').on('dp.change', function (e) {
+            fnCalPackBatchTimeDiff();
+        });
+        $('#PackNoOfWorker').on('change', function (e) {
+            fnCalPackBatchTimeDiff();
+        });
+        $('#PackCommonNoOfWorker').on('change', function (e) {
+            fnCalPackBatchTimeDiff();
+        })
+
+        function fnSetDetailContinersVisibility (){
+
+            //if(@ViewBag.IsCodingDetailVisible==0)
+            //{
+            //    let productCode = ($('#ProductCode').val()).substring(0, 3);
+            //    if(productCode=='SFG'|| productCode=='sfg'){
+            //      $("#PackingDetail").hide();
+            //      $("#ManuFactaringDetail").show();
+            //    }
+            //    else{
+            //    $("#PackingDetail").show();
+            //    $("#ManuFactaringDetail").hide();
+            //    }
+            //}
+         
+        }
+
+        function fnCalPackBatchTimeDiff() {
+            var str2 = document.getElementById("PackBatchEndTime").value;
+            var str1 = document.getElementById("PackBatchStartTime").value;
+
+            var diffMiliSec = Math.abs(new Date(str2) - new Date(str1));
+            var diffMin = Math.floor((diffMiliSec/1000)/60);
+            var diffHour = Math.floor(diffMin / 60);
+            document.getElementById("PackMachineHour").value = diffHour;
+            var noOfWorker = document.getElementById("PackNoOfWorker").value;
+
+            calPackShiftBreakDownTimeSum = 0;
+            $(".calPackShiftBreakDownTime").each(function (index, value) {
+               tdvalue = this.value;
+               calPackShiftBreakDownTimeSum += parseFloat(tdvalue);   
+             });
+            //var packManHour = (diffHour * noOfWorker) - calPackShiftBreakDownTimeSum;            
+            var packManHour = (diffHour * noOfWorker);  
+            document.getElementById("PackManHour").value = packManHour;
+
+            var noOfCommonWorker = document.getElementById("PackCommonNoOfWorker").value;
+            if (noOfCommonWorker > 0) {
+                //var packCommonManHour = (diffHour * noOfCommonWorker) - calPackShiftBreakDownTimeSum;
+                var packCommonManHour = (diffHour * noOfCommonWorker);
+                document.getElementById("PackCommonManHour").value = packCommonManHour;
+            }
+        }
+
+        $('#CodeBatchStartTime').on('dp.change', function (e) {
+            fnCalCodeBatchTimeDiff();
+        });
+        $('#CodeBatchEndTime').on('dp.change', function (e) {
+            fnCalCodeBatchTimeDiff();
+        });
+        $('#CodeNoOfWorker').on('change', function (e) {
+            fnCalCodeBatchTimeDiff();
+        });
+        $('#CodeCommonNoOfWorker').on('change', function (e) {
+            fnCalCodeBatchTimeDiff();
+        })
+
+        function fnCalCodeBatchTimeDiff() {
+            var str2 = document.getElementById("CodeBatchEndTime").value;
+            var str1 = document.getElementById("CodeBatchStartTime").value;
+
+            var diffMiliSec = Math.abs(new Date(str2) - new Date(str1));
+            var diffMin = Math.floor((diffMiliSec/1000)/60);
+            var diffHour = Math.floor(diffMin / 60);
+            document.getElementById("CodeMachineHour").value = diffHour;
+            var noOfWorker = document.getElementById("CodeNoOfWorker").value;
+
+            calCodeShiftBreakDownTimeSum = 0;
+            $(".calCodeShiftBreakDownTime").each(function (index, value) {
+               tdvalue = this.value;
+               calCodeShiftBreakDownTimeSum += parseFloat(tdvalue);   
+             });
+            //var CodeManHour = (diffHour * noOfWorker) - calCodeShiftBreakDownTimeSum;            
+            var CodeManHour = (diffHour * noOfWorker);  
+            document.getElementById("CodeManHour").value = CodeManHour;
+
+            var noOfCommonWorker = document.getElementById("CodeCommonNoOfWorker").value;
+            if (noOfCommonWorker > 0) {
+                //var CodeCommonManHour = (diffHour * noOfCommonWorker) - calCodeShiftBreakDownTimeSum;
+                var CodeCommonManHour = (diffHour * noOfCommonWorker);
+                document.getElementById("CodeCommonManHour").value = CodeCommonManHour;
+            }
+        }
+
+
+
+
+        $('#ProductionQtyBeforeConversion').on('change', function (e) {
+            fnCalProducedQuantityByConversionFactor();
+        });
+        $('#ProductionQtyConversionFactor').on('change', function (e) {
+            fnCalProducedQuantityByConversionFactor();
+        });
+
+        function fnCalProducedQuantityByConversionFactor() {
+            
+            var qtyBeforeConversion = document.getElementById("ProductionQtyBeforeConversion").value;
+            var conversionFactor = document.getElementById("ProductionQtyConversionFactor").value;
+            if(conversionFactor==0 || conversionFactor=="")
+            {
+                document.getElementById("ProductionQtyConversionFactor").value =1;
+                conversionFactor = 1;
+            }
+            var qtyAfterConversion = qtyBeforeConversion*conversionFactor;
+            document.getElementById("ProductionQty").value = qtyAfterConversion;
+        }
+
+
+
+
+        function fnCalProcessableNoOfBatch() {
+
+            var requisitionNoOfBatch = document.getElementById("NoOfBatchInRequisition").value;
+            var previousProcessedNoOfBatch = document.getElementById("PreviousProcessedBatchNo").value;
+            var currentProcessNoOfBatch = document.getElementById("NumberOfBatch").value;
+ 
+            if ((currentProcessNoOfBatch + previousProcessedNoOfBatch) > requisitionNoOfBatch) {
+                var processableNoOfBatch = requisitionNoOfBatch - prdeviousProcessedNoOfBatch
+                alert("Maximum Processable No of Batch is :" + processableNoOfBatch)
+                document.getElementById("NumberOfBatch").value = processableNoOfBatch;
+            }
+
+     
+            
+        }
+        function fnSetManufactBatchTimeBasedOnShift() {
+           
+            var selectedShiftCode = $('#ManufacShiftCode').val();
+            //$('#ManufacBatchStartTime').val();
+            //$('#ManufacBatchEndTime').val();
+            $.ajax(
+                {
+                   
+                    url: '@Url.Action("GetShiftDetail", "Production")',
+                    data: { ShiftCode: selectedShiftCode },
+                    error: function (result) {
+                        alert("error");
+                    },
+                    success: function (result) {
+                        
+                        
+                         let dateNow= new Date();
+                         let vwShiftStartTime = new Date(result[0].ShiftStartTime);
+                         let vwShiftEndTime = new Date(result[0].ShiftEndTime);
+                          $('#ManufacBatchStartTime').val(dateNow.toLocaleDateString() + " " + vwShiftStartTime.toLocaleTimeString());
+                         if(vwShiftStartTime>vwShiftEndTime)
+                         {
+                              let vwExtendedDate= new Date();
+                              vwExtendedDate.setDate(vwExtendedDate.getDate()+1);
+                             $('#ManufacBatchEndTime').val(vwExtendedDate.toLocaleDateString() +" " + vwShiftEndTime.toLocaleTimeString());
+                             
+                         }
+                         
+                         else{
+                                $('#ManufacBatchEndTime').val(dateNow.toLocaleDateString() +" " + vwShiftEndTime.toLocaleTimeString());
+                             
+                         }
+
+                       
+
+
+                        fnCalManufacBatchTimeDiff();
+                    }
+                });
+        }
+
+         function fnSetPackBatchTimeBasedOnShift(){
+            var selectedShiftCode = $('#PackShiftCode').val();
+            //$('#ManufacBatchStartTime').val();
+            //$('#ManufacBatchEndTime').val();
+            $.ajax(
+                {
+
+                    url: '@Url.Action("GetShiftDetail", "Production")',
+                    data: { ShiftCode: selectedShiftCode },
+                    error: function (result) {
+                        alert("error");
+                    },
+                    success: function (result) {
+
+                        
+                        let dateNow = new Date();
+                        let vwShiftStartTime = new Date(result[0].ShiftStartTime);
+                        let vwShiftEndTime = new Date(result[0].ShiftEndTime);
+
+
+                        $('#PackBatchStartTime').val(dateNow.toLocaleDateString() + " " + vwShiftStartTime.toLocaleTimeString());
+                        $('#PackBatchEndTime').val(dateNow.toLocaleDateString() + " " + vwShiftEndTime.toLocaleTimeString());
+                    }
+                });
+         }
+
+        $('#btnCheckFloorStock').on('click', function(){
+            var table = $("#htProductionMaterialDetail tbody");
+
+            //$("htProductionMaterialDetail tblProductionBOMDtl tr").each(function () {
+
+            table.find('tr').each(function (i, el) {
+                //var $tds = $(this).find('td'),
+                //    rmpmCode = $tds.eq(0).text(),
+                //    currentConsumption = $tds.eq(5).text(),
+                //    floorStock = $tds.eq(8).text();
+
+                //    alert(rmpmCode);
+                //    alert(currentConsumption);
+                //    alert(floorStock);
+                //// do something with productId, product, Quantity
+
+                var $tds = $(this).find('td');                
+                var rmpmName = $(this).find("td").eq(2).find(":text").val();
+                var floorStock = 0;
+                floorStock = $('.calFloorStock', $tds).val(); // Current row Standard Consumption.
+                if ($('.calTotalCon', $tds).val() > Number(floorStock)) {
+                    alert("Current use quantity should not exceed Floor Stock->" + rmpmName + ":" + floorStock);
+                    $('.calTotalCon', $tds).val((0).toFixed(5));
+                }
+            });
+        });
+
+        
+
+        $('#htProductionMaterialDetail').on('change', 'input', function () {
+            var consumeSum = 0;
+            var $tr = $(this).closest('tr'); // get tr which contains the input
+            var tot = 0; // variable to store sum
+            var stdConsumption = 0; // variable to store sum
+            var floorStock = 0; 
+
+            //Current Row FloorStock check
+            floorStock = $('.calFloorStock', $tr).val(); // Current row Standard Consumption.
+            if ($('.calTotalCon', $tr).val() > Number(floorStock)) {
+                alert("Current use quantity should not exceed Floor Stock:" + floorStock);
+                $('.calTotalCon', $tr).val((0).toFixed(5));
+            }
+
+            
+            $('.calTotalCon', $tr).each(function () { // iterate over inputs
+                tot += Number($(this).val()) || 0; // parse and add value, if NaN then add 0
+            });
+
+            stdConsumption = $('.calStdConsum', $tr).val(); // Current row Standard Consumption.
+
+
+            if ($('.calTotalCon', $tr).val() == 0) {
+                $('.calWastage', $tr).val((0).toFixed(5));
+            }
+            else
+            {
+                $('.calWastage', $tr).val((tot - stdConsumption).toFixed(5));
+            }
+
+            $('.totalConsume', $tr).val(tot);
+           
+             $('.totalConsume').each(function () { // iterate over inputs
+                 var val = Number($(this).val());
+                 consumeSum += val; // parse and add value, if NaN then add 0
+            });
+
+            $( "td#sum" ).text(consumeSum.toFixed(5));
+
+        });
+
+        //Select all text of input in td, on get focus.
+        $('#htProductionMaterialDetail').on('focus', 'input', function () {
+            $("input.calTotalCon").on('focus', function () { $(this).select(); });
+        });
+
+       
+        //if(@ViewBag.IsCodingDetailVisible==0)
+        //{
+        //    document.getElementById('CodingDetail').style.display = "none";
+        //    //$("#CodingDetail").style.visibility = "hidden";
+        //}
+       
+    })
+
+    $('#processNoField').on('change', function () {
+        var requisitionNo = $("#processNoField option:selected").val();
+        var processNo = $("#processNoField option:selected").text();
+        if (requisitionNo != '') {
+            var x = () => {
+                return new Promise(resolve => {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Production/SetDetailByProcessNo",
+                        data: { 
+                            ProcessNo: processNo
+                        },
+                        success: function (msg) {
+                            $('#RequisitionNo').val('');
+                            $('#ProductCode').val('')
+                            $('#BatchNo').val('');
+                            $('#ProductName').val('');
+                            $('#StandardOutput').val('');
+                            $('#BatchSize').val('');
+                            $('#NumberOfBatch').val();
+                            $('#PreviousProcessedBatchNo').val('');
+                            $('#NoOfBatchInRequisition').val('');
+                            $('#ProductionQty').val('');
+                            $('#PreviousProcessedProductionQty').val('');
+                            $('#PrevSecProductionQty').val('');
+                            for (var i = 0; i < msg.length; i++) {
+                                $('#RequisitionNo').val(msg[i].RequisitionNo);
+
+                                $('#ProductCode').val(msg[i].ProductCode).trigger('change');
+                                $('#BatchNo').val(msg[i].BatchNo);
+                                $('#ProductName').val(msg[i].ProductName);
+                                $('#StandardOutput').val(msg[i].StandardOutput);
+                                $('#BatchSize').val(msg[i].BatchSize);
+                                $('#NumberOfBatch').val(msg[i].NumberOfBatch);
+                                $('#PreviousProcessedBatchNo').val(msg[i].PreviousProcessedBatchNo);
+                                $('#ProductionQty').val(msg[i].ProductionQty);
+                                $('#NoOfBatchInRequisition').val(msg[i].NoOfBatchInRequisition);
+                                $('#PreviousProcessedProductionQty').val(msg[i].PreviousProcessedProductionQty);
+                                $('#PrevSecProductionQty').val(msg[i].PrevSecProductionQty)
+                            }
+                        },
+                        error: function () {
+                            $('#RequisitionNo').val('');
+                            $('#ProductCode').val('').trigger('change');
+                            $('#BatchNo').val('');
+                            $('#ProductName').val('');
+                            $('#StandardOutput').val('');
+                            $('#BatchSize').val('');
+                            $('#NumberOfBatch').val();
+                            $('#PreviousProcessedBatchNo').val('');
+                            $('#NoOfBatchInRequisition').val('');
+                            $('#ProductionQty').val('');
+                            $('#PreviousProcessedProductionQty').val('');
+                            $('#PrevSecProductionQty').val('');
+                        }
+                    })
+                    resolve()
+                });
+            }
+
+            var y = () => {
+                return new Promise((resolve) => {
+                    setTimeout(function () {
+                        GetRequisitionDetails(requisitionNo);
+                        resolve();
+                    }, 2000);
+                });
+            };
+
+            x().then(y);
+
+
+
+            //Get FG Product Wise Machine Name for Dropdown
+            $.ajax({
+                type: "POST",
+                url: "/Production/GetFGProductWiseMachineList",
+                data: { RequisitionNo: requisitionNo },
+                success: function (result) {
+
+                    console.log(result);
+                    var formoption = "<option value='" + 0 + "'>" + "-- Select Machine --" + "</option>";
+                    for (var i = 0; i < result.length; i++) {
+                        if (result[i].MachineCode != '') {
+                            if (result[i].MachineCode != undefined) {
+                                formoption += "<option value='" + result[i].MachineCode + "'>" + result[i].MachineName + "</option>";
+                            }
+                        }
+                    }
+                    $('#ManufacMachineCode').html(formoption);
+                    $('#PackMachineCode').html(formoption);
+
+                },
+                error: function () {
+
+                }
+            });
+
+
+        }
+    });
+   
+   
+       
+        $('#ProductionQty').on('change', function () {
+            let sectionCode =$("#Section option:selected").val();
+            let standardOutput = $("#StandardOutput").val();
+            let producedQuantity = $("#ProductionQty").val();
+            //let processableNoOfBatch = Number(producedQuantity) / Number(standardOutput);
+            //document.getElementById("NumberOfBatch").value = processableNoOfBatch;
+
+            var requisitionNo = $('#RequisitionNo').val();
+            if (requisitionNo.length > 0 && sectionCode != "S0001") {
+                GetRequisitionDetails(requisitionNo);
+            }
+        });
+
+        $('#NumberOfBatch').on('change', function () {
+        var requisitionNo = $('#RequisitionNo').val();
+
+        let sectionCode = $("#Section option:selected").val();
+        let standardOutput = $("#StandardOutput").val();
+        let numberOfBatch = $("#NumberOfBatch").val();
+        let processableProductQty = Number(numberOfBatch) * Number(standardOutput);
+        document.getElementById("ProductionQty").value = processableProductQty;
+        if (requisitionNo.length > 0 && sectionCode != "S0001") {
+                GetRequisitionDetails(requisitionNo);
+            }
+        });
+
+
+
+    function GetRequisitionDetails(requisitionNo) {
+
+        var requisitionNoOfBatch = document.getElementById("NoOfBatchInRequisition").value;
+        var standardOutput = document.getElementById("StandardOutput").value;
+        var previousProcessedNoOfBatch = document.getElementById("PreviousProcessedBatchNo").value;
+        var currentProcessNoOfBatch = document.getElementById("NumberOfBatch").value;
+        var sectionCode = $("#Section option:selected").val();
+        if (parseFloat(currentProcessNoOfBatch) + parseFloat(previousProcessedNoOfBatch) > parseFloat(requisitionNoOfBatch)) {
+            var processableNoOfBatch = parseFloat(requisitionNoOfBatch) - parseFloat(previousProcessedNoOfBatch)
+            if(sectionCode == "S0001"){
+
+                alert("Maximum Processable No of Batch is :" + processableNoOfBatch)
+                document.getElementById("NumberOfBatch").value = processableNoOfBatch;
+                document.getElementById("ProductionQty").value = Number(processableNoOfBatch) * Number(standardOutput);
+            } 
+           
+        }
+
+
+
+        var productionQty = $('#NumberOfBatch').val();
+        $.ajax({
+            type: "POST",
+            url: "/Production/GetRequisitionDetails",
+            data: { requisitionNo: requisitionNo, productionQty: productionQty },
+            success: function (result) {
+                $('#tblProductionBOMDtl').empty(); //Clear table body
+                var table = $("#htProductionMaterialDetail tbody");
+                $.each(result, function (idx, elem) {
+                    elem.CurrentUseQty=0;
+                    var index = $("#tblProductionBOMDtl").children("tr").length;
+                    var indexCell = "<td style='display:none'><input name='tblProductionProcessDetail.Index' type='hidden' value='" + index + "' /></td>";
+                    var materialCodeCell = "<td><input style='width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_MaterialCode' name='tblProductionProcessDetail[" + index + "].MaterialCode' type='text' value='" + elem.MaterialCode + "' /></td>";
+                    var materialNameCell = "<td><input style='width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_MaterialName' name='tblProductionProcessDetail[" + index + "].MaterialName' type='text' value='" + elem.MaterialName + "' /></td>";
+                    var unitCell = "<td><input style='width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_Unit' name='tblProductionProcessDetail[" + index + "].Unit' type='text' value='" + elem.Unit + "' /></td>";
+                    var requiredQtyCell = "<td><input style='text-align:right; width:100%' class='nothing' readonly  id='tblProductionProcessDetail_" + index + "_ReqQuantity' name='tblProductionProcessDetail[" + index + "].ReqQuantity' type='text' value='" + elem.ReqQuantity + "' /></td>";
+                    //var issuedQtyCell = "<td><input style='text-align:right; width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_IssuedQty' name='tblProductionProcessDetail[" + index + "].IssuedQty' type='text' value='" + elem.IssuedQty + "' /></td>";
+                    var issuedQtyCell = "<td style='display:none';><input style='text-align:right; width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_IssuedQty' name='tblProductionProcessDetail[" + index + "].IssuedQty' type='text' value='" + elem.IssuedQty + "' /></td>";
+                    var previousUsedQtyCell = "<td style='display:none;' ><input text-align:right; width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_PreviousUsedQty' name='tblProductionProcessDetail[" + index + "].PreviousUsedQty' type='text' value='" + elem.PreviousUsedQty + "' /></td>";
+                    //var stdConsumptionQtyCell = "<td><input class='nothing' style='text-align:right; width:100%' readonly id='tblProductionProcessDetail_" + index + "_StdConsumptionQty' name='tblProductionProcessDetail[" + index + "].StdConsumptionQty' type='text' value='" + elem.StdConsumptionQty + "' /></td>";
+                    var stdConsumptionQtyCell = "<td><input class='nothing calStdConsum' style='text-align:right; width:100%' readonly id='tblProductionProcessDetail_" + index + "_StdConsumptionQty' name='tblProductionProcessDetail[" + index + "].StdConsumptionQty' type='text' value='" + elem.StdConsumptionQty + "' /></td>";
+
+                    var currentUseQtyCell = "<td><input class='calTotalCon' onkeypress='return isNumberKey(event)' style='text-align:right; width:100%' id='tblProductionProcessDetail_" + index + "_CurrentUseQty' name='tblProductionProcessDetail[" + index + "].CurrentUseQty' type='text' value='" + elem.CurrentUseQty + "' /></td>";
+                    var processLossCell = "<td><input onkeypress='return isNumberKey(event)' style='text-align:right; width:100%' readonly class='nothing' id='tblProductionProcessDetail_" + index + "_ProcessLoss' name='tblProductionProcessDetail[" + index + "].ProcessLoss' type='text' value='" + elem.ProcessLoss + "' /></td>";
+                    //var wastageCell = "<td><input class='calTotalCon' onkeypress='return isNumberKey(event)' style='text-align:right; width:100%'  id='tblProductionProcessDetail_" + index + "_Wastage' name='tblProductionProcessDetail[" + index + "].Wastage' type='text' value='" + elem.Wastage + "' /></td>";
+                    var wastageCell = "<td><input class='calWastage nothing' readonly onkeypress='return isNumberKey(event)' style='text-align:right; width:100%'  id='tblProductionProcessDetail_" + index + "_Wastage' name='tblProductionProcessDetail[" + index + "].Wastage' type='text' value='" + elem.Wastage + "' /></td>";
+                    var totalConsumptionCell = "<td style='display:none'><input class='totalConsume nothing' onkeypress='return isNumberKey(event)' style='text-align:right; width:100%' readonly id='tblProductionProcessDetail_" + index + "_TotalConsumption' name='tblProductionProcessDetail[" + index + "].TotalConsumption' type='text' value='" + elem.TotalConsumption + "' /></td>";
+                    var floorStockQtyCell = "<td style='display:none'><input class='calFloorStock' onkeypress='return isNumberKey(event)' style='text-align:right; width:100%' id='tblProductionProcessDetail_" + index + "_FloorStock' name='tblProductionProcessDetail[" + index + "].FloorStock' type='text' value='" + elem.FloorStock + "' /></td>";
+
+                    var removeCell = "<td style='display:none'><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
+
+                    var newRow = "<tr id='trtbProductionBOMDtl" + index + "'>" + indexCell + materialCodeCell + materialNameCell + unitCell + requiredQtyCell + issuedQtyCell + previousUsedQtyCell + stdConsumptionQtyCell + currentUseQtyCell + processLossCell + wastageCell + totalConsumptionCell + floorStockQtyCell + removeCell + "</tr>";
+                    table.append(newRow);
+
+                });
+
+            },
+            error: function () {
+                //$('#RequisitionNo').val('');
+            }
+        });
+    }
+
+
+    $('#NumberOfBatch').on('focus', function () { $(this).select(); });
+    $('#ProductionQty').on('focus', function () { $(this).select(); });
+    $('#QCReferenceSampleQty').on('focus', function(){$(this).select();});
+    $('#LumpQty').on('focus', function () { $(this).select(); });
+
+</script>
+
+

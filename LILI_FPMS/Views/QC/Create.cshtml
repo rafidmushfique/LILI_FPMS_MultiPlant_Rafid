@@ -1,0 +1,545 @@
+﻿@model LILI_IMS.Models.TblQc
+
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
+
+
+
+
+@*<script src="~/lib/JQuery-unobtrusive-Ajax/jquery-ajax-unobtrusive-master/src/jquery.unobtrusive-ajax.js"></script>*@
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    @*<h1>
+            Employee
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">QC</li>
+        <li class="active">Add QC</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+        @*<div class="box-header with-border">
+                <h3 class="box-title">Add Employee</h3>
+            </div>*@
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" asp-controller="QC" method="post" asp-action="CreateQC">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Section</label>
+                    <div class="col-sm-4">
+                        <select  name="SectionCode" id="sectionCode" class="form-control">
+                            @foreach(var item in ViewBag.ListofSection)
+                            {
+                                 <option value="@item.SectionCode">@item.SectionName</option>
+                            }
+                           
+                      </select>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">QC No</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="Qcno" class="form-control" placeholder="PlanningNo" value="@Model.Qcno" readonly>
+                        <span asp-validation-for="Qcno"></span>
+                    </div>
+                    <label asp-for="Qcdate" class="col-sm-2 control-label"></label>
+                    <div class='col-sm-3 input-group date' id='RequisitionDate' style="padding-left:15px;">
+                        <input asp-for="Qcdate" type='text' class="form-control" />
+                        <span asp-validation-for="Qcdate" class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Requisition No.</label>
+                    <div class="col-sm-2">
+                        <input type="text"id="js_requisition_no" asp-for="RequisitionNo" class="form-control" placeholder="Requisition No" readonly>
+                    </div>
+                    <div class="col-sm-2 controls">
+                        <button type="button" class="btn btn-info" data-toggle="ajax-modal" data-target="#add-Requisition" data-url="@Url.Action("addRequisition")">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">BatchNo</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="BatchNo" class="form-control" placeholder="BatchNo" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Requisition For</label>
+                    <div class="col-sm-1">
+                        <input type="text" asp-for="ProductCode" class="form-control" readonly>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" asp-for="ProductName" class="form-control" placeholder="Requisition For" readonly>
+                    </div>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Pack Size</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="Unit" class="form-control" placeholder="Unit" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Batch Size</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="BatchSize" class="form-control" placeholder="BatchSize" readonly>
+                    </div>
+
+                   <label for="inputEmail3" class="col-sm-2 control-label">Available Floor Stock</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="AvailableStock" class="form-control" placeholder="Available Stock" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                     <label for="inputEmail3" class="col-sm-2 control-label">Process No</label>
+                    <div class="col-sm-4">
+                        <select name="processNo" asp-for="ProcessNo" id="ProcessNo" required class="form-control"></select>
+                    </div>
+
+                    <label asp-for="Qcqty" class="col-sm-2 control-label">FG QC quantity Before Conversion</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="FGQCQtyBeforeConversion" asp-for="FGQCQtyBeforeConversion" class="form-control" placeholder="FGQCQtyBeforeConversion" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">FG QC Qty Conversion Factor</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="FGQCQtyConversionFactor" class="form-control" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                    <label asp-for="Qcqty" class="col-sm-2 control-label">QC Quantity</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="Qcqty" asp-for="Qcqty" class="form-control" placeholder="Qcqty" readonly>
+                    </div>
+
+                    @*<label asp-for="QCReferenceSampleQty" class="col-sm-2 control-label">QC Sample Quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" Id="QCReferenceSampleQty" asp-for="QCReferenceSampleQty" class="form-control" onkeypress='return isNumberKey(event)' >
+                    </div>*@
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="QcpassQty" class="col-sm-2 control-label">FG QC Pass quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" Id="QcpassQty" asp-for="QcpassQty" class="form-control" placeholder="QC Pass Qty" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                    <label asp-for="IsSendToFloorStockFG" class="col-sm-2 control-label">Send To Floor Stock</label>
+                    <div class="col-sm-1">
+                        <input type="checkbox" class="form-control" asp-for="IsSendToFloorStockFG"  name="IsSendToFloorStockFG" id="IsSendToFloorStockFG" />
+                    </div>
+
+                    <label asp-for="QcholdQty" class="col-sm-2 control-label">QC Hold quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" Id="QcholdQty" asp-for="QcholdQty" class="form-control" placeholder="QC Hold Qty" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                    <label asp-for="QcrejectQty" class="col-sm-2 control-label">QC Reject quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" Id="QcrejectQty" asp-for="QcrejectQty" class="form-control" placeholder="QC Reject Qty" onkeypress='return isNumberKey(event)'>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display:none;">
+                    <label asp-for="SFGQcqty" class="col-sm-2 control-label">By-product QC quantity</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="SFGQcqty" asp-for="SFGQcqty" class="form-control" placeholder="SFG Qc Qty" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display:none;">
+                    <label asp-for="SFGQcpassQty" class="col-sm-2 control-label">By-product QC Pass quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" Id="SFGQcpassQty" asp-for="SFGQcpassQty" class="form-control" placeholder="SFG QC pass Qty" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                    <label asp-for="IsSendToFloorStockSFG" class="col-sm-2 control-label">Send To Floor Stock</label>
+                    <div class="col-sm-1">
+                        <input type="checkbox" class="form-control" asp-for="IsSendToFloorStockSFG" name="IsSendToFloorStockSFG" id="IsSendToFloorStockSFG" />
+                    </div>
+
+                    <label asp-for="SFGQcrejectQty" class="col-sm-2 control-label">By-product QC Reject quantity</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="SFGQcrejectQty" asp-for="SFGQcrejectQty" class="form-control" placeholder="SFG QC reject Qty" onkeypress='return isNumberKey(event)'>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="QCQuarantineQty" class="col-sm-2 control-label">QC Quarantine quantity</label>
+                    <div class="col-sm-1">
+                        <input type="text" Id="QCQuarantineQty" asp-for="QCQuarantineQty" class="form-control" placeholder="QC Pass Qty" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+                    <label asp-for="Comments" class="col-sm-2 control-label">Comments</label>
+                    <div class="col-sm-10">
+                        <textarea type="text" asp-for="Comments" class="form-control" placeholder="Comments" rows="1"></textarea>
+                        <span asp-validation-for="Comments"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TypeCode" class="col-sm-2 control-label">Type</label>
+                    <div class="col-sm-4">
+                        <select asp-for="TypeCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfType,"TypeCode","TypeName"))"></select>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div style="border-radius:30px; border:0px solid #ccc; min-width:30%;  overflow:hidden;">
+                        <table id="tblQCParamterDetail" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Parameter name</th>
+                                    <th>Parameter Standard Value</th>
+                                    <th>Actual Value</th>
+                                    <th>Comments</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblQCParameterGrid">
+                                
+
+                            @{
+                                int i = 0;
+                                foreach (var item in Model.TblQcdetails)
+                                {
+                                    var index = i;
+                                                                        <tr>
+                                                                            <td style="display:none"><input name='TblQcdetails.Index' type="hidden" value=@index /></td>
+                                                                            <td style="display:none">@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].QcparameterCode, new { @id = "QcparameterCode_" + i })</td>
+                                                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterCode, new { @id = "QcparameterCode_" + i })</td>
+                                                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterName, new { @id = "QcparameterName_" + i })</td>
+                                                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterStandardValue, new { @id = "QcparameterStandardValue_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                                                            <td>@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].QcparameterActualValue, new { @id = "QcparameterActualValue_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                                                            <td>@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].Comments, new { @id = "Comments_" + i })</td>
+                                                                            <td><input type="button" value="Remove" onClick="$(this).closest('tr').remove();"></td>
+                                                                        </tr>
+                                    i++;
+                                }
+                            }
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+                <!-- /.box-body -->
+                <div class="box-footer">
+
+                    <a class="btn btn-mini btn-primary" href='@Url.Content("/QC/Index")'>Cancel</a>
+                    <button type="submit" class="btn btn-info pull-right">Create</button>
+
+                </div>
+                <!-- /.box-footer -->
+</form>
+    </div>
+    <!-- /.box -->
+</section>
+
+
+
+
+<script type="text/javascript">
+   
+    //$('#TypeCode').on('change', function () {
+    //    GetTypeWiseQCParameter(this.value);
+    //});
+
+    function GetTypeWiseQCParameter(type) {
+        $.ajax({
+            type: "POST",
+            url: "/QC/GetTypeWiseQCParameter",
+            data: { type: type},
+            success: function (result) {
+                $('#tblQCParameterGrid').empty(); //Clear table body
+                var table = $("#tblQCParamterDetail tbody");
+                $.each(result, function (idx, elem) {
+
+                    var index = $("#tblQCParameterGrid").children("tr").length;
+                    var indexCell = "<td style='display:none'><input name='tblQCDetails.Index' type='hidden' value='" + index + "' /></td>";
+                    var qcparameterCodeCell = "<td><input style='width:100%' class='nothing' readonly id='tblQCDetails" + index + "_QcparameterCode' name='tblQCDetails[" + index + "].QcparameterCode' type='text' value='" + elem.QcparameterCode + "' /></td>";
+                    var qcparameterNameCell = "<td><input style='width:100%' class='nothing' readonly id='tblQCDetails_" + index + "_QcparameterName' name='tblQCDetails[" + index + "].QcparameterName' type='text' value='" + elem.QcparameterName + "' /></td>";
+                    var qcparameterStandardValueCell = "<td><input style='width:100%' class='nothing' readonly id='tblQCDetails_" + index + "_QcparameterStandardValue' name='tblQCDetails[" + index + "].QcparameterStandardValue' type='text' value='" + elem.QcparameterStandardValue + "' /></td>";
+                    var qcparameterActualValueCell = "<td><input style='text-align:right; width:100%'  id='tblQCDetails_" + index + "_QcparameterActualValue' name='tblQCDetails[" + index + "].QcparameterActualValue' type='text' value='" + elem.QcparameterActualValue + "' /></td>";
+                    var commentsCell = "<td><input style='width:100%'  id='tblQCDetails_" + index + "_Comments' name='tblQCDetails[" + index + "].Comments' type='text' value='" + elem.Comments + "' /></td>";
+                    
+                    var removeCell = "<td><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
+
+                    var newRow = "<tr id='trtbProductionBOMDtl" + index + "'>" + indexCell + qcparameterCodeCell + qcparameterNameCell + qcparameterStandardValueCell + qcparameterActualValueCell + commentsCell + removeCell + "</tr>";
+                    table.append(newRow);
+
+                });
+
+            },
+            error: function () {
+                //$('#RequisitionNo').val('');
+            }
+        });
+    }
+
+
+    function removeRow(id) {
+        var controlToBeRemoved = "#trtbEduDtl" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removeRowExpert(id) {
+        var controlToBeRemoved = "#trtbExpertDtl" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    // EXTRACT AND SUBMIT TABLE DATA.
+    function sumbitData() {
+
+        var myTab = document.getElementById('tblProductDetail');
+        var values = new Array();
+
+        // LOOP THROUGH EACH ROW OF THE TABLE.
+        for (row = 1; row < myTab.rows.length - 1; row++) {
+            for (c = 0; c < myTab.rows[row].cells.length; c++) {   // EACH CELL IN A ROW.
+
+                var element = myTab.rows.item(row).cells[c];
+                if (element.childNodes[0].getAttribute('type') == 'text') {
+                    values.push("'" + element.childNodes[0].value + "'");
+                }
+            }
+        }
+        console.log(values);
+    }
+
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setSectionCode("S0001");
+
+    });
+
+    $('#QcpassQty, #QcholdQty').keyup(function () {
+        var Qcqty = Number($('#Qcqty').val());
+        //var QcpassQty = Number(this.value);
+        var QcpassQty = Number($('#QcpassQty').val());
+        if(Number(QcpassQty)>Number(Qcqty))
+        {
+            alert("QC Pass Quantity should not exceed QC Quantity");
+            $('#QcpassQty').val(0);
+            $('#QcholdQty').val(0);
+            $('#QcrejectQty').val(0);
+        }
+        else
+        {
+            var QcholdQty = Number($('#QcholdQty').val());
+            var QcrejectQty = Number(Number(Qcqty) - Number(QcpassQty) - Number(QcholdQty));
+            if(Number(QcrejectQty)<0)
+            {
+                alert("QC Reject Quantity should not smaller than 0.");
+                $('#QcholdQty').val(0);
+                $('#QcrejectQty').val(0);
+            }
+            else
+            {
+                $('#QcrejectQty').val(QcrejectQty.toFixed(2));
+            }
+        }
+    });
+
+    $('#SFGQcpassQty').keyup(function () {
+        var SFGQcqty = Number($('#SFGQcqty').val());
+        var SFGQcpassQty = Number(this.value);
+        var SFGQcrejectQty = Number(Number(SFGQcqty) - Number(SFGQcpassQty));
+        $('#SFGQcrejectQty').val(SFGQcrejectQty.toFixed(2));
+    });
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode != 46 && (charCode < 48 || charCode > 57)))
+            return false;
+        return true;
+    }
+
+    //$('#FGQCQtyConversionFactor').on('change', function (e) {
+    //    fnCalProducedQCQuantityByConversionFactor();
+    //});
+
+    function fnCalProducedQCQuantityByConversionFactor() {
+        var qtyBeforeConversion = document.getElementById("FGQCQtyBeforeConversion").value;
+        var conversionFactor = document.getElementById("FGQCQtyConversionFactor").value;
+        if (conversionFactor == 0 || conversionFactor == "") {
+            document.getElementById("FGQCQtyConversionFactor").value = 1;
+            conversionFactor = 1;
+        }
+        var qtyAfterConversion = qtyBeforeConversion / conversionFactor;
+        document.getElementById("Qcqty").value = qtyAfterConversion.toFixed(5);
+        
+    }
+    $("#sectionCode").on('change', function () {
+        var formoption = "<option value='0'>Select Process No</option>";
+        var sectioncode = $("#sectionCode option:selected").val();
+        setSectionCode(sectioncode);
+        $.ajax({
+
+            url: '@Url.Action("GetProcessNoList", "QC")',
+            data: {
+                SectionCode: sectioncode
+            },
+            error: function (result) {
+                alert("error");
+            },
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    if (result[i].ProcessNo != '') {
+                        if (result[i].ProcessNo != undefined) {
+                            formoption += "<option value='" + result[i].ProcessNo + "'>" + result[i].ProcessNo + "</option>";
+                        }
+                    }
+                }
+                $('#ProcessNo').html(formoption);
+            }
+        });
+    })
+      $('#ProcessNo').on('change', function () {
+            //alert(this.value);
+            //$.ajax({
+            //    type: "POST",
+            //    url: "/QC/GetQCQuantity",
+            //    data: { ProcessNo: this.value },
+            //    success: function (result) {
+            //        $('#Qcqty').val('');    
+            //        for (var i = 0; i < result.length; i++) {
+            //            $('#FGQCQtyBeforeConversion').val((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)));
+            //            //$('#Qcqty').val(result[i].ProductionQty);
+            //            var conversionFactor = $('#FGQCQtyConversionFactor').val();
+            //            $('#Qcqty').val(((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)) / parseFloat(conversionFactor)).toFixed(5));
+            //            $('#SFGQcqty').val(result[i].SFGProductionQty);
+            //            $('#BatchNo').val(result[i].BatchNo);
+                        
+            //        }
+            //    },
+            //    error: function () {
+
+            //    }
+            //});
+        var x = () => {
+            return new Promise(resolve => {
+                $.ajax({
+                    type: "POST",
+                    url: "/QC/GetQCQuantity",
+                    data: { ProcessNo: this.value },
+                    success: function (msg) {
+                        $('#js_requisition_no').val('');
+                        $('#BatchNo').val('');
+                        $('#ProductCode').val('');
+                        $('#ProductName').val('');
+                        $('#Unit').val('');
+                        $('#BatchSize').val('');
+                        $('#AvailableStock').val();
+                        $('#FGQCQtyConversionFactor').val('');
+                        $('#Qcqty').val('');
+
+                        for (var i = 0; i < msg.length; i++) {
+                            console.log(msg[i].RequisitionNo);
+                            $('#js_requisition_no').val(msg[i].RequisitionNo);
+                            $('#BatchNo').val(msg[i].BatchNo);
+                            $('#ProductCode').val(msg[i].ProductCode);
+                            $('#ProductName').val(msg[i].ProductName);
+                            $('#Unit').val(msg[i].PackSize);
+                            $('#BatchSize').val(msg[i].BatchSize);
+                            $('#AvailableStock').val(msg[i].AvailableStock);
+                            $('#FGQCQtyConversionFactor').val(msg[i].ConversionValue);
+                            $('#Qcqty').val(msg[i].ProductionQty);
+                        }
+                    },
+                    error: function () {
+                        $('#js_requisition_no').val('');
+                        $('#BatchNo').val('');
+                        $('#ProductCode').val('');
+                        $('#ProductName').val('');
+                        $('#Unit').val('');
+                        $('#BatchSize').val('');
+                        $('#AvailableStock').val();
+                        $('#FGQCQtyConversionFactor').val();
+                        $('#Qcqty').val('');
+                    }
+                })
+                resolve()
+            });
+        }
+
+        var y = () => {
+            return new Promise((resolve) => {
+                setTimeout(function () {
+                    var productCode = $("#ProductCode").val();
+                    GetTypeWiseQCParameter(productCode);
+                    resolve();
+                }, 2000);
+            });
+        };
+
+        x().then(y);
+
+
+            //var productCode = $("#ProductCode").val();
+            //GetTypeWiseQCParameter(productCode);
+        });
+
+
+    function setSectionCode(sectioncode)
+    {
+        $.ajax({
+
+            url: '@Url.Action("SetSectionCode", "QC")',
+            data: {
+                SectionCode: sectioncode
+            },
+            error: function (result) {
+                alert("error");
+            },
+            success: function (result) {
+                console.log(result);
+            }
+        });
+    }
+    
+
+
+
+
+      
+
+
+
+    $('#FGQCQtyConversionFactor').on('focus', function(){$(this).select();});
+    $('#QCReferenceSampleQty').on('focus', function(){$(this).select();});
+    $('#QcpassQty').on('focus', function(){$(this).select();});
+    $('#QcholdQty').on('focus', function(){$(this).select();});
+    $('#QcrejectQty').on('focus', function(){$(this).select();});
+
+
+
+</script>

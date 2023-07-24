@@ -1,0 +1,255 @@
+﻿@model IEnumerable<MonthlyProductionReportFGViewModel>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h2>Monthly Production Report (FG)</h2>
+            </div>
+            <div class="ibox-content" style="min-height: 6em;padding: .5em 0 0 0;">
+                <form action="/Report/MonthlyProductionReportFG" method="get">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Year</label>
+                            <input type="text" class="form-control" name="year" value="@ViewBag.Year" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Month</label>
+                            @Html.DropDownList("month", new SelectList(ViewBag.ddlMonth, "Text", "Value"), new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label>Unit/Sub-Business</label>
+                            @Html.DropDownList("subBusiness", new SelectList(ViewBag.ddlSubBusiness, "SubBusinessCode", "SubBusinessName"), new { @class = "form-control" })
+                        </div>
+                        <div class="col-sm-2">
+                            <label>From Date</label>
+                            <div class="col-sm-12 date input-group ">
+                                <input type='date' class="form-control" name="dateFrom" id="dateFrom" onchange="ReportParameterCheck()" />
+
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>To Date</label>
+                            <div class="col-sm-12 date input-group ">
+                                <input type='date' class="form-control" name="dateTo" id="dateTo" onchange="ReportParameterCheck()" />
+
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 2.2em;height: 2.1em;">Search</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <div class="row" style="margin-bottom:5em;">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content" style="width: 100%;display: block;overflow-y: auto;height:75vh">
+                    <table id="myTable" class="table" style="border-left:1px solid black;">
+                        <thead style="border:none;">
+                            <tr style="margin:0;padding:0;border:none;">
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                @*<th colspan="5" style="border-left:1px solid white;">Quantity</th>
+                                <th style="border-left:1px solid white;"></th>
+                                <th colspan="5" style="border-left:1px solid white;">Value</th>*@
+                            </tr>
+                            <tr style="margin:0;padding:0;border:none;">
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ProductCode)</th>
+                                <th style="width:300px; border-left:1px solid white;">@Html.LabelFor(m => m.First().ProductName)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().PackSize)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().OpeningStock)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ProductionQty)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().QCReferenceSampleQty)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().DespatchQty)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().QCHoldQty)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ClosingStock)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (MonthlyProductionReportFGViewModel vm in Model)
+                            {
+                                <tr>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.ProductCode</td>
+                                    <td style='width:300px; border-left:1px solid #42f5d1;'>@vm.ProductName</td>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.PackSize</td>
+                                    <td style="text-align: right; border-left:1px solid #42f5d1;">@vm.OpeningStock</td>
+                                    @if (!string.IsNullOrEmpty(@vm.ProductionQty))
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.ProductionQty).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@vm.ProductionQty</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.QCReferenceSampleQty))
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.QCReferenceSampleQty).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@vm.QCReferenceSampleQty</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.DespatchQty))
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.DespatchQty).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@vm.DespatchQty</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.QCHoldQty))
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.QCHoldQty).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@vm.QCHoldQty</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.ClosingStock))
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.ClosingStock).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align: right; border-left:1px solid #42f5d1;">@vm.ClosingStock</td>
+                                    }
+                                   
+                                 
+                                    
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section css
+{
+    <link rel="stylesheet" href="~/lib/datatable/datatable.min.css" />
+
+    <style>
+        table thead tr th {
+            /*background-color: #8b8c9d;*/
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/lib/datatable/datatables.min.js"></script>
+    <script src="~/lib/datatable/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/vfs_fonts.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $(document).ready(function () {
+                $('#myTable').DataTable({
+                    fixedHeader: true,
+                    "scrollY": true,
+                    scrollY: 450,
+                    paging: false,
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'excelHtml5',
+                        'pdfHtml5'
+                    ],
+
+                    //"pageLength": 50
+                });
+            });
+            //$('#myTable').DataTable({
+            //    fixedHeader: true,
+            //    rowsGroup:[0,1],
+            //    "scrollX": true,
+            //    "scrollY": 450,
+            //    paging: false,
+            //    dom: 'Bfrtip',
+            //    buttons: [
+            //        'excelHtml5'
+            //    ],
+            //    "pageLength": 50
+            //});
+
+
+            //MergeGridCells();
+
+        });
+
+        function MergeGridCells() {
+            var dimension_cells = new Array();
+            var dimension_col = null;
+            var columnCount = $("#myTable tr:first th").length;
+            //for (dimension_col = 0; dimension_col <= columnCount; dimension_col++) {
+            for (dimension_col = 0; dimension_col <= 5; dimension_col++) {
+                // first_instance holds the first instance of identical td
+                var first_instance = null;
+                var rowspan = 1;
+                // iterate through rows
+                $("#myTable").find('tr').each(function () {
+
+                    // find the td of the correct column (determined by the dimension_col set above)
+                    var dimension_td = $(this).find('td:nth-child(' + dimension_col + ')');
+
+
+
+                    if (first_instance === null) {
+                        // must be the first row
+                        first_instance = dimension_td;
+                    } else if (dimension_td.text() === first_instance.text()) {
+                        // the current td is identical to the previous
+                        // remove the current td
+                        // dimension_td.remove();
+                        dimension_td.attr('hidden', true);
+                        ++rowspan;
+                        // increment the rowspan attribute of the first instance
+                        first_instance.attr('rowspan', rowspan);
+                    } else {
+                        // this cell is different from the last
+                        first_instance = dimension_td;
+                        rowspan = 1;
+                    }
+                });
+            }
+        }
+        function ReportParameterCheck() {
+            let dateFrom = $("#dateFrom").val();
+            let dateTo = $("#dateTo").val();
+            if (dateFrom != '' && dateTo != '') {
+                var FromDate = new Date(dateFrom);
+                var ToDate = new Date(dateTo);
+
+                if (FromDate.getMonth() != ToDate.getMonth()) {
+                    $("#dateFrom").val('');
+                    $("#dateTo").val('');
+                    alert("Invalid Date Range!");
+                }
+
+            }
+
+
+        }
+
+
+
+
+    </script>
+}

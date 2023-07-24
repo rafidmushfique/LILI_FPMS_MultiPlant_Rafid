@@ -1,0 +1,197 @@
+﻿@model LILI_IMS.Models.TblRequisition
+<!-- Modal -->
+<div class="modal fade" id="add-Requisition" tabindex="-1" role="dialog" aria-labelledby="addContactLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0c8599; color:white;">
+                <h5 class="modal-title" id="addContactLabel">Add Requisition</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">                
+                <form class="form-horizontal"  asp-action="SearchRequisition" style="padding-bottom:30px">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <input type="text" asp-for="RequisitionNo" class="form-control" placeholder="RequisitionNo">
+                                <span asp-validation-for="RequisitionNo"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <a id="btnSearchRequisition" class="btn btn-primary">search</a>
+                            </div>
+                        </div>
+
+                        <table id="tblRequisitionMaster" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:10%">select</th>
+                                    <th style="width:10%">RequisitionNo</th>
+                                    <th style="width:45%">Code</th>
+                                    <th style="width:45%">Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblRequisitionSearchBody">
+                            </tbody>
+                        </table>                        
+                    </div>
+                </form>                
+
+            </div>
+            <div class="modal-footer" style="background-color:#0c8599; ">
+                <button type="button" id="SetRequisitionInfo" class="btn btn-warning" data-dismiss="modal" >Ok</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                @*<button type="button" id="SetExperties" class="btn btn-primary" data-save="modal">Ok</button>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    
+
+    $(document).ready(function () {
+        $(window).keydown(function (event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+
+                var RequisitionNo = $("#RequisitionNo").val();
+                if (RequisitionNo != '') {
+                    $.ajax({
+                        type: "POST",
+                        url: "/RequisitionReturn/SearchRequisition",
+                        data: { RequisitionNo: RequisitionNo },
+                        success: function (msg) {
+                            console.log(msg);
+
+                            $("#tblRequisitionMaster #tblRequisitionSearchBody").empty();
+                            var tr = '';
+                            for (var i = 0; i < msg.length; i++) {
+                                tr = $('<tr/>');
+                                tr.append("<td>" + '<input name="RequisitionNo" type="radio" value="' + msg[i].RequisitionNo + '"></label>' + "</td>");
+                                tr.append("<td>" + msg[i].RequisitionNo + "</td>");
+                                tr.append("<td>" + msg[i].ProductCode + "</td>");
+                                tr.append("<td>" + msg[i].ProductName + "</td>");
+                                $("#tblRequisitionMaster #tblRequisitionSearchBody").append(tr);
+                            }
+                        },
+                        error: function () {
+                            //$('#ExpertiesId').val('');
+                            //$('#ExpertArea').val('');
+                            //$('#ExpertDesc').val('');
+                        }
+                    });
+                }
+
+               // return false;
+            }
+        });
+
+        $('#btnSearchRequisition').on('click', function () {
+            var RequisitionNo = $("#RequisitionNo").val();
+            if (RequisitionNo != '') {
+                $.ajax({
+                    type: "POST",
+                    url: "/RequisitionReturn/SearchRequisition",
+                    data: { RequisitionNo: RequisitionNo },
+                    success: function (msg) {
+                        console.log(msg);
+
+                        $("#tblRequisitionMaster #tblRequisitionSearchBody").empty();
+                        var tr = '';
+                        for (var i = 0; i < msg.length; i++) {
+                            tr = $('<tr/>');
+                            tr.append("<td>" + '<input name="RequisitionNo" type="radio" value="' + msg[i].RequisitionNo + '"></label>' + "</td>");
+                            tr.append("<td>" + msg[i].RequisitionNo + "</td>");
+                            tr.append("<td>" + msg[i].ProductCode + "</td>");
+                            tr.append("<td>" + msg[i].ProductName + "</td>");
+                            $("#tblRequisitionMaster #tblRequisitionSearchBody").append(tr);
+                        }
+                    },
+                    error: function () {
+                        //$('#ExpertiesId').val('');
+                        //$('#ExpertArea').val('');
+                        //$('#ExpertDesc').val('');
+                    }
+                });
+            }
+        });
+
+        $('#SetRequisitionInfo').on('click', function () {
+            var RequisitionNo = $("input:checked").val();
+            if (RequisitionNo != '') {
+                $.ajax({
+                    type: "POST",
+                    url: "/RequisitionReturn/SetRequisitionInfomation",
+                    data: { RequisitionNo: RequisitionNo },
+                    success: function (msg) {
+                        $('#js_requisition_no').val('');
+                        $('#BatchNo').val('');
+                        $('#ProductName').val('');
+                        $('#Unit').val('');
+                        $('#BatchSize').val(''); 
+
+                        for (var i = 0; i < msg.length; i++) {
+                            console.log(msg[i].RequisitionNo);
+                            $('#js_requisition_no').val(msg[i].RequisitionNo);
+                            $('#BatchNo').val(msg[i].BatchNo);
+                            $('#ProductName').val(msg[i].ProductName);
+                            $('#Unit').val(msg[i].PackSize);
+                            $('#BatchSize').val(msg[i].BatchSize);
+                        }                        
+                    },
+                    error: function () {
+                        $('#js_requisition_no').val('');
+                        $('#BatchNo').val('');
+                        $('#ProductName').val('');
+                        $('#Unit').val('');
+                        $('#BatchSize').val('');
+                    }
+                });
+
+                GetRequisitionDetails(RequisitionNo)
+            }
+        });
+
+        function GetRequisitionDetails(RequisitionNo) {
+            var noOfBatch = $('#NumberOfBatch').val();
+            $.ajax({
+                type: "POST",
+                url: "/RequisitionReturn/GetRequisitionDetailsData",
+                data: { RequisitionNo: RequisitionNo },
+                success: function (result) {
+                    $('#tblReqBOMDtl').empty(); //Clear table body
+                    var table = $("#htReqMaterialDetail tbody");
+                    $.each(result, function (idx, elem) {
+
+                        var index = $("#tblReqBOMDtl").children("tr").length;
+                        var indexCell = "<td style='display:none'><input name='TblReturnDetails.Index' type='hidden' value='" + index + "' /></td>";
+                        var materialCodeCell = "<td><input style='width:100%' class='nothing' readonly id='TblReturnDetails_" + index + "_MaterialCode' name='TblReturnDetails[" + index + "].MaterialCode' type='text' value='" + elem.MaterialCode + "' /></td>";
+                        var materialNameCell = "<td><input style='width:100%' class='nothing' readonly id='TblReturnDetails_" + index + "_MaterialName' name='TblReturnDetails[" + index + "].MaterialName' type='text' value='" + elem.MaterialName + "' /></td>";
+                        var unitCell = "<td><input style='width:100%' class='nothing' readonly id='TblReturnDetails_" + index + "_Unit' name='TblReturnDetails[" + index + "].Unit' type='text' value='" + elem.Unit + "' /></td>";
+                        var grnCell = "<td><input style='width:100%' class='nothing' readonly id='TblReturnDetails_" + index + "_GRNNo' name='TblReturnDetails[" + index + "].GRNNo' type='text' value='" + elem.GRNNo + "' /></td>";
+                        var issuedQtyCell = "<td><input style='text-align:right; width:100%' class='nothing' readonly  id='TblReturnDetails_" + index + "_IssuedQty' name='TblReturnDetails[" + index + "].IssuedQty' type='text' value='" + elem.IssuedQty + "' /></td>";
+                        var returnQtyCell = "<td><input class='calReturnQty' style='text-align:right; width:100%'  id='TblReturnDetails_" + index + "_ReturnQty' name='TblReturnDetails[" + index + "].ReturnQty' type='text' value='" + elem.ReturnQty + "' /></td>";
+
+                        var removeCell = "<td><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
+
+                        var newRow = "<tr id='trtbReqBOMDtl" + index + "'>" + indexCell + materialCodeCell + materialNameCell + unitCell + grnCell + issuedQtyCell + returnQtyCell + "</tr>";
+                        table.append(newRow);
+
+                    });
+
+                },
+                error: function () {
+                    //$('#RequisitionNo').val('');
+                }
+            });
+        }
+    });
+       
+
+</script>

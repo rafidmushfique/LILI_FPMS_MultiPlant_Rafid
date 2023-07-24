@@ -1,0 +1,242 @@
+﻿@model LILI_IMS.Models.TblRequisition
+
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+
+<section class="content-header">
+    @*<h1>
+            Requisition
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Requisition</li>
+        <li class="active">Update Requisition</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+        @*<div class="box-header with-border">
+            <h3 class="box-title">Update Requisition</h3>
+        </div>*@
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" asp-controller="RequisitionApproval">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Requisition No.</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="RequisitionNo" class="form-control" placeholder="Requisition No." readonly="readonly" value="@Model.RequisitionNo">
+                        <span asp-validation-for="RequisitionNo"></span>
+                    </div>
+
+                    <label asp-for="RequisitionDate" class="col-sm-2 control-label"></label>
+                    <div class='col-sm-3 input-group date' id='RequisitionDate' style="padding-left:15px;">
+                        <input asp-for="RequisitionDate" type='text' class="form-control" readonly="readonly"/>
+                        <span asp-validation-for="RequisitionDate" class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Batch No.</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="BatchNo" class="form-control" placeholder="Batch No." readonly="readonly" value="@Model.BatchNo" >
+                        <span asp-validation-for="BatchNo"></span>
+                    </div>
+
+                    @*<label for="inputEmail3" class="col-sm-2 control-label">Number of Batch</label>*@
+                    <label for="inputEmail3" class="col-sm-2 control-label">Requisition QTY</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="NumberOfBatch" class="form-control" placeholder="Number of Batch" readonly="readonly" value="@Model.NumberOfBatch">
+                        <span asp-validation-for="NumberOfBatch"></span>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Code</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="ProductCode" class="form-control" placeholder="Product Code" readonly="readonly" value="@Model.ProductCode">
+                        <span asp-validation-for="ProductCode"></span>
+                    </div>
+
+                    @*<div class="col-sm-2">
+                <button type="button" class="btn btn-mini btn-primary" data-toggle="ajax-modal" data-target="#add-product" data-url="@Url.Action("SearchProduct")">
+                    Search Product
+                </button>
+            </div>*@
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="ProductName" class="form-control" placeholder="Product Name" readonly="readonly" value="@Model.ProductName">
+                        <span asp-validation-for="ProductName"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Standard Output</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="StandardOutput" class="form-control" readonly="readonly" value="@Model.StandardOutput">
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Batch Size</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="BatchSize" class="form-control" readonly="readonly" value="@Model.BatchSize">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Comments" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <input type="text" asp-for="Comments" class="form-control" placeholder="Comments" value="@Model.Comments">
+                    </div>
+                </div>
+
+
+
+                <div style="border:1px solid #e5dbff; padding:10px;">
+                    <div style="border:1px solid #e5dbff; padding:10px;">
+                        <div class="box-body">
+                            <div style="border-radius:30px; border:0px solid #ccc; min-width:30%;  overflow:auto;">
+                                <table id="htReqMaterialDetail" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:10%; !important">Material Code</th>
+                                            <th style="width:30%;">Material Name</th>
+                                            <th style="width:10%;">Unit</th>
+                                            <th style="width:10%;">Standard Recipe Quantity</th>
+                                            <th style="width:10%;">Floor Stock</th>
+                                            <th style="width:10%;">Available Stock</th>
+                                            <th style="width:10%;">Required Quantity</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblReqBOMDtl" class="js_tblBOMDtl_body">
+                                        @{
+                                            int i = 0;
+                                            foreach (var item in Model.TblRequisitionDetail)
+                                            {
+                                                var index = i;
+                                                    <tr>
+                                                        <td style="display:none"><input name='TblRfqitemDetail.Index' type="hidden" value=@index /></td>
+                                                        <td style="display:none">@Html.EditorFor(modelItem => modelItem.TblRequisitionDetail[i].MaterialCode, new { @id = "MaterialCode_" + i })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].MaterialCode, new { @id = "MaterialCode_" + i })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].MaterialName, new { @id = "MaterialName_" + i })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].Unit, new { @id = "Unit_" + i })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].StandardRecipeQty, new { @id = "StandardRecipeQty_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].FloorStock, new { @id = "FloorStock_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].AvailableStock, new { @id = "AvailableStock_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].RequiredQty, new { @id = "RequiredQty_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                                    </tr>
+                                                i++;
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="Id" value="@Model.Id" />
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/RequisitionApproval/Index")'>Cancel</a>
+                <a id="ReqReject" class="btn btn-primary pull-right">Rejected</a> 
+                <a id="ReqApprove" class="btn btn-primary pull-right" style="margin-right:50px;" >Approved</a>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+
+
+    </div>
+    <!-- /.box -->
+</section>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#ReqApprove').on('click', function () {        
+            var requisitionNo = $('#RequisitionNo').val();
+            $.ajax({
+                type:"POST",
+                url:"/RequisitionApproval/RequisitionApprovalStatus",
+                data:{requisitionNo:requisitionNo, approvalStatus: "Approved"},
+                success: function (result) {
+                    alert("Requisition Approved.")
+                }
+            });
+        });
+
+        $('#ReqReject').on('click', function () {
+            var requisitionNo = $('#RequisitionNo').val();
+            $.ajax({
+                type: "POST",
+                url: "/RequisitionApproval/RequisitionApprovalStatus",
+                data: { requisitionNo: requisitionNo, approvalStatus : "Rejected" },
+                success: function (result) {
+                    alert("Requisition Rejected.")
+                }
+            });
+        });
+
+
+        $('#NumberOfBatch').on('change', function () {
+            var productId = $('#ProductCode').val();
+            if (productId.length > 0) {
+                GetBOMDetails(productId);
+            }
+        });
+
+        function GetBOMDetails(productId) {
+            var noOfBatch = $('#NumberOfBatch').val();
+            $.ajax({
+                type: "POST",
+                url: "/Requisition/GetBOMDetail",
+                data: { productId: productId, noOfBatch: noOfBatch },
+                success: function (result) {
+                    $('#tblReqBOMDtl').empty(); //Clear table body
+                    var table = $("#htReqMaterialDetail tbody");
+                    $.each(result, function (idx, elem) {
+
+                        var index = $("#tblReqBOMDtl").children("tr").length;
+                        var indexCell = "<td style='display:none'><input name='tblRequisitionDetail.Index' type='hidden' value='" + index + "' /></td>";
+                        var materialCodeCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_MaterialCode' name='tblRequisitionDetail[" + index + "].MaterialCode' type='text' value='" + elem.MaterialCode + "' /></td>";
+                        var materialNameCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_MaterialName' name='tblRequisitionDetail[" + index + "].MaterialName' type='text' value='" + elem.MaterialName + "' /></td>";
+                        var unitCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_Unit' name='tblRequisitionDetail[" + index + "].Unit' type='text' value='" + elem.Unit + "' /></td>";
+                        var standardRecipeQtyCell = "<td><input style='text-align:right; width:100%'  id='tblRequisitionDetail_" + index + "_StandardRecipeQty' name='tblRequisitionDetail[" + index + "].StandardRecipeQty' type='text' value='" + elem.StandardRecipeQty + "' /></td>";
+                        var floorStockCell = "<td><input style='text-align:right; width:100%'  id='tblRequisitionDetail_" + index + "_FloorStock' name='tblRequisitionDetail[" + index + "].FloorStock' type='text' value='" + elem.FloorStock + "' /></td>";
+                        //var availableStockCell = "<td><input style='text-align:right; width:80%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_AvailableStock' name='tblRequisitionDetail[" + index + "].AvailableStock' type='text' value='" + elem.AvailableStock + "' /></td>";
+                        var availableStockCell = "<td><input style='text-align:right; width:80%' readonly id='tblRequisitionDetail_" + index + "_AvailableStock' name='tblRequisitionDetail[" + index + "].AvailableStock' type='text' value='" + elem.AvailableStock + "' /></td>";
+                        var requiredQtyCell = "<td><input style='text-align:right; width:100%'  id='tblRequisitionDetail_" + index + "_RequiredQty' name='tblRequisitionDetail[" + index + "].RequiredQty' type='text' value='" + elem.RequiredQty + "' /></td>";
+                        
+                        var removeCell = "<td><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
+
+                        var newRow = "<tr id='trtbReqBOMDtl" + index + "'>" + indexCell + materialCodeCell + materialNameCell + unitCell + standardRecipeQtyCell + floorStockCell + availableStockCell + requiredQtyCell + removeCell + "</tr>";
+                        table.append(newRow);
+
+                    });
+
+                },
+                error: function () {
+                    //$('#RequisitionNo').val('');
+                }
+            });
+        }
+
+    });
+
+   
+
+</script>
+

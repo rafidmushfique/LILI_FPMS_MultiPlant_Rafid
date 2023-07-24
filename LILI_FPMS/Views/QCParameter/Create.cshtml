@@ -1,0 +1,112 @@
+﻿@model LILI_IMS.Models.TblQcparameter
+
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
+
+
+
+
+@*<script src="~/lib/JQuery-unobtrusive-Ajax/jquery-ajax-unobtrusive-master/src/jquery.unobtrusive-ajax.js"></script>*@
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    @*<h1>
+            Shift Setup
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">QC Parameter Setup</li>
+        <li class="active">Add Parameter</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+        @*<div class="box-header with-border">
+                <h3 class="box-title">Add Shift</h3>
+            </div>*@
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" asp-controller="QCParameter" method="post" asp-action="CreateQCParameter">
+            
+            <div class="box-body">
+                @*<div class="form-group">
+                    <label asp-for="TypeCode" class="col-sm-2 control-label">Type</label>
+                    <div class="col-sm-4">
+                        <select asp-for="TypeCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfType,"TypeCode","TypeName"))"></select>
+                    </div>
+                </div>*@
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Code</label>
+                    <div class="col-sm-2">
+                        <input type="text" asp-for="ProductCode" class="form-control" placeholder="Product Code" readonly="readonly">
+                        <span asp-validation-for="ProductCode"></span>
+                    </div>
+                    <div class="col-sm-2 controls">
+                        <button type="button" class="btn btn-info" data-toggle="ajax-modal" data-target="#add-product" data-url="@Url.Action("addProduct")">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="ProductName" class="form-control" placeholder="Product Name" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Parameter Code</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="QcparameterCode" class="form-control" placeholder="parameter Code">
+                        <span asp-validation-for="QcparameterCode"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Parameter Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="QcparameterName" class="form-control" placeholder="QC Parameter Name">
+                        <span asp-validation-for="QcparameterName"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Parameter Standard Value</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="QcparameterStandardValue" class="form-control" placeholder="QC Parameter StandardValue">
+                        <span asp-validation-for="QcparameterStandardValue"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Comments</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="Comments" class="form-control" placeholder="Comments">
+                        <span asp-validation-for="Comments"></span>
+                    </div>
+                </div>
+
+
+                
+            </div>
+
+
+            <!-- /.box-body -->
+            <div class="box-footer">
+
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/QCParameter/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-info pull-right">Create</button>
+
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+    <!-- /.box -->
+</section>
+
+

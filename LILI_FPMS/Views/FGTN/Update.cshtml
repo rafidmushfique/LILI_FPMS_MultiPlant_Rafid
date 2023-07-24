@@ -1,0 +1,246 @@
+﻿@model LILI_FPMS.Models.TblFgtn
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    @*<h1>
+    Employee
+    </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">FGTN</li>
+        <li class="active">Edit FGTN</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+        @*<div class="box-header with-border">
+        <h3 class="box-title">Add Employee</h3>
+        </div>*@
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" asp-controller="FGTN" method="post" asp-action="UpdateFGFTN">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">FGTN No</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="Fgtnno" class="form-control" placeholder="Fgtnno" value="@Model.Fgtnno" readonly>
+                        <span asp-validation-for="Fgtnno"></span>
+                    </div>
+                    <label asp-for="Fgtndate" class="col-sm-2 control-label"></label>
+                    <div class='col-sm-3 input-group date' id='Fgtndate' style="padding-left:15px;">
+                        <input asp-for="Fgtndate" type='text' class="form-control" />
+                        <span asp-validation-for="Fgtndate" class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Comments" class="col-sm-2 control-label">Comments</label>
+                    <div class="col-sm-10">
+                        <textarea type="text" asp-for="Comments" class="form-control" placeholder="Comments" rows="1"></textarea>
+                        <span asp-validation-for="Comments"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LocationCode" class="col-sm-2 control-label">Transfer Location</label>
+                    <div class="col-sm-4">
+                        <select asp-for="LocationCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfLocation,"LocationCode","LocationName"))"></select>
+                        <span asp-validation-for="LocationCode"></span>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div style="border-radius:30px; border:0px solid #ccc; min-width:30%;  overflow:hidden;">
+                        <table id="htFGTNDetail" class="table table-bordered table-striped">
+                            <thead>
+                                <tr style="background-color:#6c7ae0; color:white; height:50px;">
+                                    <th style="text-align:center; width:10%">Product Code</th>
+                                    <th style="text-align:center; width:10%">Product Name</th>
+                                    <th style="text-align:center; width:10%">QC No.</th>
+                                    <th style="text-align:center;  width:10%">Requisition No.</th>
+                                    <th style="text-align:center;  width:10%">Process No.</th>
+                                    <th style="text-align:center;  width:10%">Batch No.</th>
+                                    <th style="text-align:center;  width:10%">QC Pass Qty</th>
+                                    <th style="text-align:center;  width:10%">FGTN Qty</th>
+                                    <th style="text-align:center;  width:10%">Comments</th>
+                                    <th style="text-align:center; width:5%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="htFGTNDetailGrid">
+
+                                @{
+                                    int i = 0;
+                                    foreach (var item in Model.TblFgtndetails)
+                                    {
+                                        var index = i;
+                                        <tr>
+                                            <td style="display:none"><input name='TblFgtndetails.Index' type="hidden" value=@index /></td>
+                                            <td style="display:none">@Html.EditorFor(modelItem => modelItem.TblFgtndetails[i].Qcno, new { @id = "Qcno_" + i })</td>
+                                            <td>@Html.TextBoxFor(modelItem => modelItem.TblFgtndetails[i].ProductCode, new { @id = "ProductCode_" + i , @readonly = "readonly", @class="nothing"})</td>
+                                            <td>@Html.DisplayFor(modelItem => modelItem.TblFgtndetails[i].ProductName, new { @id = "ProductName_" + i , @readonly = "readonly"})</td>
+                                            <td>@Html.DisplayFor(modelItem => modelItem.TblFgtndetails[i].Qcno, new { @id = "Qcno_" + i })</td>
+                                            <td>@Html.TextBoxFor(modelItem => modelItem.TblFgtndetails[i].RequisitionNo, new { @id = "RequisitionNo_" + i , @readonly = "readonly", @class="nothing"})</td>
+                                            <td>@Html.TextBoxFor(modelItem => modelItem.TblFgtndetails[i].ProcessNo, new { @id = "ProcessNo_" + i, @readonly = "readonly", @class="nothing" })</td>
+                                            <td>@Html.TextBoxFor(modelItem => modelItem.TblFgtndetails[i].BatchNo, new { @id = "BatchNo_" + i, @readonly = "readonly", @class="nothing" })</td>
+                                            <td>@Html.TextBoxFor(modelItem => modelItem.TblFgtndetails[i].QcpassQty, new { @id = "QcpassQty_" + i, @readonly = "readonly", @class="nothing clsPendingFGTNQty" })</td>
+                                            <td>@Html.TextBoxFor(modelItem => modelItem.TblFgtndetails[i].Fgtnqty, new { @id = "Fgtnqty_" + i, @style = "width: 150px; text-align:right;", @class="clsFGTNQty"  })</td>
+                                            <td>@Html.TextBoxFor(modelItem => modelItem.TblFgtndetails[i].Comments, new { @id = "Comments_" + i})</td>
+                                            <td><input type="button" value="Remove" onClick="$(this).closest('tr').remove();"></td>
+                                        </tr>
+                                        i++;
+                                    }
+                                }
+
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- /.box-body -->
+            <div class="box-footer">
+
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/FGTN/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-info pull-right">Update</button>
+
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+    <!-- /.box -->
+</section>
+
+
+
+
+<script type="text/javascript">
+
+    //$('#TypeCode').on('change', function () {
+    //    GetTypeWiseQCParameter(this.value);
+    //});
+
+    function GetTypeWiseQCParameter(type) {
+        $.ajax({
+            type: "POST",
+            url: "/QC/GetTypeWiseQCParameter",
+            data: { type: type },
+            success: function (result) {
+                $('#tblQCParameterGrid').empty(); //Clear table body
+                var table = $("#tblQCParamterDetail tbody");
+                $.each(result, function (idx, elem) {
+
+                    var index = $("#tblQCParameterGrid").children("tr").length;
+                    var indexCell = "<td style='display:none'><input name='tblQCDetails.Index' type='hidden' value='" + index + "' /></td>";
+                    var qcparameterCodeCell = "<td><input style='width:100%' class='nothing' readonly id='tblQCDetails" + index + "_QcparameterCode' name='tblQCDetails[" + index + "].QcparameterCode' type='text' value='" + elem.QcparameterCode + "' /></td>";
+                    var qcparameterNameCell = "<td><input style='width:100%' class='nothing' readonly id='tblQCDetails_" + index + "_QcparameterName' name='tblQCDetails[" + index + "].QcparameterName' type='text' value='" + elem.QcparameterName + "' /></td>";
+                    var qcparameterStandardValueCell = "<td><input style='width:100%' class='nothing' readonly id='tblQCDetails_" + index + "_QcparameterStandardValue' name='tblQCDetails[" + index + "].QcparameterStandardValue' type='text' value='" + elem.QcparameterStandardValue + "' /></td>";
+                    var qcparameterActualValueCell = "<td><input style='text-align:right; width:100%'  id='tblQCDetails_" + index + "_QcparameterActualValue' name='tblQCDetails[" + index + "].QcparameterActualValue' type='text' value='" + elem.QcparameterActualValue + "' /></td>";
+                    var commentsCell = "<td><input style='width:100%'  id='tblQCDetails_" + index + "_Comments' name='tblQCDetails[" + index + "].Comments' type='text' value='" + elem.Comments + "' /></td>";
+
+                    var removeCell = "<td><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
+
+                    var newRow = "<tr id='trtbProductionBOMDtl" + index + "'>" + indexCell + qcparameterCodeCell + qcparameterNameCell + qcparameterStandardValueCell + qcparameterActualValueCell + commentsCell + removeCell + "</tr>";
+                    table.append(newRow);
+
+                });
+
+            },
+            error: function () {
+                //$('#RequisitionNo').val('');
+            }
+        });
+    }
+
+
+    function removeRow(id) {
+        var controlToBeRemoved = "#trtbEduDtl" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removeRowExpert(id) {
+        var controlToBeRemoved = "#trtbExpertDtl" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    //// EXTRACT AND SUBMIT TABLE DATA.
+    //function sumbitData() {
+
+    //    var myTab = document.getElementById('tblProductDetail');
+    //    var values = new Array();
+
+    //    // LOOP THROUGH EACH ROW OF THE TABLE.
+    //    for (row = 1; row < myTab.rows.length - 1; row++) {
+    //        for (c = 0; c < myTab.rows[row].cells.length; c++) {   // EACH CELL IN A ROW.
+
+    //            var element = myTab.rows.item(row).cells[c];
+    //            if (element.childNodes[0].getAttribute('type') == 'text') {
+    //                values.push("'" + element.childNodes[0].value + "'");
+    //            }
+    //        }
+    //    }
+    //    console.log(values);
+    //}
+
+</script>
+
+
+<script type="text/javascript">
+
+    //$('#QcpassQty').keyup(function () {
+    //    var Qcqty = Number($('#Qcqty').val());
+    //    var QcpassQty = Number(this.value);
+    //    var QcrejectQty = Number(Number(Qcqty) - Number(QcpassQty));
+    //    $('#QcrejectQty').val(QcrejectQty);
+    //});
+
+    //$('#SFGQcpassQty').keyup(function () {
+    //    var SFGQcqty = Number($('#SFGQcqty').val());
+    //    var SFGQcpassQty = Number(this.value);
+    //    var SFGQcrejectQty = Number(Number(SFGQcqty) - Number(SFGQcpassQty));
+    //    $('#SFGQcrejectQty').val(SFGQcrejectQty);
+    //});
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode != 46 && (charCode < 48 || charCode > 57)))
+            return false;
+        return true;
+    }
+
+    $('#htFGTNDetail').on('focus', 'input', function () {
+        $("input").on('focus', function () { $(this).select(); });
+    });
+
+    $('#htFGTNDetail').on('change', 'input', function () {
+        var consumeSum = 0;
+        var $tr = $(this).closest('tr'); // get tr which contains the input
+        var tot = 0; // variable to store sum
+        var stdConsumption = 0; // variable to store sum
+
+        $('.clsFGTNQty', $tr).each(function () { // iterate over inputs
+            var fgtnQty = Number($(this).val());
+            var pendingQty = $('.clsPendingFGTNQty', $tr).val();
+            if (fgtnQty > pendingQty) {
+                alert("FGTN Quantity Cannot Exceed Pending Quantity.")
+                $('.clsFGTNQty', $tr).val(0);
+            }
+
+        });
+
+    });
+</script>

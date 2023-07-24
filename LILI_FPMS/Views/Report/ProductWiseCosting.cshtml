@@ -1,0 +1,142 @@
+﻿@model IEnumerable<ProductWiseCostingViewModel>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h2>Product Wise Costing Report</h2>
+            </div>
+            <div class="ibox-content" style="min-height: 6em;padding: .5em 0 0 0;">
+                <form action="/Report/ProductWiseCosting" method="get">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Year</label>
+                            <input type="text" class="form-control" name="year" value="@ViewBag.Year" />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Month</label>
+                            <input type="text" class="form-control" name="month" value="@ViewBag.Month" />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Code</label>
+                            <input type="text" class="form-control" name="code" value="@ViewBag.Code" />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Batch</label>
+                            <input type="text" class="form-control" name="batch" value="@ViewBag.Batch" />
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 2.2em;height: 2.1em;">Search</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <div class="row" style="margin-bottom:5em;">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content" style="width: 100%;display: block;overflow-y: auto;height:65vh">
+                    <table id="myTable" class="table  table-responsive-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>@Html.LabelFor(m => m.First().FGCode)</th>
+                                <th>@Html.LabelFor(m => m.First().FGName)</th>
+                                <th>@Html.LabelFor(m => m.First().PackSize)</th>
+                                <th>@Html.LabelFor(m => m.First().Production)</th>
+                                <th>@Html.LabelFor(m => m.First().StandardTotalRM)</th>
+                                <th>@Html.LabelFor(m => m.First().StandardTotalPM)</th>
+                                <th>@Html.LabelFor(m => m.First().StandardTotalOH)</th>
+                                <th>@Html.LabelFor(m => m.First().StandardRMPerUnit)</th>
+                                <th>@Html.LabelFor(m => m.First().StandardPMPerUnit)</th>
+                                <th>@Html.LabelFor(m => m.First().StandardOHPerUnit)</th>
+                                <th>@Html.LabelFor(m => m.First().StandardCOGS)</th>
+                                <th>@Html.LabelFor(m => m.First().ActualTotalRM)</th>
+                                <th>@Html.LabelFor(m => m.First().ActualTotalPM)</th>
+                                <th>@Html.LabelFor(m => m.First().ActualTotalOH)</th>
+                                <th>@Html.LabelFor(m => m.First().ActualRMPerUnit)</th>
+                                <th>@Html.LabelFor(m => m.First().ActualPMPerUnit)</th>
+                                <th>@Html.LabelFor(m => m.First().ActualOHPerUnit)</th>
+                                <th>@Html.LabelFor(m => m.First().ActualCOGS)</th>
+                                <th>@Html.LabelFor(m => m.First().VarianceTotalRM)</th>
+                                <th>@Html.LabelFor(m => m.First().VarianceTotalPM)</th>
+                                <th>@Html.LabelFor(m => m.First().VarianceTotalOH)</th>
+                                <th>@Html.LabelFor(m => m.First().VarianceCOGS)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (ProductWiseCostingViewModel vm in Model)
+                            {
+                                <tr>
+                                    <td>@vm.FGCode</td>
+                                    <td>@vm.FGName</td>
+                                    <td>@vm.PackSize</td>
+                                    <td>@vm.Production</td>
+                                    <td>@vm.StandardTotalRM</td>
+                                    <td>@vm.StandardTotalPM</td>
+                                    <td>@vm.StandardTotalOH</td>
+                                    <td>@vm.StandardRMPerUnit</td>
+                                    <td>@vm.StandardPMPerUnit</td>
+                                    <td>@vm.StandardOHPerUnit</td>
+                                    <td>@vm.StandardCOGS</td>
+                                    <td>@vm.ActualTotalRM</td>
+                                    <td>@vm.ActualTotalPM</td>
+                                    <td>@vm.ActualTotalOH</td>
+                                    <td>@vm.ActualRMPerUnit</td>
+                                    <td>@vm.ActualPMPerUnit</td>
+                                    <td>@vm.ActualOHPerUnit</td>
+                                    <td>@vm.ActualCOGS</td>
+                                    <td>@vm.VarianceTotalRM</td>
+                                    <td>@vm.VarianceTotalPM</td>
+                                    <td>@vm.VarianceTotalOH</td>
+                                    <td>@vm.VarianceCOGS</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section css
+{
+    <link rel="stylesheet" href="~/lib/datatable/datatable.min.css" />
+
+    <style>
+        table thead tr th {
+            /*background-color: #8b8c9d;*/
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/lib/datatable/datatables.min.js"></script>
+    <script src="~/lib/datatable/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/vfs_fonts.js"></script>
+    <script>
+
+
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                fixedHeader: true,
+                "scrollY": true,
+                scrollY: 450,
+                paging: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    'excelHtml5',
+                    'pdfHtml5'
+                ],
+
+                //"pageLength": 50
+            });
+        });
+    </script>
+}

@@ -1,0 +1,110 @@
+﻿@model LILI_IMS.Models.TblMachineSetup
+
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
+
+
+
+
+@*<script src="~/lib/JQuery-unobtrusive-Ajax/jquery-ajax-unobtrusive-master/src/jquery.unobtrusive-ajax.js"></script>*@
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    @*<h1>
+            Shift Setup
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Machine Setup</li>
+        <li class="active">Add Machine</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+     
+        <form class="form-horizontal" asp-controller="Machine" method="post" asp-action="CreateMachine">    
+
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Code</label>
+                    <div class="col-sm-2">
+                        <input type="text" asp-for="ProductCode" class="form-control" placeholder="Product Code" readonly="readonly">
+                        <span asp-validation-for="ProductCode"></span>
+                    </div>
+                    <div class="col-sm-2 controls">
+                        <button type="button" class="btn btn-info" data-toggle="ajax-modal" data-target="#add-product" data-url="@Url.Action("addProduct")">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="ProductName" class="form-control" placeholder="Product Name" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group control-group">
+                    <label asp-for="MachineCode" class="col-sm-2 control-label">Machine Name</label>
+                    <div class="col-sm-10">
+                        <select asp-for="MachineCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfMachine,"MachineCode","MachineName"))"></select>
+                        <span asp-validation-for="MachineCode"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Manufacturing Capacity</label>
+                    <div class="col-sm-10">
+                        <input type="text" asp-for="Capacity" class="form-control" placeholder="Capacity">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Packing Capacity</label>
+                    <div class="col-sm-10">
+                        <input type="text" asp-for="CapacityPacking" class="form-control" placeholder="Packing Capacity">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Manufacturing Speed</label>
+                    <div class="col-sm-10">
+                        <input type="text" asp-for="Speed" class="form-control" placeholder="Speed">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Packing Speed</label>
+                    <div class="col-sm-10">
+                        <input type="text" asp-for="SpeedPacking" class="form-control" placeholder="Packing Speed">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Comments</label>
+                    <div class="col-sm-10">
+                        <input type="text" asp-for="Comments" class="form-control" placeholder="Comments">
+                    </div>
+                </div>                
+            </div>
+
+
+            <!-- /.box-body -->
+            <div class="box-footer">
+
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/Machine/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-info pull-right">Create</button>
+
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+    <!-- /.box -->
+</section>
+
+

@@ -1,0 +1,198 @@
+﻿@model List<LILI_IMS.Models.TblRequisition>
+<!-- Modal -->
+<div class="modal fade" id="add-contact" tabindex="-1" role="dialog" aria-labelledby="addContactLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header"  style="background-color:#0c8599; color:white;">
+                <h5 class="modal-title" id="addContactLabel">Select Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Experties">
+                    <input name="IsValid" type="hidden" value="@ViewData.ModelState.IsValid.ToString()" />
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"
+                               for="inputEmail3">SearchKey</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="searchKey" name="searchKey" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10" style="padding-top:2px;">
+                            <button id="btnSearchProductByKey" type="button" class="btn btn-mini btn-primary">Search</button>
+                        </div>
+                    </div>
+
+                    <div class="box-body">
+                        <table id="htProductDetail" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:10%">Id</th>
+                                    <th style="width:45%">Product Code.</th>
+                                    <th style="width:45%">Product Name</th>
+                                    @*<th>Action</th>*@
+                                </tr>
+                            </thead>
+                            <tbody id="tbProductDtl" class="js_tbl_body">
+                                @{
+                                    int i = 0; @*To make unique Id*@
+                                    foreach (var item in Model)
+                                    {
+                                                                                @*@Html.HiddenIndexerInputForModel()*@
+                                        var index = i;
+                                                                                <tr>
+                                                                                    <td style="display:none"><input name='tblProductDetail.Index' type="hidden" value=@index /></td>
+                                                                                    <td>@Html.RadioButtonFor(modelItem => item.ProductCode, item.ProductCode)</td>
+                                                                                    <td>@Html.DisplayFor(modelItem => item.ProductCode, new { @id = "ProductCode_" + i })</td>
+                                                                                    <td>@Html.DisplayFor(modelItem => item.ProductName, new { @id = "ProductName_" + i })</td>
+                                                                                    @*<td><input type="button" value="Remove" onClick="$(this).closest('tr').remove();"></td>*@
+                                                                                </tr>
+                                        i++;
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+
+
+
+                </form>
+            </div>
+            <div class="modal-footer" style="background-color:#0c8599; ">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="SetProduct" class="btn btn-primary" data-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    $('#SetProduct').on('click', function () {
+        var productId = $("input:checked").val();
+        if (productId != '') {
+            $.ajax({
+                type: "POST",
+                url: "/Requisition/SetProduct",
+                data: { productId: productId },
+                success: function (msg) {
+                    $('#ProductCode').val('');
+                    $('#ProductName').val('');
+                    $('#StandardOutput').val('');
+                    $('#BatchSize').val('');
+                    $('#BOMId').val('');
+
+                    for (var i = 0; i < msg.length; i++) {
+                        $('#ProductCode').val(msg[i].ProductCode);
+                        $('#ProductName').val(msg[i].ProductName);
+                        $('#StandardOutput').val(msg[i].StandardOutput);
+                        $('#BatchSize').val(msg[i].BatchSize);
+                        $('#MonthlyPlannedQty').val(msg[i].MonthlyPlannedQTY);
+                        var monthlyPlannedPendingQty = msg[i].MonthlyPlannedQTY - msg[i].ProductionQty
+                        $('#MonthlyPlannedPendingQty').val(monthlyPlannedPendingQty);
+                        $('#BOMId').val(msg[i].BOMId);
+                    }
+                },
+                error: function () {
+                    $('#ProductCode').val('');
+                    $('#ProductName').val('');
+                    $('#StandardOutput').val('');
+                    $('#BatchSize').val('');
+                    $('#MonthlyPlannedQty').val();
+                    $('#MonthlyPlannedPendingQty').val();
+                    $('#BOMId').val('');
+                }
+            });
+            var extOfRequisition = $('#ExtOfRequisitionNo').val();
+            if (extOfRequisition.length<=0){
+                GetBOMDetails(productId);
+            }
+        }
+    });
+
+    $('#NumberOfBatch').on('change', function () {
+        var productId = $('#ProductCode').val();
+        var extOfRequisition = $('#ExtOfRequisitionNo').val();
+        if (extOfRequisition.length<=0){
+            if (productId.length > 0) {
+                GetBOMDetails(productId);
+            }
+        }
+    });
+
+    function GetBOMDetails(productId) {
+        var noOfBatch = $('#NumberOfBatch').val();
+        $.ajax({
+            type: "POST",
+            url: "/Requisition/GetBOMDetail",
+            data: { productId: productId, noOfBatch: noOfBatch },
+            success: function (result) {
+                $('#tblReqBOMDtl').empty(); //Clear table body
+                var table = $("#htReqMaterialDetail tbody");
+                $.each(result, function (idx, elem) {
+
+                    var index = $("#tblReqBOMDtl").children("tr").length;
+                    var indexCell = "<td style='display:none'><input name='tblRequisitionDetail.Index' type='hidden' value='" + index + "' /></td>";
+                    var materialCodeCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_MaterialCode' name='tblRequisitionDetail[" + index + "].MaterialCode' type='text' value='" + elem.MaterialCode + "' /></td>";
+                    var materialNameCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_MaterialName' name='tblRequisitionDetail[" + index + "].MaterialName' type='text' value='" + elem.MaterialName + "' /></td>";
+                    var unitCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_Unit' name='tblRequisitionDetail[" + index + "].Unit' type='text' value='" + elem.Unit + "' /></td>";
+                    var standardRecipeQtyCell = "<td><input class='calStdRecipe nothing' style='text-align:right; width:100%; background-color: #ffe6e6;' readonly id='tblRequisitionDetail_" + index + "_StandardRecipeQty' name='tblRequisitionDetail[" + index + "].StandardRecipeQty' type='text' value='" + elem.StandardRecipeQty + "' /></td>";
+                    var floorStockCell = "<td><input class='calFloorStock nothing' style='text-align:right; width:100%; background-color: #ffe6e6;' readonly id='tblRequisitionDetail_" + index + "_FloorStock' name='tblRequisitionDetail[" + index + "].FloorStock' type='text' value='" + elem.FloorStock + "' /></td>";
+                    var availableStockCell = "<td><input class = 'nothing' style='text-align:right; width:80%; background-color: #ffe6e6;' readonly id='tblRequisitionDetail_" + index + "_AvailableStock' name='tblRequisitionDetail[" + index + "].AvailableStock' type='text' value='" + elem.AvailableStock + "' /></td>";
+                    var requiredQtyCell = "<td><input class='calTotalReq' style='text-align:right; width:100%'  id='tblRequisitionDetail_" + index + "_RequiredQty' name='tblRequisitionDetail[" + index + "].RequiredQty' type='text' value='" + elem.RequiredQty + "' /></td>";
+                    
+                    var removeCell = "<td><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
+
+                    var newRow = "<tr id='trtbReqBOMDtl" + index + "'>" + indexCell + materialCodeCell + materialNameCell + unitCell + standardRecipeQtyCell + floorStockCell + availableStockCell + requiredQtyCell + "</tr>";
+                    table.append(newRow);
+
+                });
+
+            },
+            error: function () {
+                //$('#RequisitionNo').val('');
+            }
+        });
+    }
+
+    $('#btnSearchProductByKey').on('click', function () {
+        var searchKey = $('#searchKey').val();
+        if (searchKey != '') {
+            $.ajax({
+                type: "POST",
+                url: "/Requisition/SearchProductByKey",
+                data: { searchKey: searchKey },
+                success: function (msg) {
+                    $(".js_tbl_body").empty();
+                    var tr = '';
+                    for (var i = 0; i < msg.length; i++) {
+                        tr = $('<tr/>');
+                        @*<td style="display:none"><input name='tblProductDetail.Index' type="hidden" value=@index /></td>*@
+                        tr.append("<td>" + '<input name="ProductCode" type="radio" value="' + msg[i].ProductCode + '"></label>' + "</td>");
+                        tr.append("<td>" + msg[i].ProductCode + "</td>");
+                        tr.append("<td>" + msg[i].ProductName + "</td>");
+                        $('.js_tbl_body').append(tr);
+                    }
+                },
+                error: function () {
+                    //$('#RequisitionNo').val('');
+                }
+            });
+        }
+    });
+
+    function removeRowItem(id) {
+        var controlToBeRemoved = "#trtbReqBOMDtl" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+</script>

@@ -1,0 +1,112 @@
+﻿@model LILI_IMS.Models.TblShiftSetup
+
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+
+<section class="content-header">
+    @*<h1>
+            Shift
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Shift Setup</li>
+        <li class="active">Update Shift</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" asp-controller="Shift" method="post" asp-action="UpdateShift">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Shift Code</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" asp-for="ShiftCode" placeholder="Name" readonly value="@Model.ShiftCode">
+                        <span asp-validation-for="ShiftCode"></span>
+
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Shift Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" asp-for="ShiftName" placeholder="EmpId" value="@Model.ShiftName">
+                        <span asp-validation-for="ShiftName"></span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Standard Shift Hour</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" asp-for="StandardShiftHour" placeholder="Standard Shift Hour" value="@Model.StandardShiftHour" onkeypress='return isNumberKey(event)'>
+                        <span asp-validation-for="StandardShiftHour"></span>
+                    </div>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Planned Down Change Time</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" asp-for="PlannedDownChangeTime" placeholder="Planned Down Change Time" value="@Model.PlannedDownChangeTime" onkeypress='return isNumberKey(event)'>
+                        <span asp-validation-for="PlannedDownChangeTime"></span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Productive Shift Hour</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" asp-for="ProductiveShiftHour" placeholder="Standard Shift Hour" value="@Model.ProductiveShiftHour" onkeypress='return isNumberKey(event)'>
+                        <span asp-validation-for="ProductiveShiftHour"></span>
+                    </div>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Comments</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" asp-for="Comments" placeholder="Comments" value="@Model.Comments">
+                        <span asp-validation-for="Comments"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+
+                   
+                        <label for="inputEmail3" class="col-sm-2 control-label">Shift Start Time</label>
+                        <div class="col-sm-4">
+                            <input type="time" asp-for="ShiftStartTime" class="form-control" placeholder="ShiftStartTime">
+                        </div>
+                   
+
+                 
+                        <label for="inputEmail3" class="col-sm-2 control-label">Shift End Time</label>
+                        <div class="col-sm-4">
+                            <input type="time" asp-for="ShiftEndTime" class="form-control" placeholder="ShiftEndTime">
+                        </div>
+                   
+
+                </div>
+
+
+
+                <input type="hidden" name="Id" value="@Model.Id" />
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/Shift/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-info pull-right">Update</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+    <!-- /.box -->
+</section>
+
+<script type="text/javascript">
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode != 46 && (charCode < 48 || charCode > 57)))
+            return false;
+        return true;
+    }
+
+</script>

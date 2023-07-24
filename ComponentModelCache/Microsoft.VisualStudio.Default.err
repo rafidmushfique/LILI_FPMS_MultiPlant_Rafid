@@ -1,0 +1,19 @@
+----- CompositionError level 1 ------
+Microsoft.CodeAnalysis.Editor.TypeScript.ScriptContexts.DefaultTypeScriptWorkspace.ctor(typeScriptWorkspaceCore): expected exactly 1 export matching constraints:
+    Contract name: Microsoft.CodeAnalysis.Editor.TypeScript.ScriptContexts.ITypeScriptWorkspaceCore
+    TypeIdentityName: Microsoft.CodeAnalysis.Editor.TypeScript.ScriptContexts.ITypeScriptWorkspaceCore
+but found 0.
+   part definition Microsoft.CodeAnalysis.Editor.TypeScript.ScriptContexts.DefaultTypeScriptWorkspace
+
+Microsoft.VisualStudio.Web.Editors.Razor.TagHelpers.TagHelperElementCompletionProvider.TagHelperCompletionService: expected exactly 1 export matching constraints:
+    Contract name: Microsoft.VisualStudio.Editor.Razor.TagHelperCompletionService
+    TypeIdentityName: Microsoft.VisualStudio.Editor.Razor.TagHelperCompletionService
+but found 0.
+   part definition Microsoft.VisualStudio.Web.Editors.Razor.TagHelpers.TagHelperElementCompletionProvider
+
+Microsoft.VisualStudio.Web.Editors.Razor.TagHelpers.TagHelperHtmlTagBehaviorProvider.TagHelperFactsService: expected exactly 1 export matching constraints:
+    Contract name: Microsoft.VisualStudio.Editor.Razor.TagHelperFactsService
+    TypeIdentityName: Microsoft.VisualStudio.Editor.Razor.TagHelperFactsService
+but found 0.
+   part definition Microsoft.VisualStudio.Web.Editors.Razor.TagHelpers.TagHelperHtmlTagBehaviorProvider
+

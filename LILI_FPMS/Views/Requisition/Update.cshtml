@@ -1,0 +1,268 @@
+﻿@model LILI_IMS.Models.TblRequisition
+
+
+@*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+
+<section class="content-header">
+    @*<h1>
+            Requisition
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Requisition</li>
+        <li class="active">Update Requisition</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+        @*<div class="box-header with-border">
+            <h3 class="box-title">Update Requisition</h3>
+        </div>*@
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" asp-controller="Requisition" method="post" asp-action="UpdateRequisition">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Requisition No.</label>
+                    <div class="col-sm-2">
+                        <input type="text" asp-for="RequisitionNo" class="form-control" placeholder="Requisition No." readonly="readonly" value="@Model.RequisitionNo">
+                        <span asp-validation-for="RequisitionNo"></span>
+                    </div>
+                    <label for="inputEmail3" class="col-sm-1 control-label">Ext. Of Req.</label>
+                    <div class="col-sm-1">
+                        <input type="text" asp-for="ExtOfRequisitionNo" class="form-control" placeholder="Ext. Of Requisition" readonly="readonly">
+                        <span asp-validation-for="ExtOfRequisitionNo"></span>
+                    </div>
+
+                    <label asp-for="RequisitionDate" class="col-sm-2 control-label">Requisition Date</label>
+                    <div class='col-sm-3 input-group date' id='RequisitionDate' style="padding-left:15px;">
+                        <input asp-for="RequisitionDate" type='text' class="form-control" />
+                        <span asp-validation-for="RequisitionDate" class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    @*<label for="inputEmail3" class="col-sm-2 control-label">Batch No.</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="BatchNo" class="form-control" placeholder="Batch No." value="@Model.BatchNo">
+                        <span asp-validation-for="BatchNo"></span>
+                    </div>*@
+
+                    @*<label for="inputEmail3" class="col-sm-2 control-label">Number of Batch</label>*@
+                    <label for="inputEmail3" class="col-sm-2 control-label">No. Of Batch</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="NumberOfBatch" class="form-control" placeholder="Number of Batch" value="@Model.NumberOfBatch">
+                        <span asp-validation-for="NumberOfBatch"></span>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">BOM Id</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="BOMId" class="form-control" readonly="readonly">
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Code</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="ProductCode" class="form-control" placeholder="Product Code" readonly="readonly" value="@Model.ProductCode">
+                        <span asp-validation-for="ProductCode"></span>
+                    </div>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="ProductName" class="form-control" placeholder="Product Name" readonly="readonly" value="@Model.ProductName">
+                        <span asp-validation-for="ProductName"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Standard Output</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="StandardOutput" class="form-control" readonly="readonly" value="@Model.StandardOutput">
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Batch Size</label>
+                    <div class="col-sm-4">
+                        <input type="text" asp-for="BatchSize" class="form-control" readonly="readonly" value="@Model.BatchSize">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Comments" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <input type="text" asp-for="Comments" class="form-control" placeholder="Comments" value="@Model.Comments">
+                    </div>
+                </div>
+
+
+
+
+
+
+
+                <div style="border:1px solid #e5dbff; padding:10px;">
+                    <!--<div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Experties Id</label>
+                        <div class="col-sm-2">
+                            <input type="text" id="ExpertiesId" class="form-control" placeholder="Experties Id">
+                        </div>
+                        <div class="col-sm-2">-->
+                            <!-- Button trigger modal -->
+                            <!--<button type="button" class="btn btn-primary" id="EditExperties" data-toggle="ajax-modal" data-target="#add-contact" data-url="@Url.Action("Experties")">
+                                Add Experties
+                            </button>
+                        </div>
+                    </div>-->
+
+                    <div style="border:1px solid #e5dbff; padding:10px;">
+                        <div class="box-body">
+                            <div style="border-radius:30px; border:0px solid #ccc; min-width:30%;  overflow:auto;">
+                                <table id="htReqMaterialDetail" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:10%; !important">Material Code</th>
+                                            <th style="width:30%;">Material Name</th>
+                                            <th style="width:10%;">Unit</th>
+                                            <th style="width:10%;">Standard Recipe Quantity</th>
+                                            <th style="width:10%;">Floor Stock</th>
+                                            <th style="width:10%;">Warehouse Stock</th>
+                                            <th style="width:10%;">Required Quantity</th>
+                                            
+                                            @*<th style="width:5%;">Action</th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblReqBOMDtl" class="js_tblBOMDtl_body">
+                                        @{
+                                            int i = 0;
+                                            foreach (var item in Model.TblRequisitionDetail)
+                                            {
+                                                var index = i;
+                                                    <tr>
+                                                        <td style="display:none"><input name='TblRfqitemDetail.Index' type="hidden" value=@index /></td>
+                                                        <td style="display:none">@Html.EditorFor(modelItem => modelItem.TblRequisitionDetail[i].MaterialCode, new { @id = "MaterialCode_" + i })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].MaterialCode, new { @id = "MaterialCode_" + i })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].MaterialName, new { @id = "MaterialName_" + i })</td>
+                                                        <td>@Html.DisplayFor(modelItem => modelItem.TblRequisitionDetail[i].Unit, new { @id = "Unit_" + i })</td>
+                                                        <td>@Html.EditorFor(modelItem => modelItem.TblRequisitionDetail[i].StandardRecipeQty, new { @id = "StandardRecipeQty_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;background-color: #ffe6e6;", @class = "calStdRecipe nothing", @readonly = "readonly" } })</td>
+                                                        <td>@Html.EditorFor(modelItem => modelItem.TblRequisitionDetail[i].FloorStock, new { @id = "FloorStock_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;background-color: #ffe6e6;", @class = "calFloorStock nothing", @readonly = "readonly" } })</td>
+                                                        <td>@Html.EditorFor(modelItem => modelItem.TblRequisitionDetail[i].AvailableStock, new { @id = "AvailableStock_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;background-color: #ffe6e6;", @class = "calFloorStock nothing", @readonly = "readonly" } })</td>
+                                                        <td>@Html.EditorFor(modelItem => modelItem.TblRequisitionDetail[i].RequiredQty, new { @id = "RequiredQty_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" , @class = "calTotalReq"} })</td>
+
+                                                        @*<td><input type="button" value="Remove"  onClick="$(this).closest('tr').remove();"></td>*@
+                                                    </tr>
+                                                i++;
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="Id" value="@Model.Id" />
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/Requisition/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-info pull-right">Update</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+    <!-- /.box -->
+</section>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#NumberOfBatch').on('change', function () {
+            var productId = $('#ProductCode').val();
+            var extOfRequisition = $('#ExtOfRequisitionNo').val();
+            if (extOfRequisition.length <= 0) {
+                if (productId.length > 0) {
+                    GetBOMDetails(productId);
+                }
+            }
+        });
+
+        function GetBOMDetails(productId) {
+            var noOfBatch = $('#NumberOfBatch').val();
+            $.ajax({
+                type: "POST",
+                url: "/Requisition/GetBOMDetail",
+                data: { productId: productId, noOfBatch: noOfBatch },
+                success: function (result) {
+                    $('#tblReqBOMDtl').empty(); //Clear table body
+                    var table = $("#htReqMaterialDetail tbody");
+                    $.each(result, function (idx, elem) {
+
+                        var index = $("#tblReqBOMDtl").children("tr").length;
+                        var indexCell = "<td style='display:none'><input name='tblRequisitionDetail.Index' type='hidden' value='" + index + "' /></td>";
+                        var materialCodeCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_MaterialCode' name='tblRequisitionDetail[" + index + "].MaterialCode' type='text' value='" + elem.MaterialCode + "' /></td>";
+                        var materialNameCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_MaterialName' name='tblRequisitionDetail[" + index + "].MaterialName' type='text' value='" + elem.MaterialName + "' /></td>";
+                        var unitCell = "<td><input style='width:100%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_Unit' name='tblRequisitionDetail[" + index + "].Unit' type='text' value='" + elem.Unit + "' /></td>";
+                        var standardRecipeQtyCell = "<td><input class='calStdRecipe' style='text-align:right; width:100%'  id='tblRequisitionDetail_" + index + "_StandardRecipeQty' name='tblRequisitionDetail[" + index + "].StandardRecipeQty' type='text' value='" + elem.StandardRecipeQty + "' /></td>";
+                        var floorStockCell = "<td><input class='calFloorStock' style='text-align:right; width:100%'  id='tblRequisitionDetail_" + index + "_FloorStock' name='tblRequisitionDetail[" + index + "].FloorStock' type='text' value='" + elem.FloorStock + "' /></td>";
+                        //var availableStockCell = "<td><input style='text-align:right; width:80%' class='nothing' readonly id='tblRequisitionDetail_" + index + "_AvailableStock' name='tblRequisitionDetail[" + index + "].AvailableStock' type='text' value='" + elem.AvailableStock + "' /></td>";
+                        var availableStockCell = "<td><input style='text-align:right; width:80%' readonly id='tblRequisitionDetail_" + index + "_AvailableStock' name='tblRequisitionDetail[" + index + "].AvailableStock' type='text' value='" + elem.AvailableStock + "' /></td>";
+                        var requiredQtyCell = "<td><input class='calTotalReq' style='text-align:right; width:100%'  id='tblRequisitionDetail_" + index + "_RequiredQty' name='tblRequisitionDetail[" + index + "].RequiredQty' type='text' value='" + elem.RequiredQty + "' /></td>";
+                        
+                        var removeCell = "<td><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
+
+                        var newRow = "<tr id='trtbReqBOMDtl" + index + "'>" + indexCell + materialCodeCell + materialNameCell + unitCell + standardRecipeQtyCell + floorStockCell + availableStockCell + requiredQtyCell + "</tr>";
+                        table.append(newRow);
+
+                    });
+
+                },
+                error: function () {
+                    //$('#RequisitionNo').val('');
+                }
+            });
+        }
+
+
+
+        //$('#htReqMaterialDetail').on('change', 'input', function () {
+        //    var $tr = $(this).closest('tr'); // get tr which contains the input
+        //    var tot = 0; // variable to store sum
+        //    $('.calFloorStock', $tr).each(function () { // iterate over inputs
+        //        /*tot += Number($(this).val()) || 0; */// parse and add value, if NaN then add 0
+        //        alert(Number($('.calFloorStock').val()));
+        //        tot = $('.calStdRecipe').val() - Number($(this).val()) || 0;
+        //    });
+        //    $('.calTotalReq', $tr).val(tot);
+        //});
+
+        //Select all text of input in td, on get focus.
+        $('#htReqMaterialDetail').on('focus', 'input', function () {
+            $("input.calFloorStock").on('focus', function () { $(this).select(); });
+        });
+
+
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode > 31 && (charCode != 46 && (charCode < 48 || charCode > 57)))
+                return false;
+            return true;
+        }
+    });
+
+   
+    $('#NumberOfBatch').on('focus', function () { $(this).select(); });
+
+    
+
+</script>
+

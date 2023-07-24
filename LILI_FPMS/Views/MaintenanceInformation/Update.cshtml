@@ -1,0 +1,118 @@
+﻿@model LILI_IMS.Models.TblMaintenanceInformation
+<div id="modal-placeholder"></div>
+
+
+
+
+
+<section class="content-header">
+
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Maintenance Information Setup</li>
+        <li class="active">Add Maintenance Information</li>
+    </ol>
+</section>
+
+<section class="content container-fluid">
+  
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:0px">
+
+        <form class="form-horizontal" asp-controller="MaintenanceInformation" method="post" asp-action="UpdateMaintenanceInfo">
+
+            <div class="box-body">
+               
+                      <div class="form-group">
+                         <label for="inputEmail3" class="col-sm-2 control-label">Maintenance Code</label>
+                        <div class="col-sm-2">
+                            <input type="text" asp-for="MaintenanceCode" class="form-control" placeholder="Maintenance Code" readonly="readonly">
+                            <span asp-validation-for="MaintenanceCode"></span>
+                        </div>
+                      </div> 
+                       <div class="form-group">
+                         <label for="inputEmail3" class="col-sm-2 control-label">Maintenance Name</label>
+                        <div class="col-sm-2">
+                            <input type="text" asp-for="MaintenanceName" class="form-control" placeholder="Maintenance Name">
+                            <span asp-validation-for="MaintenanceName"></span>
+                        </div>
+                      </div> 
+                      <div class="form-group">
+                         <label for="inputEmail3" class="col-sm-2 control-label">Maintenance Date</label>
+                        <div class="col-sm-2">
+                            <input type="text" asp-for="MaintenanceDate" class="form-control" placeholder="MM/dd/YYYY" >
+                            <span asp-validation-for="MaintenanceDate"></span>
+                        </div>
+                        </div>
+                        <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Maintenance Hour</label>
+                        <div class="col-sm-2">
+                            <input type="number" asp-for="MaintenanceHour" class="form-control" placeholder="Maintenance Hour" >
+                            <span asp-validation-for="MaintenanceHour"></span>
+                        </div>
+                      </div>      
+
+                      <div class="form-group">
+               
+                        <label for="inputEmail3" class="col-sm-2 control-label">Machine Name</label>
+                        <div class="col-sm-2">
+                            <select asp-for="MachineCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfMachine,"MachineCode","MachineName"))"></select>
+                            <span asp-validation-for="MachineCode"></span>
+                        </div>
+                        </div>
+                        <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Maintenance Type</label>
+                         <div class="col-sm-2">
+                            <select asp-for="MaintenanceType" class="form-control" asp-for="MaintenanceType">
+                                <option vlaue="0">Select Type</option> 
+                                <option vlaue="Schedule">Schedule</option> 
+                                <option vlaue="Corrective">Corrective</option>
+                            </select>
+                            <span asp-validation-for="MaintenanceType"></span>
+                        </div>
+                     </div>
+                    
+                      <div class="form-group">
+                 
+                      </div> 
+
+                      <div class="form-group">
+               
+                        <label asp-for="Description" class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-6">
+                          @*  <input type="text" asp-for="Description" class="form-control" placeholder="Description" >*@
+
+                            <textarea asp-for="Description"  class="form-control" placeholder="Description" style="width: 782px; height: 104px;" ></textarea>
+                            <span asp-validation-for="Description"></span>
+                        </div
+                     </div>
+
+                         <input type="hidden" name="Id" value="@Model.Id" />
+            </div>
+
+
+            <!-- /.box-body -->
+            <div class="box-footer">
+
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/MaintenanceInformation/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-info pull-right">Update</button>
+
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+    <!-- /.box -->
+</section>
+
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.min.js"></script>
+<script src="~/lib/select2/select2.min.js"></script>
+
+<script>
+     $("#MachineCode").select2();
+     $("#MaintenanceDate").datetimepicker();
+</script>
+<link href="~/lib/select2/select2.min.css" rel="stylesheet"/>
+<link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />

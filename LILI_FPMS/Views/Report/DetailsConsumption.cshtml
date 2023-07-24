@@ -1,0 +1,366 @@
+﻿@model IEnumerable<DetailsConsumptionViewModel>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h2>Details Consumption Report</h2>
+            </div>
+            <div class="ibox-content" style="min-height: 6em;padding: .5em 0 0 0;">
+                <form action="/Report/DetailsConsumption" method="get">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Year</label>
+                            <input type="text" id="dcrYear"class="form-control" name="year" value="@ViewBag.Year" />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Month</label>
+                            <input type="text" id="dcrMonth" class="form-control" name="month" value="@ViewBag.Month" />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Code</label>
+                            <input type="text" id="dcrCode" class="form-control" name="code" value="@ViewBag.Code" />
+                        </div>
+                        <div class="col-md-2">
+                            <label>Batch</label>
+                            <input type="text" id="dcrBatch" class="form-control" name="batch" value="@ViewBag.Batch" />
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 2.2em;height: 2.1em;">Search</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <div class="row" style="margin-bottom:5em;">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content" style="width: 100%;display: block;overflow-y: auto;height:75vh">
+                    <table id="myTable" class="table" style="border-left:1px solid black;">
+                        <thead style="border:none;">
+                            <tr style="margin:0;padding:0;border:none;">
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th colspan="5" style="border-left:1px solid white;">Quantity</th>
+                                <th style="border-left:1px solid white;"></th>
+                                <th colspan="5" style="border-left:1px solid white;">Value</th>
+                            </tr>
+                            <tr style="margin:0;padding:0;border:none;">
+                                @*<th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().FGCodeBatchNoAndCategory)</th>*@
+                                @*<th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().FGCodeAndBatchNo)</th>*@
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().FGCode)</th>
+                                <th style="width:500px; border-left:1px solid white;">@Html.LabelFor(m => m.First().FGName)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().PackSize)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().BatchSize)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().BatchNo)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().Category)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().MatCode)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().MaterialName)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().Unit)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().StdConsumptionQty)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().CurrentUseQty)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ProcessLoss)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().Wastage)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().TotalConsumption)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().Rate)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().StandardValue)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().UsedValue)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ProcessLossValue)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().WastageValue)</th>
+                                <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().TotalConsumptionValue)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (DetailsConsumptionViewModel vm in Model)
+                            {
+                                <tr>
+                                    @*<td style="border-left:1px solid #42f5d1;">@vm.FGCodeBatchNoAndCategory</td>*@
+                                    @*<td style="border-left:1px solid #42f5d1;">@vm.FGCodeAndBatchNo</td>*@
+                                    <td style="border-left:1px solid #42f5d1;">@vm.FGCode</td>
+                                    <td style='width:500px;border-left:1px solid #42f5d1;'>@vm.FGName</td>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.PackSize</td>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.BatchSize</td>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.BatchNo</td>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.Category</td>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.MatCode</td>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.MaterialName</td>
+                                    <td style="border-left:1px solid #42f5d1;">@vm.Unit</td>
+                                    @if (!string.IsNullOrEmpty(@vm.StdConsumptionQty))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.StdConsumptionQty).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.StdConsumptionQty</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.CurrentUseQty))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.CurrentUseQty).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.CurrentUseQty</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.ProcessLoss))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.ProcessLoss).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.ProcessLoss</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.Wastage))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.Wastage).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.Wastage</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.TotalConsumption))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.TotalConsumption).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.TotalConsumption</td>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(@vm.Rate))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.Rate).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.Rate</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.StandardValue))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.StandardValue).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.StandardValue</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.UsedValue))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.UsedValue).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.UsedValue</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.ProcessLossValue))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.ProcessLossValue).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.ProcessLossValue</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.WastageValue))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.WastageValue).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.WastageValue</td>
+                                    }
+                                    @if (!string.IsNullOrEmpty(@vm.TotalConsumptionValue))
+                                    {
+
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@Decimal.Parse(@vm.TotalConsumptionValue).ToString("N")</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; border-left:1px solid #42f5d1;">@vm.TotalConsumptionValue</td>
+                                    }
+                                  
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section css
+{
+    <link rel="stylesheet" href="~/lib/datatable/datatable.min.css" />
+
+    <style>
+        table thead tr th {
+            /*background-color: #8b8c9d;*/
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/lib/datatable/datatables.min.js"></script>
+    <script src="~/lib/datatable/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/vfs_fonts.js"></script>
+    <script src="~/lib/table2excel/table2excel.js"></script>
+    <script src="~/lib/table2excel/jquery.table2excel.min.js"></script>
+    <script>
+
+
+        $(document).ready(function () {
+            $('#myTable').DataTable({
+                fixedHeader: true,
+                "scrollY": true,
+                scrollY: 450,
+                paging: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'pdfHtml5'
+                    },
+
+                    //{
+                    //    extend: 'pdfHtml5',
+                    //    orientation: 'landscape',
+                    //    title: function () {
+                    //        return "Details  Consumption"
+                    //    },
+                    //    pageSize: 'LEGAL',
+                    //    text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                    //    titleAttr: 'PDF'
+                    //},
+                    {
+                        text: 'Excel',
+                        action: function (e, dt, node, config) {
+                            expoert2excel();
+                        }
+                    }
+                ],
+
+                //"pageLength": 50
+            });
+        });
+    </script>
+
+    <script>
+        //$(document).ready(function () {
+            
+
+        //    $('#myTable').DataTable({
+        //        fixedHeader: true,
+        //        "scrollX": true,
+        //        "scrollY": 450,
+        //        paging: false,
+        //        dom: 'Bfrtip',
+        //        buttons: [
+        //            'excelHtml5'
+        //        ],
+        //        "pageLength": 50
+        //    });
+
+
+        //    //MergeGridCells();
+
+        //});
+        //function PreviewPdf(){
+        
+        //let pYear= $("#dcrYear").val();
+        //let pMonth = $("#dcrMonth").val();
+        //let pCode= $("#dcrCode").val();
+        //let pBatch= $("#dcrBatch").val();
+        //let parameter = 
+        //    $.ajax(
+        //        {
+        //            type: "POST",
+        //            url: '@Url.Action("Delete", "Report")',
+        //            data: {
+        //                Year:  pYear,
+        //                Month: pMonth,
+        //                Code:  pCode,
+        //                Batch: pBatch
+        //            },
+        //            error: function (e) {
+        //                console.log(e);
+        //            },
+
+        //        });
+
+        //}
+        function MergeGridCells() {
+            var dimension_cells = new Array();
+            var dimension_col = null;
+            var columnCount = $("#myTable tr:first th").length;
+            //for (dimension_col = 0; dimension_col <= columnCount; dimension_col++) {
+            for (dimension_col = 0; dimension_col <= 5; dimension_col++) {
+                // first_instance holds the first instance of identical td
+                var first_instance = null;
+                var rowspan = 1;
+                // iterate through rows
+                $("#myTable").find('tr').each(function () {
+
+                    // find the td of the correct column (determined by the dimension_col set above)
+                    var dimension_td = $(this).find('td:nth-child(' + dimension_col + ')');
+
+
+
+                    if (first_instance === null) {
+                        // must be the first row
+                        first_instance = dimension_td;
+                    } else if (dimension_td.text() === first_instance.text()) {
+                        // the current td is identical to the previous
+                        // remove the current td
+                        // dimension_td.remove();
+                        dimension_td.attr('hidden', true);
+                        ++rowspan;
+                        // increment the rowspan attribute of the first instance
+                        first_instance.attr('rowspan', rowspan);
+                    } else {
+                        // this cell is different from the last
+                        first_instance = dimension_td;
+                        rowspan = 1;
+                    }
+                });
+            }
+        }
+
+
+        function expoert2excel() {
+            //var table2excel = new Table2Excel();
+
+            //var table = document.querySelectorAll("table")[1];
+
+            //table2excel.export(table,"LILI_IMS");
+            $("#myTable").table2excel({
+                preserveColors: false
+            });
+        }
+
+
+
+    </script>
+}

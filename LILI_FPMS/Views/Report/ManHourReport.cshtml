@@ -1,0 +1,166 @@
+﻿@model IEnumerable<ManHourReportViewModel>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h2>Man-Hour Report</h2>
+            </div>
+            <div class="ibox-content" style="min-height: 6em;padding: .5em 0 0 0;">
+                <form action="/Report/ManHourReport" method="get">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Year</label>
+                            <input type="text" class="form-control" name="year" value="@ViewBag.Year" />
+                        </div>
+                        @*<div class="col-md-2">
+                            <label>Month</label>
+                            <input type="text" class="form-control" name="month" value="@ViewBag.Month" />
+                        </div>*@
+
+                        <div class="col-sm-2">
+                            <label>Month</label>
+                            @Html.DropDownList("month", new SelectList(ViewBag.ddlMonth, "Text", "Value"), new { @class = "form-control" })
+                        </div>
+
+
+                        @*<div class="form-group">
+                        <label class="col-sm-2 control-label">Month</label>
+                        <div class="col-sm-4">
+                                <select id="MonthCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfMonth,"MonthCode","MonthName"))"></select>
+                            </div>
+                        </div>*@
+
+                        <div class="col-md-2">
+                            <label>Code</label>
+                            <input type="text" class="form-control" name="code" value="@ViewBag.Code" />
+                        </div>
+
+                        @*<div class="col-md-2">
+                            <label>Batch</label>
+                            <input type="text" class="form-control" name="batch" value="@ViewBag.Batch" />
+                        </div>*@
+                        <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 2.2em;height: 2.1em;">Show Report</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <div class="row" style="margin-bottom:5em;">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content" style="width: 100%;display: block;overflow-y: auto;height:75vh">
+                    <table id="myTable" class="table">
+                        <thead style="border:none;">
+                            @*<tr style="margin:0;padding:0;border:none;">*@
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().RequisitionNo)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ProcessNo)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ItemCode)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().SKUProduct)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().PackSize)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().BatchNo)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().TotalProductionPcs)</th>
+
+
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().StandardMHRM)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().StandardMHPM)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().StandardMHTotal)</th>
+
+
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ActualMHRM)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ActualMHPM)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().ActualMHTotal)</th>
+
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().VarianceRM)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().VariancePM)</th>
+                        <th style="border-left:1px solid white;">@Html.LabelFor(m => m.First().VarianceTotal)</th>
+                            @*</tr>*@
+                        </thead>
+                        <tbody>
+                            @foreach (ManHourReportViewModel vm in Model)
+                            {
+                                <tr>
+                                    <td style="text-align:right;">@vm.RequisitionNo</td>
+                                    <td style="text-align:right;">@vm.ProcessNo</td>
+                                    <td style="text-align:right;">@vm.ItemCode</td>
+                                    <td style="text-align:left;">@vm.SKUProduct</td>
+                                    <td style="text-align:left;">@vm.PackSize</td>
+                                    <td style="text-align:left;">@vm.BatchNo</td>
+                                    <td style="text-align:left;">@vm.TotalProductionPcs</td>
+
+                                    <td style="text-align:right;">@vm.StandardMHRM</td>
+                                    <td style="text-align:right;">@vm.StandardMHPM</td>
+                                    <td style="text-align:right;">@vm.StandardMHTotal</td>
+
+                                    <td style="text-align:right;">@vm.ActualMHRM</td>
+                                    <td style="text-align:right;">@vm.ActualMHPM</td>
+                                    <td style="text-align:right;">@vm.ActualMHTotal</td>
+
+                                    <td style="text-align:right;">@vm.VarianceRM</td>
+                                    <td style="text-align:right;">@vm.VariancePM</td>
+                                    <td style="text-align:right;">@vm.VarianceTotal</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section css
+{
+    <link rel="stylesheet" href="~/lib/datatable/datatable.min.css" />
+
+    <style>
+        table thead tr th {
+            /*background-color: #8b8c9d;*/
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/lib/datatable/datatables.min.js"></script>
+    <script src="~/lib/datatable/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/vfs_fonts.js"></script>
+    <script>
+
+
+        $(document).ready(function () {
+                $('#myTable').DataTable({
+                fixedHeader: true,
+                "scrollY": true,
+                scrollY: 450,
+                paging: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5'
+                    },
+
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        title:function(){
+                         return "Man Hour Report"
+                        },
+                        pageSize: 'LEGAL',
+                        text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                        titleAttr: 'PDF'
+                    }
+                ],
+
+                //"pageLength": 50
+            });
+        });
+    </script>
+
+}

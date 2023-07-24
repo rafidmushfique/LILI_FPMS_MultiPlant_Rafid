@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace LILI_FPMS.Temp_Models
+{
+    public partial class TblManufacturingBreakDownCause
+    {
+        public TblManufacturingBreakDownCause()
+        {
+            TblCodingDetailShift = new HashSet<TblCodingDetailShift>();
+            TblManufacturingShift = new HashSet<TblManufacturingShift>();
+            TblPackingDetailShift = new HashSet<TblPackingDetailShift>();
+        }
+
+        public int BreakeDownCauseId { get; set; }
+        public string BreakeDownCause { get; set; }
+        public long? PlantId { get; set; }
+
+        public ICollection<TblCodingDetailShift> TblCodingDetailShift { get; set; }
+        public ICollection<TblManufacturingShift> TblManufacturingShift { get; set; }
+        public ICollection<TblPackingDetailShift> TblPackingDetailShift { get; set; }
+    }
+}

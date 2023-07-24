@@ -1,0 +1,174 @@
+﻿@model LILI_IMS.Models.QuotationSubmittedReportParameter
+
+
+
+<section class="content-header">
+    @*<h1>
+            Employee
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Report All Submission</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="box-body">
+            <div class="col-xs-12">
+                <div class="col-sm-11">
+                    <form method="post" asp-controller="Report" asp-action ="ReportAllSubmission">
+                        <div class="box-body"  style="padding:20px;">
+                            <div class="form-group">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Quotation No.</label>
+                                <div class="col-sm-4">
+                                    @*<input type="text" asp-for="QuotationNo" class="form-control" placeholder="QuotationNo">*@
+                                    <select asp-for="QuotationNo" class="form-control" asp-items="@(new SelectList(ViewBag.QuotationList,"Rfqno","Rfqno"))">
+                                        <option value="">Please Select</option>
+                                    </select>
+                                    <span asp-validation-for="QuotationNo"></span>
+                                </div>
+
+                                <label for="inputEmail3" class="col-sm-2 control-label">Item Code</label>
+                                <div class="col-sm-4">
+                                    @*<input type="text" asp-for="ItemCode" class="form-control" placeholder="ItemCode">*@
+                                    <select asp-for="ItemCode" class="form-control" asp-items="@(new SelectList(string.Empty,"ItemCode","ItemName"))"></select>
+                                    <span asp-validation-for="ItemCode"></span>
+                                </div>
+                            </div>
+
+                            
+                            <div class="form-group" style="padding-top:40px;">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Participant Code</label>
+                                <div class="col-sm-4">
+                                    <input type="text" asp-for="ParticipantCode" class="form-control" placeholder="ParticipantCode">
+                                    <span asp-validation-for="ParticipantCode"></span>
+                                </div>
+
+                                <label asp-for="hasRate" class="col-sm-2 control-label">Rate Provided</label>
+                                <div class="bootstrap-switch-square col-sm-4">
+                                    <input type="checkbox" class="form-control" asp-for="hasRate" data-toggle="toggle" name="hasRate" id="hasRate" />
+                                </div>
+                            </div>
+
+
+
+                            @*<div class="form-group">
+            <label asp-for="FromDate" class="col-sm-2 control-label"></label>
+            <div class='col-sm-3 input-group date' id='JoiningDate' style="padding-left:15px;">
+                <input asp-for="FromDate" type='text' class="form-control" />
+                <span asp-validation-for="FromDate" class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+            <label asp-for="ToDate" class="col-sm-2 control-label"></label>
+            <div class='col-sm-3 input-group date' id='JoiningDate' style="padding-left:15px;">
+                <input asp-for="ToDate" type='text' class="form-control" />
+                <span asp-validation-for="ToDate" class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>*@
+                        </div>
+
+                            <div class="form-actions no-color">
+                                <div class="col-sm-12">
+                                    @*<div class="col-sm-6">
+                                        <input type="text" name="SearchString" value="@ViewData["currentFilter"]" class="form-control" placeholder="Search for...">
+                                    </div>*@
+                                    <div class="col-sm-12">
+                                        <span class="input-group-btn pull-left">
+                                            @*<input  value="Search" class="btn btn-default" style="background-color:#4d4a45; color:white;" />*@
+                                            <button type="submit" class="btn btn-search" value="Search"><i class="fa fa-dashboard fa-fw"></i>Preview</button>
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        @*<a asp-action="Index">Back to Full List</a>*@
+                                    </div>
+                                </div>
+                            </div>
+                    </form>
+
+                </div>
+            </div>
+            
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <!-- /.row -->
+</section>
+
+<!-- page script -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#QuotationNo").change(function () {
+            
+            var url = '@Url.Content("~/")' + "Report/GetQuotationWiseItemList";
+            var quotationNo = $("#QuotationNo").val();
+            
+            $.getJSON(url, { quotationNo: quotationNo }, function (data) {
+                var items = '';
+                $("#ItemCode").empty();
+                $.each(data, function(i, result){
+                    items += "<option value = '" + result.value + "'>" + result.text + "</option>";
+                });
+                $("#ItemCode").html(items);
+            });
+        });
+    });
+</script>
+
+<style>
+
+    table {
+        border: 1px solid #e3d8c3;
+        border-radius: 13px;
+        border-spacing: 0;
+    }
+
+    html {
+        margin: 40px auto;
+    }
+
+    .btn-search {
+        background: #286090;
+        border-radius: 0;
+        color: #fff;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #1c1c1c;
+    }
+
+        .btn-search:link, .btn-search:visited {
+            color: #fff;
+        }
+
+        .btn-search:active, .btn-search:hover {
+            background: blue;
+            color: #ccc;
+        }
+
+
+
+
+
+    .btn-action {
+        background: #286090;
+        border-radius: 0;
+        color: #fff;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #1c1c1c;
+    }
+
+        .btn-action:link, .btn-search:visited {
+            color: #fff;
+        }
+
+        .btn-action:active, .btn-search:hover {
+            background: blue;
+            color: #ccc;
+        }
+</style>
+
+

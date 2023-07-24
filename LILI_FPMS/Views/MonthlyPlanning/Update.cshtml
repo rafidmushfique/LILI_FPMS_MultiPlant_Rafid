@@ -1,0 +1,302 @@
+﻿@model LILI_IMS.Models.TblMonthlyPlanning
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
+
+
+
+
+@*<script src="~/lib/JQuery-unobtrusive-Ajax/jquery-ajax-unobtrusive-master/src/jquery.unobtrusive-ajax.js"></script>*@
+
+<!-- Modal placeholder -->
+<div id="modal-placeholder"></div>
+
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    @*<h1>
+            Employee
+        </h1>*@
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Monthly plan</li>
+        <li class="active">Update plan</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content container-fluid">
+    <!-- Horizontal Form -->
+    <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
+        @*<div class="box-header with-border">
+                <h3 class="box-title">Add Employee</h3>
+            </div>*@
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" asp-controller="MonthlyPlanning" method="post" asp-action="UpdatePlan">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">PlanningNo</label>
+                    <div class="col-sm-10">
+                        <input type="text" asp-for="PlanningNo" class="form-control" placeholder="PlanningNo" value="@Model.PlanningNo" readonly>
+                        <span asp-validation-for="PlanningNo"></span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label asp-for="Year" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-4">
+                        @Html.DropDownList("Year", new SelectList(ViewBag.ddlYear, "Text", "Value"), new { @class = "form-control" })
+                    </div>
+                    <label asp-for="Month" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-4">
+                        @Html.DropDownList("Month", new SelectList(ViewBag.ddlMonth, "Text", "Value"), new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Comments" class="col-sm-2 control-label">Comments</label>
+                    <div class="col-sm-10">
+                        <textarea type="text" asp-for="Comments" class="form-control" placeholder="Comments" rows="1"></textarea>
+                        <span asp-validation-for="Comments"></span>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Code</label>
+                    <div class="col-sm-2">
+                        <input type="text" Id="ProductCode" class="form-control" placeholder="Product Code" readonly>
+                    </div>
+                    <div class="col-sm-2 controls">
+                        <button type="button" class="btn btn-info" data-toggle="ajax-modal" data-target="#add-product" data-url="@Url.Action("addProduct")">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Product Name</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="ProductName" class="form-control" placeholder="Product Name" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Actual Forecast</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="ActualForecast" class="form-control" placeholder="Actual Forecast" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Reviewed Forecast</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="ReviewedForecast" class="form-control" placeholder="Reviewed Forecast" onkeypress='return isNumberKey(event)'>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Opening Stock</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="OpeningStock" class="form-control" placeholder="Opening Stock" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Production Requirement</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="ProductionRequirement" class="form-control" placeholder="Production Requirement" onkeypress='return isNumberKey(event)'>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Plan Qty</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="PlanQty" class="form-control" placeholder="PlanQty" onkeypress='return isNumberKey(event)'>
+                    </div>
+
+                    <label for="inputEmail3" class="col-sm-2 control-label">Revised plan Qty</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="RevisedPlanQty" class="form-control" placeholder="Revised plan Qty" onkeypress='return isNumberKey(event)'>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Closing</label>
+                    <div class="col-sm-4">
+                        <input type="text" Id="Closing" class="form-control" placeholder="Closing" onkeypress='return isNumberKey(event)'>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Comments</label>
+                    <div class="col-sm-10">
+                        <textarea type="text" id="Comments_detail" class="form-control" placeholder="Comments" rows="1"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <a class="btn btn-primary" onclick="addNewRowToFgGrid()">Add product to grid</a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div style="border-radius:30px; border:0px solid #ccc; min-width:30%;  overflow:hidden;">
+                        <table id="tblProductDetail" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                   
+                                    <th>FG Code</th>
+                                    <th>FG Name</th>
+                                    <th>Actual Forecast</th>
+                                    <th>Reviewed Forecast</th>
+                                    <th>Opening Stock</th>
+                                    <th>Production Requirement</th>
+                                    <th>Plan Quantity</th>
+                                    <th>Revised Plan Quantity</th>
+                                    <th>Closing</th>
+                                    <th>Comments</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblFGGrid">
+                                @{ int i = 0;
+                                    foreach (var item in Model.TblMonthlyPlanningDetail.ToList())
+                                    {
+                                        var index = i;
+                                            <tr>
+                                                <td style="display:none"><input name='TblMonthlyPlanningDetail.Index' type="hidden" value=@index /></td>
+                                                <td style="display:none">@Html.DisplayFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].Id, new { @id = "Id_" + i, @readonly = "readonly" })</td>
+                                                <td style="display:none">@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].Fgcode, new { @id = "Fgcode_" + i })</td>
+                                                <td>@Html.DisplayFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].Fgcode, new { @id = "Fgcode_" + i })</td>
+                                                <td>@Html.DisplayFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].FgName, new { @id = "FgName_" + i })</td>
+                                            <td style="text-align:right;">@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].ActualForecast, new { @id = "ActualForecast_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                            <td style="text-align:right;">@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].ReviewedForecast, new { @id = "ReviewedForecast_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                            <td style="text-align:right;">@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].OpeningStock, new { @id = "OpeningStock_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                            <td style="text-align:right;">@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].ProductionRequirement, new { @id = "ProductionRequirement_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                                <td style="text-align:right;">@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].PlanQty, new { @id = "PlanQty_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                                <td style="text-align:right;">@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].RevisedPlanQty, new { @id = "RevisedPlanQty_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                            <td style="text-align:right;">@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].Closing, new { @id = "Closing_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+
+                                                <td>@Html.EditorFor(modelItem => modelItem.TblMonthlyPlanningDetail[i].Comments, new { @id = "Comments_" + i })</td>
+                                                <td><input type="button" value="Remove" onClick="$(this).closest('tr').remove();"></td>
+                                            </tr>
+                                        i++;
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- /.box-body -->
+            <div class="box-footer">
+
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/MonthlyPlanning/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-success pull-right">Update</button>
+
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+    <!-- /.box -->
+</section>
+
+
+
+
+<script type="text/javascript">
+
+    //Add new row with data from textbox
+    function addNewRowToFgGrid() {
+
+        var ProductCode = $("#ProductCode").val();
+        var ProductName = $("#ProductName").val();
+        var ActualForecast = $("#ActualForecast").val();
+        var ReviewedForecast = $("#ReviewedForecast").val();
+        var OpeningStock = $("#OpeningStock").val();
+        var ProductionRequirement = $("#ProductionRequirement").val();
+        var PlanQty = $("#PlanQty").val();
+        var RevisedPlanQty = $("#RevisedPlanQty").val();
+        var Closing = $("#Closing").val();
+        var Comments = $("#Comments_detail").val();
+
+            @{
+                Model.TblMonthlyPlanningDetail.Add(new TblMonthlyPlanningDetail());
+            }
+
+        var index = $("#tblFGGrid").children("tr").length;
+
+        var indexCell = "<td style='display:none'><input name='TblMonthlyPlanningDetail.Index' type='hidden' value='" + index + "' /></td>";
+        var idCell = "<td style='display:none'><input readonly id='TblMonthlyPlanningDetail_" + index + "_Id' name='TblMonthlyPlanningDetail[" + index + "].Id' type='text' value='" + parseInt(index+1) +  "' /></td>";
+        var FgcodeCell = "<td><input readonly id='TblMonthlyPlanningDetail_" + index + "_Fgcode' name='TblMonthlyPlanningDetail[" + index + "].Fgcode' type='text' value='" + ProductCode +"' /></td>";
+        var FgNameCell = "<td><input readonly id='TblMonthlyPlanningDetail_" + index + "_FgName' name='TblMonthlyPlanningDetail[" + index + "].FgName' type='text' value='" + ProductName +"' /></td>";
+
+        var ActualForecastCell = "<td><input style='text-align:right; width:100%' id='TblMonthlyPlanningDetail_" + index + "_ActualForecast' name='TblMonthlyPlanningDetail[" + index + "].ActualForecast' type='text' value='" + ActualForecast + "' /></td>";
+        var ReviewedForecastCell = "<td><input style='text-align:right; width:100%' id='TblMonthlyPlanningDetail_" + index + "_ReviewedForecast' name='TblMonthlyPlanningDetail[" + index + "].ReviewedForecast' type='text' value='" + ReviewedForecast + "' /></td>";
+        var OpeningStockCell = "<td><input style='text-align:right; width:100%' id='TblMonthlyPlanningDetail_" + index + "_OpeningStock' name='TblMonthlyPlanningDetail[" + index + "].OpeningStock' type='text' value='" + OpeningStock + "' /></td>";
+        var ProductionRequirementCell = "<td><input style='text-align:right; width:100%' id='TblMonthlyPlanningDetail_" + index + "_ProductionRequirement' name='TblMonthlyPlanningDetail[" + index + "].ProductionRequirement' type='text' value='" + ProductionRequirement + "' /></td>";
+
+        var PlanQtyCell = "<td><input id='TblMonthlyPlanningDetail_" + index + "_PlanQty' name='TblMonthlyPlanningDetail[" + index + "].PlanQty' type='text' value='" + PlanQty +"' /></td>";
+        var RevisedPlanQtyCell = "<td><input id='TblMonthlyPlanningDetail_" + index + "_RevisedPlanQty' name='TblMonthlyPlanningDetail[" + index + "].RevisedPlanQty' type='text' value='" + RevisedPlanQty +"' /></td>";
+        var ClosingCell = "<td><input style='text-align:right; width:100%' id='TblMonthlyPlanningDetail_" + index + "_Closing' name='TblMonthlyPlanningDetail[" + index + "].Closing' type='text' value='" + Closing + "' /></td>";
+        var commentCell = "<td><input id='TblMonthlyPlanningDetail_" + index + "_Comments' name='TblMonthlyPlanningDetail[" + index + "].Comments' type='text' value='" + Comments +"' /></td>";
+
+        var removeCell = "<td><input id='addRow' type='button' value='Remove' onClick = " + "$(this).closest('tr').remove(); /></td>";
+
+        var newRow = "<tr id='trtbEduDtl" + index + "'>" + indexCell + idCell + FgcodeCell + FgNameCell + ActualForecastCell + ReviewedForecastCell
+            + OpeningStockCell + ProductionRequirementCell + PlanQtyCell + RevisedPlanQtyCell + ClosingCell + commentCell + removeCell + "</tr>";
+        $("#tblFGGrid").append(newRow);
+
+        $("#ProductCode").val('');
+        $("#ProductName").val('');
+        $("#ActualForecast").val('');
+        $("#ReviewedForecast").val('');
+        $("#OpeningStock").val('');
+        $("#ProductionRequirement").val('');
+        $("#PlanQty").val('');
+        $("#RevisedPlanQty").val('');
+        $("#Closing").val('');
+        $("#Comments_detail").val('');
+    }
+
+
+
+    function removeRow(id) {
+        var controlToBeRemoved = "#tblFGGrid" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    function removeRowExpert(id) {
+        var controlToBeRemoved = "#tblFGGrid" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+
+    // EXTRACT AND SUBMIT TABLE DATA.
+    function sumbitData() {
+
+        var myTab = document.getElementById('tblProductDetail');
+        var values = new Array();
+
+        // LOOP THROUGH EACH ROW OF THE TABLE.
+        for (row = 1; row < myTab.rows.length - 1; row++) {
+            for (c = 0; c < myTab.rows[row].cells.length; c++) {   // EACH CELL IN A ROW.
+
+                var element = myTab.rows.item(row).cells[c];
+                if (element.childNodes[0].getAttribute('type') == 'text') {
+                    values.push("'" + element.childNodes[0].value + "'");
+                }
+            }
+        }
+        console.log(values);
+    }
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode != 46 && (charCode < 48 || charCode > 57)))
+            return false;
+        return true;
+    }
+
+</script>
+

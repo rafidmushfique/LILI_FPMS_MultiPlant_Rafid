@@ -1,0 +1,280 @@
+﻿@model LILI_FPMS.Models.TblProductWiseSectionSetup
+
+<div id="modal-placeholder"></div>
+
+@if (TempData["msg"] != null && TempData["msg"] != "")
+{
+    var str = TempData["msg"].ToString();
+    <div class="myAlert-top alert alert-success">
+     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert">
+                    @TempData["msg"]
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<section class="content-header">
+
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Product Wise Section Setup</li>
+        <li class="active">Add Section to Product</li>
+    </ol>
+</section>
+
+<section class="content container-fluid">
+
+    <div class="card" style="border:1px solid; border-color:cadetblue; padding:1vh">
+
+        <form class="form-horizontal" asp-controller="ProductWiseSectionSetup" method="post" asp-action="UpdateProductWiseSection" onsubmit="return SubmissionCheck()">
+
+
+            <div class="card-body">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Plant id</label>
+                        <div class="col-sm-2">
+                            <input type="hidden" name="Id" value="@Model.Id" />
+                            <input type="text" asp-for="PlantId" id="PlantId" class="form-control" placeholder="Plant Id" readonly="readonly">
+                            <span asp-validation-for="PlantId"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Product Code</label>
+                        <div class="col-sm-2">
+                          
+                            <input type="text" asp-for="ProductCode" id="ProductCode" class="form-control" placeholder="Product Code" readonly="readonly">
+                            <span asp-validation-for="ProductCode"></span>
+                        </div>
+                        <div class="col-sm-1 controls">
+                            <button type="button" class="btn btn-info" data-toggle="ajax-modal" data-target="#add-product" data-url="@Url.Action("addProduct")">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </div>
+                        <label for="inputEmail3" class="col-sm-1 control-label">Product Name</label>
+                        <div class="col-sm-2">
+                            <input type="text" Id="ProductName" asp-for="ProductName" class="form-control" placeholder="Product Name" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label name="Section" class="col-sm-2 control-label">Section</label>
+                        <div class="col-sm-2">
+                            <select name="Section" id="Section" class="form-control">
+                                @foreach (var item in ViewBag.SectionList)
+                                {
+                                    <option value="@item.SectionCode">@item.SectionName</option>
+                                }
+                            </select>
+                            <span for="Section"></span>
+                        </div>
+
+                        <label name="Sequence" class="col-sm-1 col-sm-offset-1 control-label">Sequence</label>
+                        <div class="col-sm-2">
+                            <select name="Sequence" id="Sequence" class="form-control">
+                                @foreach (var item in ViewBag.SelectionList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <span for="Section"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                    </div>
+
+                    <div class="form-group">
+                        <label name="Section" class="col-sm-1 col-sm-offset-1 control-label">Comments</label>
+                        <div class="col-sm-2">
+                            <textarea class="form-control" rows="5" name="Comments" id="comments" style="width:90rem"></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-mini btn-primary" onclick="AddNewRow()">Add</button>
+                        </div>
+
+                        <div class="col-sm-0 col-sm-offset-0 ">
+                            <input type="checkbox" name="isqcrequired" id="isQCrequired" >
+                            <input type="hidden" id="checkboxValue" value="yes">
+                            <label for=""> QC Required</label><br>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="card" style="border:1px solid; border-color:cadetblue; padding:0.5vh; margin:0.5vh">
+
+                            <table class="table table-bordered">
+                                <thead>
+                                <th style="width:7%;display:none">Prdouct Code</th>
+                                <th style="width:15%;display:none">Prdouct Name</th>
+                                <th style="width:7%">Section</th>
+                        
+                                <th style="width:7%">Sequence</th>
+                                <th style="width:7%">QC Required</th>
+                                <th style="width:20%">Comments</th>
+                                <th style="width:7%">Action</th>
+                        </thead>
+                            <tbody id="tblProductWiseSectionSetupDetials">
+                                    @{
+                                        int i = 0;
+                                 
+
+                                        @foreach(var item in Model.tblProductWiseSectionSetupDetails)
+                                        {
+                                            var index = i;
+                                            <tr>
+                                                <td style="display:none">@Model.ProductCode</td>
+                                                <td style="display:none">@Model.ProductName</td>
+                                             
+                                                <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].Section,      new { @id ="TblProductWiseSectionSetupDetails"+@index +"_Section", @readonly = "readonly", @class="nothing"})</td>
+                                                <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].Sequence,     new { @id ="TblProductWiseSectionSetupDetails"+@index +"_Sequence", @readonly = "readonly", @class="nothing"})</td>
+                                                <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].IsQcrequired, new { @id ="TblProductWiseSectionSetupDetails"+@index +"_IsQcrequired", @readonly = "readonly", @class="nothing"})</td>
+                                                <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].Comments,     new { @id ="TblProductWiseSectionSetupDetails"+@index +"_IsQcrequired", @readonly = "readonly", @class="nothing"})</td>
+
+                                                
+                                            @*     
+                                            <td style='text-align:right;'><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails"@index"_Sequence' name='TblProductWiseSectionSetupDetails[" @index  "].Sequence' type='text' value="@item.Sequence"/></td>
+                                            <td style='text-align:right;'><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails"@index"_IsQcrequired' name='TblProductWiseSectionSetupDetails["  @index  "].IsQcrequired' type='text' value="@item.IsQcrequired"/></td>
+                                            <td style='text-align:right;'><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails"@index"_Comments' name='TblProductWiseSectionSetupDetails["  @index  "].Comments' type='text' value="@item.Comments"/></td>
+                                            *@
+                                                <td><input id='remvRow' type='button' class='btn btn-sm btn-danger' value='X' onclick="$(this).closest(' tr').remove();" /> </td>
+                                            
+                                            </tr>
+                                            i++;
+                                        }
+                                    }
+                        </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+
+
+
+            </div>
+
+            <div class="card-footer" style="">
+
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/ProductWiseSectionSetup/Index")'>Cancel</a>
+
+
+                <button type="submit" class="btn btn-mini btn-primary pull-right">Update</button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$(".select2").select2();
+        $("#isQCrequired ").attr("Checked", true);
+       
+    });
+
+
+    $("#isQCrequired ").change(function () {
+        if ($(this).is(':checked')) {
+            $("#checkboxValue").val("yes");
+            console.log($("#checkboxValue").val());
+        }
+        else {
+            $("#checkboxValue").val("no");
+            console.log($("#checkboxValue").val());
+        }
+    });
+    function AddNewRow() {
+        var productCode = $("#ProductCode").val();
+        var productName = $("#ProductName").val();
+        var section = $("#Section").val();
+        var sequence = $("#Sequence").val();
+        var isQcrequired = $("#checkboxValue").val();
+        var comment = $("#comments").val();
+    @{
+        Model.tblProductWiseSectionSetupDetails.Add(new LILI_FPMS.Models.TblProductWiseSectionSetupDetail());
+    }
+
+                    var index = $("#tblProductWiseSectionSetupDetials").children("tr").length;
+
+        //var indexCell = "<td style='display:none'><input name='TblProductWiseSectionSetupDetails.Index' type='hidden' value='" + index + "' /></td>";
+        //var idCell = "<td style='display:none'> <input id='TblProductWiseSectionSetupDetails" + index + "_Id' name='TblProductWiseSectionSetupDetails[" + index + "].Id' type='text' value='" + parseInt(index + 1) + "' /></td>";
+        var productCodeCell = "<td style='display:none'><input style='border:none' type='text' value='" + productCode + "' readonly/></td>";
+        var productNameCell = "<td style='display:none'><input style='border:none' type='text' value='" + productName + "' readonly/></td>";
+
+        var sectionCell =     "<td><input style=' width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Section' name='TblProductWiseSectionSetupDetails[" + index + "].Section' type='text' value='" + section + "' /></td>";
+        var sequnceCell = "<td><input style=' width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Sequence' name='TblProductWiseSectionSetupDetails[" + index + "].Sequence' type='text' value='" + sequence + "' /></td>";
+        var isQcrequiredCell = "<td><input style=' width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_IsQcrequired' name='TblProductWiseSectionSetupDetails[" + index + "].IsQcrequired' type='text' value='" + isQcrequired + "' /></td>";
+        var commentsCell = "<td><input style=' width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Comments' name='TblProductWiseSectionSetupDetails[" + index + "].Comments' type='text' value='" + comment + "' /></td>";
+        var removeCell =    "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeProductWiseSectionSetupDetial(" + index + ");' /></td>";
+
+        var newRow = "<tr id='tblProductWiseSectionSetupDetials" + index + "'>" + productCodeCell + productNameCell + sectionCell + sequnceCell + isQcrequiredCell + commentsCell + removeCell + "</tr>";
+
+        $("#tblProductWiseSectionSetupDetials").append(newRow);
+    }
+    function removeProductWiseSectionSetupDetial(id) {
+        var controlToBeRemoved = "#tblProductWiseSectionSetupDetials" + id;
+        //alert(controlToBeRemoved);
+        $(controlToBeRemoved).remove();
+    }
+    function removeDataFromDb(id)
+    {
+       
+            var r = confirm("Are you sure you want to Delete?");
+            if (r == true) {
+
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: '@Url.Action("DeleteDetail", "ProductWiseSectionSetup")',
+                        data: {
+                            id: id
+                        },
+                        error: function (result) {
+                            alert("error");
+                        },
+                        success: function (result) {
+                            if (result == true) {
+                                var baseUrl = "/Index";
+                                alert("Delete Succesful!s");
+                                window.location.reload();
+                            }
+                            else {
+                                alert("Can't delete, May have data dependency !");
+                            }
+
+                        }
+                    });
+            }
+       
+    }
+
+    function SubmissionCheck()
+    {
+        if ($("#tblProductWiseSectionSetupDetials").children("tr").length<1)
+        {
+         if(confirm("Can not Submit Empty Setup")){
+           window.location="";
+         }
+
+
+         return false;
+        }
+    }
+</script>
+
+
+
