@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using LILI_FPMS;
+﻿using LILI_FPMS;
 using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using NPOI.SS.Formula.Functions;
-using NPOI.SS.UserModel;
-using Org.BouncyCastle.Ocsp;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LILI_IMS.Controllers
 {
-
     [Authorize]
     public class QCController : Controller
     {
         private readonly dbFormulationProductionSystemContext _context;
         private string SECTION_CODE;
+
         public QCController(dbFormulationProductionSystemContext context)
         {
             _context = context;
@@ -49,30 +43,31 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            //var plans = from s in eFTestContext.TblMonthlyPlanning 
+            //var plans = from s in eFTestContext.TblMonthlyPlanning
             //            from d in eFTestContext.TblMonthlyPlanningDetail
             //            where (s.PlanningNo == d.PlanningNo)
             //            select new {s.PlanningNo,s.Year,s.Month,d.Fgcode};
 
-            var qc_data = from master in _context.TblQc.Where(master=>master.PlantId == GlobalVariable.PlantId)
+            var qc_data = from master in _context.TblQc.Where(master => master.PlantId == GlobalVariable.PlantId)
                           from requisition in _context.TblRequisition.Where(requisition => requisition.PlantId == GlobalVariable.PlantId)
                           from process in _context.TblProductionProcess.Where(process => process.PlantId == GlobalVariable.PlantId)
-                          from bom in _context.View_BOM.Where(bom=> bom.IsActive=="Y")
+                          from bom in _context.View_BOM.Where(bom => bom.IsActive == "Y")
                           from p in _context.View_Product
-                          where(master.RequisitionNo == requisition.RequisitionNo && master.ProcessNo == process.ProcessNo && requisition.ProductCode == bom.ProductCode 
-                          && bom.ProductCode== p.ProductCode)
-                          select new TblQc {
+                          where (master.RequisitionNo == requisition.RequisitionNo && master.ProcessNo == process.ProcessNo && requisition.ProductCode == bom.ProductCode
+                          && bom.ProductCode == p.ProductCode)
+                          select new TblQc
+                          {
                               Id = master.Id,
                               ProductCode = requisition.ProductCode,
                               ProductName = p.ProductName,
                               Qcno = master.Qcno,
                               Qcdate = master.Qcdate,
-                              RequisitionNo =  master.RequisitionNo,
-                              BatchNo =  process.BatchNo,
-                              ProcessNo =  master.ProcessNo,
-                              Qcqty =  master.Qcqty,
-                              QcpassQty =  master.QcpassQty,
-                              QcrejectQty =  master.QcrejectQty
+                              RequisitionNo = master.RequisitionNo,
+                              BatchNo = process.BatchNo,
+                              ProcessNo = master.ProcessNo,
+                              Qcqty = master.Qcqty,
+                              QcpassQty = master.QcpassQty,
+                              QcrejectQty = master.QcrejectQty
                           };
 
             if (!String.IsNullOrEmpty(searchString))
@@ -85,6 +80,7 @@ namespace LILI_IMS.Controllers
                 case "name_desc":
                     qc_data = qc_data.OrderByDescending(s => s.Qcno);
                     break;
+
                 case "empId_desc":
                     qc_data = qc_data.OrderByDescending(s => s.Qcno);
                     break;
@@ -100,16 +96,14 @@ namespace LILI_IMS.Controllers
             }
             int pageSize = 7;
 
-
             return View(await PaginatedList<TblQc>.CreateAsync(qc_data.AsNoTracking(), pageNumber ?? 1, pageSize));
-
         }
 
         public ActionResult Create()
         {
             TblQc entities = new TblQc();
 
-            List<SelectListItem> Year = new List<SelectListItem>();           
+            List<SelectListItem> Year = new List<SelectListItem>();
 
             entities.Idate = DateTime.Now;
             entities.Qcdate = DateTime.Now;
@@ -131,7 +125,7 @@ namespace LILI_IMS.Controllers
             //                                     QcparameterActualValue = null,
             //                                     Comments = null
             //                                 }).ToList();
-            List<TblSection> sectionList= new List<TblSection>();
+            List<TblSection> sectionList = new List<TblSection>();
             //sectionList = _context.TblSection.ToList();
             sectionList = (from c in _context.TblSection.Where(c => c.PlantId == GlobalVariable.PlantId).OrderBy(c => c.Id) select c).ToList();
             sectionList.Insert(0, new TblSection { SectionCode = "0", SectionName = "Select Section" });
@@ -141,7 +135,6 @@ namespace LILI_IMS.Controllers
 
         public string GetAutoNumber()
         {
-
             //Generate Requisition No.---------Start
             String sDate = DateTime.Now.ToString();
             DateTime datevalue = (Convert.ToDateTime(sDate.ToString()));
@@ -162,7 +155,6 @@ namespace LILI_IMS.Controllers
             QCNo = "QC-" + yy + mn + maxId;
 
             return QCNo;
-
         }
 
         [HttpPost, ActionName("CreateQC")]
@@ -174,7 +166,6 @@ namespace LILI_IMS.Controllers
             {
                 if (ModelState.IsValid)
                 {
-
                     //var qc_entity = new TblQc
                     //{
                     //    Qcno = qc_data.Qcno,
@@ -191,7 +182,6 @@ namespace LILI_IMS.Controllers
                     //_context.TblQc.Add(qc_entity);
                     //await _context.SaveChangesAsync();
 
-
                     //if (qc_data.TblQcdetails != null)
                     //{
                     //    foreach (var item in qc_data.TblQcdetails.ToList())
@@ -207,14 +197,12 @@ namespace LILI_IMS.Controllers
                     //await _context.SaveChangesAsync();
                     //TempData["Success"] = "Success message text.";
 
-
                     qc_data.Iuser = User.Identity.Name;
                     qc_data.Idate = DateTime.Now;
                     qc_data.PlantId = GlobalVariable.PlantId;
                     qc_data.Qcno = GetAutoNumber();
                     _context.Add(qc_data);
                     await _context.SaveChangesAsync();
-
                 }
                 else
                 {
@@ -222,31 +210,26 @@ namespace LILI_IMS.Controllers
                     return View(qc_data);
                 }
 
-
                 // Update tblFloorStock Table
                 var fgCodeQuery = from p in _context.TblProductionProcess
-                             join r in _context.TblRequisition on p.RequisitionNo equals r.RequisitionNo
-                             where p.ProcessNo == qc_data.ProcessNo
-                             select new { ProductCode  = r.ProductCode };
+                                  join r in _context.TblRequisition on p.RequisitionNo equals r.RequisitionNo
+                                  where p.ProcessNo == qc_data.ProcessNo
+                                  select new { ProductCode = r.ProductCode };
                 string fgCode = fgCodeQuery.FirstOrDefault().ProductCode.ToString();
 
-                var sfgCode = _context.TblProductionProcess.Where(c=>c.ProcessNo==qc_data.ProcessNo).FirstOrDefault().SFGCode;
+                var sfgCode = _context.TblProductionProcess.Where(c => c.ProcessNo == qc_data.ProcessNo).FirstOrDefault().SFGCode;
 
                 if (qc_data.IsSendToFloorStockFG && qc_data.QcpassQty > 0)
                 {
                     UpdateFloorStockFromProductionQC(fgCode.ToString(), qc_data.Qcno, qc_data.QcpassQty);
                 }
 
-                if (qc_data.IsSendToFloorStockSFG && qc_data.SFGQcpassQty>0)
+                if (qc_data.IsSendToFloorStockSFG && qc_data.SFGQcpassQty > 0)
                 {
                     UpdateFloorStockFromProductionQC(sfgCode.ToString(), qc_data.Qcno, qc_data.SFGQcpassQty);
                 }
 
-
                 return RedirectToAction(nameof(Index));
-
-
-
             }
             catch (DbUpdateException ex)
             {
@@ -254,10 +237,6 @@ namespace LILI_IMS.Controllers
                     "Try again, and if the problem persists " +
                     "see your system administrator.");
             }
-
-
-
-            
 
             return RedirectToAction(nameof(Index));
         }
@@ -307,8 +286,8 @@ namespace LILI_IMS.Controllers
             QCModel.Qcdate = dt.Qcdate;
             QCModel.Comments = dt.Comments;
             QCModel.RequisitionNo = dt.RequisitionNo;
-            QCModel.BatchNo = _context.TblProductionProcess.Where(pro => pro.ProcessNo == dt.ProcessNo).FirstOrDefault().BatchNo;            
-            var productCode =  _context.TblRequisition.Where(req => req.RequisitionNo == dt.RequisitionNo).FirstOrDefault().ProductCode;
+            QCModel.BatchNo = _context.TblProductionProcess.Where(pro => pro.ProcessNo == dt.ProcessNo).FirstOrDefault().BatchNo;
+            var productCode = _context.TblRequisition.Where(req => req.RequisitionNo == dt.RequisitionNo).FirstOrDefault().ProductCode;
             QCModel.ProductName = _context.View_Product.Where(req => req.ProductCode == productCode).FirstOrDefault().ProductName;
             QCModel.PackSize = _context.View_Product.Where(req => req.ProductCode == productCode).FirstOrDefault().PackSize;
             QCModel.BatchSize = _context.View_BOM.Where(req => req.ProductCode == productCode).FirstOrDefault().BatchSize;
@@ -327,7 +306,6 @@ namespace LILI_IMS.Controllers
             QCModel.QCReferenceSampleQty = dt.QCReferenceSampleQty;
             QCModel.QCQuarantineQty = dt.QCQuarantineQty;
 
-
             ViewBag.ddlProcessList = new SelectList(_context.TblProductionProcess.Where(c => c.RequisitionNo == dt.RequisitionNo), "ProcessNo", "ProcessNo");
 
             List<TblQcparameterType> typeList = new List<TblQcparameterType>();
@@ -336,33 +314,30 @@ namespace LILI_IMS.Controllers
             typeList.Insert(0, new TblQcparameterType { TypeCode = "0", TypeName = "Select Type" });
             ViewBag.ListOfType = typeList;
 
-
-            var qc_detail =    from master in _context.TblQc
-                               from req in _context.TblRequisition
-                               from detail in _context.TblQcdetails   
-                                from para in _context.TblQcparameter
-                               where (master.RequisitionNo == req.RequisitionNo)
-                                 where (master.Qcno == detail.Qcno)
-                                   where (para.ProductCode == req.ProductCode)
-                                   where (detail.QcparameterCode == para.QcparameterCode)                                 
-                                 where (master.Qcno == dt.Qcno)
-                                 orderby detail.QcparameterCode
-                                 select new TblQcdetails
-                                 {
-                                     Id = detail.Id,
-                                     QcparameterCode = detail.QcparameterCode,
-                                     QcparameterName = para.QcparameterName,
-                                     QcparameterStandardValue = para.QcparameterStandardValue,
-                                     QcparameterActualValue = detail.QcparameterActualValue,
-                                     Comments = detail.Comments
-                                 };
+            var qc_detail = from master in _context.TblQc
+                            from req in _context.TblRequisition
+                            from detail in _context.TblQcdetails
+                            from para in _context.TblQcparameter
+                            where (master.RequisitionNo == req.RequisitionNo)
+                            where (master.Qcno == detail.Qcno)
+                            where (para.ProductCode == req.ProductCode)
+                            where (detail.QcparameterCode == para.QcparameterCode)
+                            where (master.Qcno == dt.Qcno)
+                            orderby detail.QcparameterCode
+                            select new TblQcdetails
+                            {
+                                Id = detail.Id,
+                                QcparameterCode = detail.QcparameterCode,
+                                QcparameterName = para.QcparameterName,
+                                QcparameterStandardValue = para.QcparameterStandardValue,
+                                QcparameterActualValue = detail.QcparameterActualValue,
+                                Comments = detail.Comments
+                            };
 
             QCModel.TblQcdetails = qc_detail.ToList();
 
             return View(QCModel);
-        }        
-
-
+        }
 
         [HttpPost, ActionName("UpdateQC")]
         [ValidateAntiForgeryToken]
@@ -384,11 +359,11 @@ namespace LILI_IMS.Controllers
                 if (await TryUpdateModelAsync<TblQc>(
                     qcdataToUpdate,
                     "",
-                    s => s.Qcno, s => s.Qcdate, s => s.RequisitionNo, s => s.ProcessNo, s => s.Qcqty, s => s.QcpassQty, s => s.QcholdQty, s => s.QcrejectQty, 
-                    s => s.SFGQcqty, s => s.SFGQcpassQty, s => s.SFGQcrejectQty, s => s.Comments, s=>s.FGQCQtyBeforeConversion, s=>s.FGQCQtyConversionFactor,
-                    s => s.QCQuarantineQty, s=>s.IsSendToFloorStockFG, s=> s.IsSendToFloorStockSFG))
+                    s => s.Qcno, s => s.Qcdate, s => s.RequisitionNo, s => s.ProcessNo, s => s.Qcqty, s => s.QcpassQty, s => s.QcholdQty, s => s.QcrejectQty,
+                    s => s.SFGQcqty, s => s.SFGQcpassQty, s => s.SFGQcrejectQty, s => s.Comments, s => s.FGQCQtyBeforeConversion, s => s.FGQCQtyConversionFactor,
+                    s => s.QCQuarantineQty, s => s.IsSendToFloorStockFG, s => s.IsSendToFloorStockSFG))
 
-                _context.TblQcdetails.RemoveRange(_context.TblQcdetails.Where(d => d.Qcno == qc_data.Qcno));
+                    _context.TblQcdetails.RemoveRange(_context.TblQcdetails.Where(d => d.Qcno == qc_data.Qcno));
 
                 if (qc_data.TblQcdetails != null)
                 {
@@ -425,7 +400,6 @@ namespace LILI_IMS.Controllers
                     UpdateFloorStockFromProductionQC(sfgCode.ToString(), qc_data.Qcno, qc_data.SFGQcpassQty);
                 }
 
-
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
@@ -439,10 +413,9 @@ namespace LILI_IMS.Controllers
 
         public IActionResult addRequisition()
         {
-
             //var requisitionModel = new List<TblRequisition>(from c in _context.TblRequisition
             //                                                from p in _context.View_Product
-            //                                                where (c.ProductCode == p.ProductCode && c.ExtOfRequisitionNo == null) 
+            //                                                where (c.ProductCode == p.ProductCode && c.ExtOfRequisitionNo == null)
             //                                                orderby c.RequisitionDate descending
             //                                                select new TblRequisition
             //                                                {
@@ -511,13 +484,14 @@ namespace LILI_IMS.Controllers
             //isCodingDetailVisible = _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalVariable.PlantId).Count() > 0 ?
             //                        _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalVariable.PlantId).FirstOrDefault().Isvisible : 0;
 
-            var model = new List<TblProductionProcess>(from prop in _context.TblProductionProcess where prop.ProcessNo==ProcessNo
+            var model = new List<TblProductionProcess>(from prop in _context.TblProductionProcess
+                                                       where prop.ProcessNo == ProcessNo
                                                        select new TblProductionProcess
                                                        {
-                                                           RequisitionNo= prop.RequisitionNo,
+                                                           RequisitionNo = prop.RequisitionNo,
                                                            ProcessNo = prop.ProcessNo,
                                                            //ProductionQty = isCodingDetailVisible==0? prop.ProductionQty:prop.CodingQty,
-                                                           ProductionQty =  prop.ProductionQty,
+                                                           ProductionQty = prop.ProductionQty,
                                                            SFGProductionQty = prop.SFGProductionQty,
                                                            BatchNo = prop.BatchNo,
                                                            QCReferenceSampleQty = prop.QCReferenceSampleQty,
@@ -526,7 +500,6 @@ namespace LILI_IMS.Controllers
             var sa = new JsonSerializerSettings();
             return Json(model, sa);
         }
-
 
         [HttpPost]
         public JsonResult SetRequisitionInfomation(string RequisitionNo)
@@ -540,20 +513,19 @@ namespace LILI_IMS.Controllers
             if (RequisitionNo != "")
             {
                 var availableFloorStock = from c in _context.TblRequisition
-                                              join fs in _context.TblFloorStock on c.ProductCode equals fs.MaterialCode into ps
-                                              from f in ps.DefaultIfEmpty()
-                                              where (c.RequisitionNo == RequisitionNo)
-                                              select new
-                                              {
-                                                  AvailableStock = (ps != null ? ps.Sum(x => x.AvailableStock) : 0)
-                                              };
-
+                                          join fs in _context.TblFloorStock on c.ProductCode equals fs.MaterialCode into ps
+                                          from f in ps.DefaultIfEmpty()
+                                          where (c.RequisitionNo == RequisitionNo)
+                                          select new
+                                          {
+                                              AvailableStock = (ps != null ? ps.Sum(x => x.AvailableStock) : 0)
+                                          };
 
                 var sa = new JsonSerializerSettings();
                 var expertiesInfo = from c in _context.TblRequisition
                                     from b in _context.View_BOM
                                     from p in _context.View_Product
-                                    where(c.RequisitionNo == RequisitionNo && c.ProductCode == b.ProductCode && b.ProductCode == p.ProductCode)
+                                    where (c.RequisitionNo == RequisitionNo && c.ProductCode == b.ProductCode && b.ProductCode == p.ProductCode)
                                     select new
                                     {
                                         c.RequisitionNo,
@@ -563,7 +535,7 @@ namespace LILI_IMS.Controllers
                                         p.PackSize,
                                         b.BatchSize,
                                         b.ConversionValue,
-                                        AvailableStock = availableFloorStock.FirstOrDefault().AvailableStock   // (ps != null ? ps.Sum(x=>x.AvailableStock) : 0) // ps.Sum(x=> (double)x.AvailableStock ?? 0.00).Sum() 
+                                        AvailableStock = availableFloorStock.FirstOrDefault().AvailableStock   // (ps != null ? ps.Sum(x=>x.AvailableStock) : 0) // ps.Sum(x=> (double)x.AvailableStock ?? 0.00).Sum()
                                     };
                 return Json(expertiesInfo, sa);
             }
@@ -593,7 +565,6 @@ namespace LILI_IMS.Controllers
                                               AvailableStock = (ps != null ? ps.Sum(x => x.AvailableStock) : 0)
                                           };
 
-
                 var sa = new JsonSerializerSettings();
                 var expertiesInfo = from c in _context.TblRequisition
                                     from b in _context.View_BOM
@@ -608,7 +579,7 @@ namespace LILI_IMS.Controllers
                                         p.PackSize,
                                         b.BatchSize,
                                         b.ConversionValue,
-                                        AvailableStock = availableFloorStock.FirstOrDefault().AvailableStock   // (ps != null ? ps.Sum(x=>x.AvailableStock) : 0) // ps.Sum(x=> (double)x.AvailableStock ?? 0.00).Sum() 
+                                        AvailableStock = availableFloorStock.FirstOrDefault().AvailableStock   // (ps != null ? ps.Sum(x=>x.AvailableStock) : 0) // ps.Sum(x=> (double)x.AvailableStock ?? 0.00).Sum()
                                     };
                 return Json(expertiesInfo, sa);
             }
@@ -633,7 +604,7 @@ namespace LILI_IMS.Controllers
             //                                   });
 
             var model = new List<TblQcdetails>(from para in _context.TblQcparameter
-                                               where (para.ProductCode == type) && (para.PlantId==GlobalVariable.PlantId)
+                                               where (para.ProductCode == type) && (para.PlantId == GlobalVariable.PlantId)
                                                select new TblQcdetails
                                                {
                                                    Id = para.Id,
@@ -647,11 +618,13 @@ namespace LILI_IMS.Controllers
             var sa = new JsonSerializerSettings();
             return Json(model, sa);
         }
+
         public ActionResult SetSectionCode(string SectionCode)
         {
             SECTION_CODE = SectionCode;
             return Ok();
         }
+
         //public ActionResult GetProcessNoList(string SectionCode)
         //{
         //    var sa = new JsonSerializerSettings();
@@ -660,7 +633,7 @@ namespace LILI_IMS.Controllers
         //    var model = (from c in _context.TblProductionProcess
         //                 where c.SectionCode==SectionCode
         //                 select new TblProductionProcess
-        //                 { 
+        //                 {
         //                  ProcessNo = c.ProcessNo,
         //                 }
         //                 ).ToList();
@@ -674,7 +647,7 @@ namespace LILI_IMS.Controllers
             var sectionCodeParam = new SqlParameter("@SectionCode", SectionCode);
             var PlantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
             var model = _context.GetProcessNoList.FromSql("EXEC sp_GetProcessNoListForQC  @SectionCode, @PlantId", sectionCodeParam, PlantIdParam).ToList();
-            
+
             return Json(model, sa);
         }
     }
