@@ -100,13 +100,18 @@
 
                     <div class="form-group">
                         <div class="col-sm-2 col-sm-offset-2">
-                            <button type="button" class="btn btn-mini btn-primary" onclick="AddNewRow()">Add</button>
+                            <button type="button" id="addnewrowbtn" class="btn btn-mini btn-primary" onclick="AddNewRow()">Add</button>
                         </div>
 
-                        <div class="col-sm-0 col-sm-offset-0 ">
+                        <div class="col-sm-1 ">
                             <input type="checkbox" name="isqcrequired" id="isQCrequired" >
                             <input type="hidden" id="checkboxValue" value="yes">
                             <label for=""> QC Required</label><br>
+                        </div>
+                        <div class="col-sm-2 ">
+                            <input type="checkbox" id="isSetupCompleted">
+                            <input type="hidden" id="checkboxValue1" value="no">
+                            <label for="">Completed Setup</label>
                         </div>
                     </div>
 
@@ -121,6 +126,7 @@
                         
                                 <th style="width:7%">Sequence</th>
                                 <th style="width:7%">QC Required</th>
+                                <th style="width:7%">Setup Completed</th>
                                 <th style="width:20%">Comments</th>
                                 <th style="width:7%">Action</th>
                         </thead>
@@ -139,10 +145,16 @@
                                                 <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].Section,      new { @id ="TblProductWiseSectionSetupDetails"+@index +"_Section", @readonly = "readonly", @class="nothing"})</td>
                                                 <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].Sequence,     new { @id ="TblProductWiseSectionSetupDetails"+@index +"_Sequence", @readonly = "readonly", @class="nothing"})</td>
                                                 <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].IsQcrequired, new { @id ="TblProductWiseSectionSetupDetails"+@index +"_IsQcrequired", @readonly = "readonly", @class="nothing"})</td>
+                                                <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].IsSetupCompleted,     new { @id ="TblProductWiseSectionSetupDetails"+@index +"_IsSetupCompleted", @readonly = "readonly", @class="nothing"})</td>
                                                 <td>@Html.TextBoxFor(modelItem => modelItem.tblProductWiseSectionSetupDetails[i].Comments,     new { @id ="TblProductWiseSectionSetupDetails"+@index +"_IsQcrequired", @readonly = "readonly", @class="nothing"})</td>
-
+                                                @if (item.IsSetupCompleted == "yes")
+                                                { 
+                                                <script>
+                                                        $("#addnewrowbtn").prop("disabled", true);
+                                                  </script>    
                                                 
-                                            @*     
+                                                }
+                                                @*     
                                             <td style='text-align:right;'><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails"@index"_Sequence' name='TblProductWiseSectionSetupDetails[" @index  "].Sequence' type='text' value="@item.Sequence"/></td>
                                             <td style='text-align:right;'><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails"@index"_IsQcrequired' name='TblProductWiseSectionSetupDetails["  @index  "].IsQcrequired' type='text' value="@item.IsQcrequired"/></td>
                                             <td style='text-align:right;'><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails"@index"_Comments' name='TblProductWiseSectionSetupDetails["  @index  "].Comments' type='text' value="@item.Comments"/></td>
@@ -183,10 +195,14 @@
     $(document).ready(function () {
         //$(".select2").select2();
         $("#isQCrequired ").attr("Checked", true);
-       
+      
+
     });
 
-
+    $("#remvRow").click(function () {
+        debugger;
+        $("#addnewrowbtn").prop("disabled", false);
+    });
     $("#isQCrequired ").change(function () {
         if ($(this).is(':checked')) {
             $("#checkboxValue").val("yes");
@@ -197,6 +213,19 @@
             console.log($("#checkboxValue").val());
         }
     });
+
+    $("#isSetupCompleted ").change(function () {
+        if ($(this).is(':checked')) {
+            $("#checkboxValue1").val("yes");
+
+            console.log($("#checkboxValue").val());
+        }
+        else {
+            $("#checkboxValue1").val("no");
+            console.log($("#checkboxValue1").val());
+
+        }
+    });
     function AddNewRow() {
         var productCode = $("#ProductCode").val();
         var productName = $("#ProductName").val();
@@ -204,6 +233,12 @@
         var sequence = $("#Sequence").val();
         var isQcrequired = $("#checkboxValue").val();
         var comment = $("#comments").val();
+        var isSetupCompleted = $("#checkboxValue1").val();
+
+
+        if (isSetupCompleted == "yes") {
+            $("#addnewrowbtn").prop("disabled", true);
+        }
     @{
         Model.tblProductWiseSectionSetupDetails.Add(new LILI_FPMS.Models.TblProductWiseSectionSetupDetail());
     }
@@ -218,14 +253,18 @@
         var sectionCell =     "<td><input style=' width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Section' name='TblProductWiseSectionSetupDetails[" + index + "].Section' type='text' value='" + section + "' /></td>";
         var sequnceCell = "<td><input style=' width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Sequence' name='TblProductWiseSectionSetupDetails[" + index + "].Sequence' type='text' value='" + sequence + "' /></td>";
         var isQcrequiredCell = "<td><input style=' width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_IsQcrequired' name='TblProductWiseSectionSetupDetails[" + index + "].IsQcrequired' type='text' value='" + isQcrequired + "' /></td>";
+        var isSetupCompletedCell = "<td><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_IsQcrequired' name='TblProductWiseSectionSetupDetails[" + index + "].IsSetupCompleted' type='text' value='" + isSetupCompleted + "' /></td>";
+
         var commentsCell = "<td><input style=' width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Comments' name='TblProductWiseSectionSetupDetails[" + index + "].Comments' type='text' value='" + comment + "' /></td>";
         var removeCell =    "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeProductWiseSectionSetupDetial(" + index + ");' /></td>";
 
-        var newRow = "<tr id='tblProductWiseSectionSetupDetials" + index + "'>" + productCodeCell + productNameCell + sectionCell + sequnceCell + isQcrequiredCell + commentsCell + removeCell + "</tr>";
+        var newRow = "<tr id='tblProductWiseSectionSetupDetials" + index + "'>" + productCodeCell + productNameCell + sectionCell + sequnceCell + isQcrequiredCell + isSetupCompletedCell + commentsCell + removeCell + "</tr>";
 
         $("#tblProductWiseSectionSetupDetials").append(newRow);
     }
     function removeProductWiseSectionSetupDetial(id) {
+
+        $("#addnewrowbtn").prop("disabled", false);
         var controlToBeRemoved = "#tblProductWiseSectionSetupDetials" + id;
         //alert(controlToBeRemoved);
         $(controlToBeRemoved).remove();

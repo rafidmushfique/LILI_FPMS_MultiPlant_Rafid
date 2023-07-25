@@ -71,7 +71,8 @@ namespace LILI_IMS.Models
         
         public virtual DbSet<GetProductWiseBOMDetail> GetProductWiseBOMDetail { get; set; }
 
-        public virtual DbSet<GetProcessNoList> GetProcessNoList { get; set; }
+        public virtual DbSet<GetProcessNoList> GetProcessNoList { get; set; }        
+        public virtual DbSet<GetProcessNoListQC> GetProcessNoListQC { get; set; }
 
         public virtual DbSet<TblManufacturingBreakDownCause> TblManufacturingBreakDownCause { get; set; }
         public virtual DbSet<TblManufacturingLine> TblManufacturingLine { get; set; }
@@ -967,7 +968,9 @@ namespace LILI_IMS.Models
             modelBuilder.Entity<TblQc>(entity =>
             {
                 entity.ToTable("tblQC");
-
+                entity.Property(e => e.SectionCode)
+                      .IsRequired()
+                      .HasMaxLength(50);
                 entity.HasIndex(e => e.Qcno)
                     .HasName("IX_tblQC")
                     .IsUnique();
@@ -2036,6 +2039,11 @@ namespace LILI_IMS.Models
                     .HasColumnName("IsQCrequired")
                     .HasMaxLength(5)
                     .IsUnicode(false);
+
+                entity.Property(e => e.IsSetupCompleted)
+                   .HasColumnName("IsSetupCompleted")
+                   .HasMaxLength(5)
+                   .IsUnicode(false);
 
                 entity.Property(e => e.Section)
                     .HasMaxLength(10)

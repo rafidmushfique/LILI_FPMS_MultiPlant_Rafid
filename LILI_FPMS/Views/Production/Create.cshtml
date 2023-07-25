@@ -38,17 +38,22 @@
         <form class="form-horizontal" asp-controller="Production" method="post" asp-action="CreateProduction" onsubmit="return FloorStockCheck(this);">
 
             <div class="box-body">
-
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Products</label>
+                    <div class="col-sm-4">
+                        <select id="ProductCodeSrch" class="form-control select2" asp-items="@(new SelectList(ViewBag.ListOfProduct,"ProductCode","ProductName"))"></select>
+                      @*  <span asp-validation-for="ProductCodeSrch"></span>*@
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Section</label>
                     <div class="col-sm-4">
                         <select  asp-for="SectionCode" id="Section" class="form-control">
-                            @foreach(var item in ViewBag.ListofSection)
-                            {
-                                 <option value="@item.SectionCode">@item.SectionName</option>
-                            }
-                           
-                      </select>
+                            
+                        </select>
+                        <div id="hiddenSequenceNo">
+
+                        </div>
                     </div>
                     <label for="inputEmail3" class="col-sm-2 control-label">Process No.</label>
                     <div class="col-sm-3">
@@ -589,12 +594,16 @@
 
 
 
-    $("#Section").on('change', function () {
-
+   
+        $("#Section").on('change', function () {
+        
         
 
         var text=$("#Section option:selected").text();
         var sectioncode = $("#Section option:selected").val();
+
+        var sequenceNo= $("#SequenceNo_"+sectioncode).val();
+        var productcode = $("#ProductCodeSrch option:selected").val();
         $.ajax({
 
             url: '@Url.Action("SetSectionCode", "Production")',
@@ -609,7 +618,7 @@
             }
         });
 
-        if (sectioncode == "S0001") {
+        if ( sequenceNo == 1) {
            
             $("#requisitionSrchBtn").prop("disabled", null);
             $("#processNoField").prop("disabled","true");
@@ -620,11 +629,14 @@
             $("#prevSecPQty").css("visibility", "visible");
             $("#requisitionSrchBtn").prop("disabled", "true");
             $("#processNoField").prop("disabled", null);
+
             $.ajax({
 
                 url: '@Url.Action("GetProcessNoList", "Production")',
                 data: {
-                    SectionCode: sectioncode
+                    SectionCode: sectioncode,
+                    SequenceNo: sequenceNo,
+                    ProductCode: productcode,
                 },
                 error: function (result) {
                     alert("error");
@@ -1241,10 +1253,44 @@
         $(controlToBeRemoved).remove();
     }
 
+    function getSectionList(productcode) {
+        $.ajax({
 
+            url: '@Url.Action("GetSectionData", "Production")',
+            data: {
+                ProductCode: productcode
+            },
+            error: function (result) {
+                alert("error");
+            },
+            success: function (result) {
+                var formoption = "<option value='" + 0 + "'>" + "-- Select Section --" + "</option>";
+                var hiddenSequence = "";
+                for (var i = 0; i < result.length; i++) {
+                    if (result[i].SectionCode != '' && result[i].SectionCode != undefined) {
+
+                        formoption += "<option value='" + result[i].SectionCode + "'>" + result[i].SectionName + "</option>";
+                        hiddenSequence += "<input type='hidden' id='SequenceNo_" + result[i].SectionCode + "' value='" + result[i].SequenceNo + "'>"
+                    }
+                }
+                $('#Section').html(formoption);
+                $('#hiddenSequenceNo').html(hiddenSequence);
+
+            }
+        });
+    
+    }
 
     $(document).ready(function () {
+        var productcode = $("#ProductCodeSrch option:selected").val();
+        getSectionList(productcode);
         //$("#prevSecPQty").css("visibility", "hidden");
+        $("#ProductCodeSrch").on('select2:select', function () {
+            var productcode = $("#ProductCodeSrch option:selected").val();
+            getSectionList(productcode);
+           
+        });
+
         if($("#Section").val() != null)
         {
           var text= $("#Section option:selected").text();
@@ -1740,7 +1786,8 @@
             //document.getElementById("NumberOfBatch").value = processableNoOfBatch;
 
             var requisitionNo = $('#RequisitionNo').val();
-            if (requisitionNo.length > 0 && sectionCode != "S0001") {
+        var sequenceNo = $("#SequenceNo_" + sectionCode).val();
+        if (requisitionNo.length > 0 && sequenceNo != 1) {
                 GetRequisitionDetails(requisitionNo);
             }
         });
@@ -1753,7 +1800,8 @@
         let numberOfBatch = $("#NumberOfBatch").val();
         let processableProductQty = Number(numberOfBatch) * Number(standardOutput);
         document.getElementById("ProductionQty").value = processableProductQty;
-        if (requisitionNo.length > 0 && sectionCode != "S0001") {
+        var sequenceNo = $("#SequenceNo_" + sectionCode).val();
+        if (requisitionNo.length > 0 && sequenceNo != 1) {
                 GetRequisitionDetails(requisitionNo);
             }
         });
@@ -1767,9 +1815,10 @@
         var previousProcessedNoOfBatch = document.getElementById("PreviousProcessedBatchNo").value;
         var currentProcessNoOfBatch = document.getElementById("NumberOfBatch").value;
         var sectionCode = $("#Section option:selected").val();
+        var sequenceNo = $("#SequenceNo_" + sectionCode).val();
         if (parseFloat(currentProcessNoOfBatch) + parseFloat(previousProcessedNoOfBatch) > parseFloat(requisitionNoOfBatch)) {
             var processableNoOfBatch = parseFloat(requisitionNoOfBatch) - parseFloat(previousProcessedNoOfBatch)
-            if(sectionCode == "S0001"){
+            if (sequenceNo == 1) {
 
                 alert("Maximum Processable No of Batch is :" + processableNoOfBatch)
                 document.getElementById("NumberOfBatch").value = processableNoOfBatch;

@@ -10,5 +10,7 @@ namespace LILI_FPMS.Models
         public string SectionName { get; set; }
         public string SectionCode { get; set; }
         public long? PlantId { get; set; }
+        [NotMapped]
+        public int SequenceNo { get; set; }
     }
 }

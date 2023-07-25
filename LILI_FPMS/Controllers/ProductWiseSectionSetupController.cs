@@ -131,7 +131,7 @@ namespace LILI_FPMS.Controllers
                             Sequence=c.Sequence,
                             Comments=c.Comments,
                             IsQcrequired=c.IsQcrequired,
-
+                            IsSetupCompleted=c.IsSetupCompleted,
 
                           };
             model.Id = data.Id;
@@ -197,6 +197,7 @@ namespace LILI_FPMS.Controllers
                             prodwisedetail.Sequence = item.Sequence;
                             prodwisedetail.Comments = item.Comments;
                             prodwisedetail.IsQcrequired = item.IsQcrequired;
+                            prodwisedetail.IsSetupCompleted = item.IsSetupCompleted;
                             await _context.AddAsync(prodwisedetail);
                         }
                         await _context.SaveChangesAsync();

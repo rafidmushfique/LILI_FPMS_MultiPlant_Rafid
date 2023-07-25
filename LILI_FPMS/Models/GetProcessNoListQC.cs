@@ -2,11 +2,11 @@
 
 namespace LILI_FPMS.Models
 {
-    public partial class GetProcessNoList
+    public partial class GetProcessNoListQC
     {
         public Int32 Id { get; set; }
         public string ProcessNo { get; set; }
         public string RequisitionNo { get; set; }
-        public string ProductCode { get; set; }
+
     }
 }

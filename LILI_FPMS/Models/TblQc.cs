@@ -35,6 +35,7 @@ namespace LILI_IMS.Models
 
         public bool IsSendToFloorStockFG { get; set; }
         public bool IsSendToFloorStockSFG { get; set; }
+        public string SectionCode { get; set; }
 
         [NotMapped]
         public string ProductCode { get; set; }

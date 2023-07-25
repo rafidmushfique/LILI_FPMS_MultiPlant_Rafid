@@ -673,7 +673,7 @@ namespace LILI_IMS.Controllers
             var sa = new JsonSerializerSettings();
             var sectionCodeParam = new SqlParameter("@SectionCode", SectionCode);
             var PlantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
-            var model = _context.GetProcessNoList.FromSql("EXEC sp_GetProcessNoListForQC  @SectionCode, @PlantId", sectionCodeParam, PlantIdParam).ToList();
+            var model = _context.GetProcessNoListQC.FromSql("EXEC sp_GetProcessNoListForQC  @SectionCode, @PlantId", sectionCodeParam, PlantIdParam).ToList();
             
             return Json(model, sa);
         }

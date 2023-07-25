@@ -102,40 +102,13 @@ namespace LILI_IMS.Controllers
 
         public ActionResult Create()
         {
-            ////Generate Process No.---------Start
-            //String sDate = DateTime.Now.ToString();
-            //DateTime datevalue = (Convert.ToDateTime(sDate.ToString()));
-            ////String dy = datevalue.Day.ToString("00");
-            //String mn = datevalue.Month.ToString("00");
-            //String yy = datevalue.Year.ToString().Substring(2, 2);
-            //var processNo = "PRO-" + yy + mn;
-            //String maxId = "";
-            //String maxNo = (from c in _context.TblProductionProcess.Where(c => c.ProcessNo.Substring(0, 8) == processNo).OrderByDescending(t => t.Id) select c.ProcessNo.Substring(8, 3)).FirstOrDefault();
-            //if (maxNo == null)
-            //{
-            //    maxId = "001";
-            //}
-            //else
-            //{
-            //    maxId = (Convert.ToInt16(maxNo) + 1).ToString("000");
-            //}
-            //processNo = "PRO-" + yy + mn + maxId;
 
-            ////Generate Process No.---------End
              
 
             TblProductionProcess entities = new TblProductionProcess();
-            //entities.ProcessNo = processNo;
             entities.ProcessNo = GenerateProcessNo();
             entities.ProcessDate = DateTime.Now;
             entities.ProductionQtyConversionFactor = 1;
-            //DateTime myDateTime = DateTime.UtcNow;
-
-            //entities.ManufacBatchStartTime = myDateTime.TimeOfDay;
-            //entities.ManufacBatchEndTime = myDateTime.TimeOfDay;
-            //entities.PackBatchStartTime = myDateTime.TimeOfDay;
-            //entities.PackBatchStartTime = myDateTime.TimeOfDay;
-            entities.PackingQty = 0;
             entities.CodingQty = 0;
             entities.ManufacBatchStartTime = DateTime.Now;
             entities.ManufacBatchEndTime = DateTime.Now;
@@ -172,7 +145,15 @@ namespace LILI_IMS.Controllers
                            select c).ToList();
             machineList.Insert(0, new TblMachineName { MachineCode = "", MachineName = "Select Machine" });
             ViewBag.ListofMachine = machineList;
-
+            var productList = (from c in _context.View_Product
+                               select new
+                               {
+                                   ProductCode = c.ProductCode,
+                                   ProductName = c.ProductName,
+                                   Business = c.Business
+                               }).Where(c => c.Business == businessCode).ToList();
+            productList.Insert(0, new { ProductCode = "0", ProductName = "-- Select Product --", Business = "A" });
+            ViewBag.ListOfProduct = productList;
 
             List<TblManufacturingBreakDownCause> ManufacturingBreakDownCauseList = new List<TblManufacturingBreakDownCause>();
             ManufacturingBreakDownCauseList = (from c in _context.TblManufacturingBreakDownCause.Where(c=>c.PlantId == GlobalVariable.PlantId) select c).OrderBy(c => c.BreakeDownCause).ToList();
@@ -360,7 +341,15 @@ namespace LILI_IMS.Controllers
                            }).Where(c => c.Business == "A").ToList();
             sfgList.Insert(0, new { SFGCode = "", SFGName = "Select By-product", Business = "A" });
             ViewBag.ListOfSFG = sfgList;
-
+            var productList = (from c in _context.View_Product
+                           select new
+                           {
+                               ProductCode = c.ProductCode,
+                               ProductName = c.ProductName,
+                               Business = c.Business
+                           }).Where(c => c.Business == "A").ToList();
+            productList.Insert(0, new { ProductCode = "0", ProductName = "-- Select Product --", Business = "A" });
+            ViewBag.ListOfProduct = productList;
             List<TblShiftSetup> shiftList = new List<TblShiftSetup>();
             shiftList = (from c in _context.TblShiftSetup
                          select c).ToList();
@@ -1102,13 +1091,19 @@ namespace LILI_IMS.Controllers
             return Ok();
         }
 
-        public ActionResult GetProcessNoList(string SectionCode)
+        public ActionResult GetProcessNoList(string SectionCode,int SequenceNo,string ProductCode)
         {
             
             var sa= new JsonSerializerSettings();
             var sectionCodeParam = new SqlParameter("@SectionCode", SectionCode);
             var plantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
-            var model = _context.GetProcessNoList.FromSql("EXEC sp_GetSectionWiseProcessNoListForPP @SectionCode, @PlantId", sectionCodeParam, plantIdParam).ToList();
+            var sequenceNoParam = new SqlParameter("@CurrentSectionSequence", SequenceNo);
+            var productCodeParam = new SqlParameter("@ProductCodeNo", ProductCode);
+            var model = _context.GetProcessNoList.FromSql("EXEC sp_GetSectionWiseProcessNoListForPP @SectionCode, @PlantId,@CurrentSectionSequence,@ProductCodeNo", sectionCodeParam, plantIdParam, sequenceNoParam, productCodeParam).ToList();
+            //if (ProductCode != "0" && ProductCode != null && ProductCode != "")
+            //{
+            //     model = model.Where(x => x.ProductCode == ProductCode).ToList();
+            //}
             return Json(model, sa);
         }
 
@@ -1135,6 +1130,27 @@ namespace LILI_IMS.Controllers
                 
             }
            
+        }
+
+        public JsonResult GetSectionData(string ProductCode) {
+            var plantId = GlobalVariable.PlantId;
+            var sa = new JsonSerializerSettings();
+            List<TblSection> sectionList = new List<TblSection>();
+            sectionList = (
+                           from pw in _context.TblProductWiseSectionSetup
+                           from pwd in _context.TblProductWiseSectionSetupDetail
+                           from c in _context.TblSection
+                           where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode && pw.ProductCode== ProductCode && pw.PlantId== plantId
+                               select new TblSection { 
+                                Id = c.Id,
+                                SectionCode=c.SectionCode,
+                                SectionName= c.SectionName,
+                                SequenceNo= pwd.Sequence
+                               }
+                           ).ToList();
+
+            ViewBag.ListofSection = sectionList;
+            return Json(sectionList, sa);
         }
         //public JsonResult GetPackMachineCapacity(string machineCode)
         //{

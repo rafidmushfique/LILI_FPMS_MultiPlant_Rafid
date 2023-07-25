@@ -12,6 +12,7 @@ namespace LILI_FPMS.Models
         public int Sequence { get; set; }
         public string Comments { get; set; }
         public string IsQcrequired { get; set; }
+          public string IsSetupCompleted { get; set; }
 
         public TblProductWiseSectionSetup ProductSectionSetup { get; set; }
     }
