@@ -1,15 +1,20 @@
-﻿using LILI_FPMS;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
+using LILI_FPMS;
 using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+using NPOI.SS.Formula.Functions;
 
 namespace LILI_IMS.Controllers
 {
@@ -44,7 +49,7 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var pross = from s in _context.TblProductionProcess.Where(s => s.PlantId == GlobalVariable.PlantId)
+            var pross = from s in _context.TblProductionProcess.Where(s=>s.PlantId==GlobalVariable.PlantId)
                         from r in _context.TblRequisition.Where(r => r.PlantId == GlobalVariable.PlantId)
                         from p in _context.View_Product
                         where s.RequisitionNo == r.RequisitionNo && r.ProductCode == p.ProductCode
@@ -53,7 +58,7 @@ namespace LILI_IMS.Controllers
                             Id = s.Id,
                             ProcessNo = s.ProcessNo,
                             ProcessDate = s.ProcessDate,
-                            BatchNo = s.BatchNo,
+                            BatchNo = s.BatchNo,    
                             RequisitionNo = s.RequisitionNo,
                             ProductCode = r.ProductCode,
                             ProductName = p.ProductName,
@@ -74,29 +79,25 @@ namespace LILI_IMS.Controllers
                 case "processNo_desc":
                     pross = pross.OrderByDescending(s => s.ProcessNo);
                     break;
-
                 case "processDate_desc":
                     pross = pross.OrderByDescending(s => s.ProcessDate);
                     break;
-
                 case "requisitionNo_desc":
                     pross = pross.OrderByDescending(s => s.RequisitionNo);
                     break;
-
                 case "productCode_desc":
                     pross = pross.OrderByDescending(s => s.ProductCode);
                     break;
-
                 case "productName_desc":
                     pross = pross.OrderByDescending(s => s.ProductName);
                     break;
-
                 default:
                     pross = pross.OrderByDescending(s => s.ProcessNo);
                     break;
             }
             int pageSize = 10;
             return View(await PaginatedList<TblProductionProcess>.CreateAsync(pross.AsNoTracking(), pageNumber ?? 1, pageSize));
+
         }
 
         public ActionResult Create()
@@ -121,6 +122,7 @@ namespace LILI_IMS.Controllers
             //processNo = "PRO-" + yy + mn + maxId;
 
             ////Generate Process No.---------End
+             
 
             TblProductionProcess entities = new TblProductionProcess();
             //entities.ProcessNo = processNo;
@@ -141,16 +143,15 @@ namespace LILI_IMS.Controllers
             entities.PackBatchEndTime = DateTime.Now;
 
             var businessCode = (from c in _context.TblUserWiseBusinessAndPlantCode
-                                where c.PlantId == GlobalVariable.PlantId
+                                where c.PlantId==GlobalVariable.PlantId
                                 select c.BusinessCode
-                                ).FirstOrDefault();
-            var sfgList = (from c in _context.View_Product
-                           select new
-                           {
-                               SFGCode = c.ProductCode,
-                               SFGName = c.ProductName,
-                               Business = c.Business
-                           }).Where(c => c.Business == businessCode).ToList();
+                                ).FirstOrDefault(); 
+           var  sfgList = (from c in _context.View_Product
+                         select new { 
+                         SFGCode = c.ProductCode,
+                         SFGName = c.ProductName,
+                         Business=c.Business
+                         }).Where(c=>c.Business == businessCode).ToList();
             sfgList.Insert(0, new { SFGCode = "", SFGName = "Select By-product", Business = "A" });
             ViewBag.ListOfSFG = sfgList;
 
@@ -161,7 +162,7 @@ namespace LILI_IMS.Controllers
             ViewBag.ListOfShift = shiftList;
 
             List<TblLineSetup> lineList = new List<TblLineSetup>();
-            lineList = (from c in _context.TblLineSetup.Where(c => c.PlantId == GlobalVariable.PlantId)
+            lineList = (from c in _context.TblLineSetup.Where(c=>c.PlantId ==GlobalVariable.PlantId)
                         select c).ToList();
             lineList.Insert(0, new TblLineSetup { LineCode = "", LineName = "Select Line" });
             ViewBag.ListofLine = lineList;
@@ -172,8 +173,9 @@ namespace LILI_IMS.Controllers
             machineList.Insert(0, new TblMachineName { MachineCode = "", MachineName = "Select Machine" });
             ViewBag.ListofMachine = machineList;
 
+
             List<TblManufacturingBreakDownCause> ManufacturingBreakDownCauseList = new List<TblManufacturingBreakDownCause>();
-            ManufacturingBreakDownCauseList = (from c in _context.TblManufacturingBreakDownCause.Where(c => c.PlantId == GlobalVariable.PlantId) select c).OrderBy(c => c.BreakeDownCause).ToList();
+            ManufacturingBreakDownCauseList = (from c in _context.TblManufacturingBreakDownCause.Where(c=>c.PlantId == GlobalVariable.PlantId) select c).OrderBy(c => c.BreakeDownCause).ToList();
             //ManufacturingBreakDownCauseList.Insert(0, new TblManufacturingBreakDownCause { BreakeDownCauseId = 0, BreakeDownCause = "Select Cause" });
             ViewBag.ManufacturingBreakDownCauseList = ManufacturingBreakDownCauseList;
 
@@ -183,12 +185,12 @@ namespace LILI_IMS.Controllers
             ViewBag.ListofStaff = staffList;
 
             List<TblSection> sectionList = new List<TblSection>();
-            sectionList = (from c in _context.TblSection.Where(c => c.PlantId == GlobalVariable.PlantId).OrderBy(c => c.Id) select c).ToList();
+            sectionList = (from c in _context.TblSection.Where(c=>c.PlantId == GlobalVariable.PlantId).OrderBy(c=>c.Id) select c).ToList();
             ViewBag.ListofSection = sectionList;
 
             int isCodingDetailVisible = 0;
-            isCodingDetailVisible = _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalVariable.PlantId).Count() > 0 ?
-                                    _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalVariable.PlantId).FirstOrDefault().Isvisible : 0;
+            isCodingDetailVisible = _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalVariable.PlantId).Count()>0?
+                                    _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalVariable.PlantId).FirstOrDefault().Isvisible:0;
             ViewBag.IsCodingDetailVisible = isCodingDetailVisible;
 
             return View(entities);
@@ -204,15 +206,15 @@ namespace LILI_IMS.Controllers
                 {
                     if (prod.SFGCode != null && prod.SFGCode != "")
                     {
-                        var sfgCode = prod.SFGCode;
-                        var processNo = prod.ProcessNo;
-                        var sfgQty = prod.SFGProductionQty;
-                        var result = UpdateFloorStockFromProduction(sfgCode.ToString(), processNo, sfgQty);
-                        if (!result)
-                        {
+                            var sfgCode=prod.SFGCode;
+                            var processNo= prod.ProcessNo;
+                            var sfgQty = prod.SFGProductionQty;
+                            var result=  UpdateFloorStockFromProduction(sfgCode.ToString(), processNo, sfgQty);
+                            if (!result) {
                             ViewData["Error"] = "Error Updating FloorStock.";
                             return View(prod);
                         }
+
                     }
                     prod.Iuser = User.Identity.Name;
                     prod.Idate = DateTime.Now;
@@ -257,6 +259,7 @@ namespace LILI_IMS.Controllers
             return Json(productList, sa);
         }
 
+
         [HttpPost]
         public bool Delete(int id)
         {
@@ -285,6 +288,7 @@ namespace LILI_IMS.Controllers
                 //return RedirectToAction(nameof(Index));
             }
         }
+
 
         public ActionResult Update(int id)
         {
@@ -346,6 +350,7 @@ namespace LILI_IMS.Controllers
             prodModel.QCReferenceSampleQty = dt.QCReferenceSampleQty;
             prodModel.LumpQty = dt.LumpQty;
 
+
             var sfgList = (from c in _context.View_Product
                            select new
                            {
@@ -381,10 +386,11 @@ namespace LILI_IMS.Controllers
 
             List<TblProductionManPower> staffList = new List<TblProductionManPower>();
             staffList = (from c in _context.TblProductionManPower select c).ToList();
-            //  staffList.Insert(0, new TblProductionManPower { StaffId = "", Name = "Select Staff" });
+          //  staffList.Insert(0, new TblProductionManPower { StaffId = "", Name = "Select Staff" });
             ViewBag.ListofStaff = staffList;
 
             prodModel.TblProductionProcessDetail = _context.TblProductionProcessDetail.Where(d => d.ProcessNo == dt.ProcessNo).ToList();
+
 
             var manufacturingShiftDetail = from pp_master in _context.TblProductionProcess
                                            from manu_shift in _context.TblManufacturingShift
@@ -402,6 +408,7 @@ namespace LILI_IMS.Controllers
                                                BreakeDownTime = manu_shift.BreakeDownTime
                                            };
             prodModel.TblManufacturingShift = manufacturingShiftDetail.ToList();
+
 
             var manufacturingLineDetail = from pp_master in _context.TblProductionProcess
                                           from manu_line in _context.TblManufacturingLine
@@ -436,19 +443,20 @@ namespace LILI_IMS.Controllers
                                              };
             prodModel.TblManufacturingMachine = manufacturingMachineDetail.ToList();
 
-            var manufacturingManPowerDetail = from pp_master in _context.TblProductionProcess
-                                              from manu_manpower in _context.TblManufacturingManPower
-                                              where (pp_master.Id == manu_manpower.ProductionId)
-                                              from manpower in _context.TblProductionManPower
-                                              where (manu_manpower.StaffId == manpower.StaffId)
-                                              where pp_master.Id == id
-                                              select new TblManufacturingManPower
-                                              {
-                                                  Id = manu_manpower.Id,
-                                                  ProductionId = pp_master.Id,
-                                                  StaffId = manu_manpower.StaffId,
-                                                  Name = manpower.Name,
-                                              };
+            var manufacturingManPowerDetail= from pp_master in _context.TblProductionProcess
+                                             from manu_manpower in _context.TblManufacturingManPower
+                                             where (pp_master.Id == manu_manpower.ProductionId)
+                                             from manpower in _context.TblProductionManPower
+                                             where (manu_manpower.StaffId == manpower.StaffId)
+                                             where pp_master.Id == id
+                                             select new TblManufacturingManPower
+                                             {
+                                                 Id = manu_manpower.Id,
+                                                 ProductionId = pp_master.Id,
+                                                 StaffId = manu_manpower.StaffId,
+                                                 Name = manpower.Name,
+                                                
+                                             };
             prodModel.TblManufacturingManPower = manufacturingManPowerDetail.ToList();
 
             var packingShiftDetail = from pp_master in _context.TblProductionProcess
@@ -467,6 +475,7 @@ namespace LILI_IMS.Controllers
                                          BreakeDownTime = packing_shift.BreakeDownTime
                                      };
             prodModel.TblPackingDetailShift = packingShiftDetail.ToList();
+
 
             var packingLineDetail = from pp_master in _context.TblProductionProcess
                                     from packing_line in _context.TblPackingDetailLine
@@ -513,9 +522,9 @@ namespace LILI_IMS.Controllers
                                             ProductionId = pp_master.Id,
                                             StaffId = packing_manpower.StaffId,
                                             Name = manpower.Name,
+
                                         };
             prodModel.TblPackingManPower = packingManPowerDetail.ToList();
-
             #region Code Details part
 
             var codingShiftDetail = from pp_master in _context.TblProductionProcess
@@ -534,6 +543,7 @@ namespace LILI_IMS.Controllers
                                         BreakeDownTime = coding_shift.BreakeDownTime
                                     };
             prodModel.TblCodingDetailShift = codingShiftDetail.ToList();
+
 
             var codinngLineDetail = from pp_master in _context.TblProductionProcess
                                     from coding_line in _context.TblCodingDetailLine
@@ -567,8 +577,7 @@ namespace LILI_IMS.Controllers
                                           CodeMachineManHour = coding_machine.CodeMachineManHour
                                       };
             prodModel.TblCodingDetailMachine = codingMachineDetail.ToList();
-
-            #endregion Code Details part
+            #endregion
 
             var productionDetail = from prodDtl in _context.TblProductionProcessDetail
                                    from mat in _context.View_Material
@@ -589,6 +598,7 @@ namespace LILI_IMS.Controllers
                                        Wastage = prodDtl.Wastage,
                                        TotalConsumption = prodDtl.TotalConsumption
                                    };
+
 
             prodModel.TblProductionProcessDetail = productionDetail.ToList();
 
@@ -622,11 +632,13 @@ namespace LILI_IMS.Controllers
                     s => s.SFGCode, s => s.SFGProductionQty, s => s.BatchNo,
                     s => s.ManufacBatchStartTime, s => s.ManufacBatchEndTime, s => s.ManufacShiftCode, s => s.ManufacShiftBreakDownChangeTime, s => s.ManufacLineCode,
                     s => s.ManufacMachineCode, s => s.ManufacMachineCapacity, s => s.ManufacMachineHour, s => s.ManufacManHour, s => s.ManufacNoOfWorker,
-                    s => s.ManufacCommonManHour, s => s.ManufacCommonNoOfWorker,
+                    s=> s.ManufacCommonManHour, s=> s.ManufacCommonNoOfWorker,
                     s => s.PackBatchStartTime, s => s.PackBatchEndTime, s => s.PackShiftCode, s => s.PackShiftBreakDownChangeTime, s => s.PackLineCode,
-                    s => s.PackMachineCode, s => s.PackMachineCapacity, s => s.PackMachineHour, s => s.PackManHour, s => s.PackCommonManHour, s => s.PackCommonNoOfWorker,
+                    s => s.PackMachineCode, s => s.PackMachineCapacity, s => s.PackMachineHour, s => s.PackManHour, s=>s.PackCommonManHour, s => s.PackCommonNoOfWorker,
                     s => s.PackNoOfWorker, s => s.Comments,
-                    s => s.Euser, s => s.Edate, s => s.NumberOfBatch, s => s.QCReferenceSampleQty))
+                    s => s.Euser, s => s.Edate, s =>s.NumberOfBatch, s => s.QCReferenceSampleQty))
+
+
 
                     _context.TblManufacturingShift.RemoveRange(_context.TblManufacturingShift.Where(d => d.ProductionId == id));
 
@@ -778,7 +790,6 @@ namespace LILI_IMS.Controllers
             return processNo;
             //Generate Process No.---------End
         }
-
         public IActionResult SearchRequisition(string searchKey)
         {
             //var model = new List<TblRequisition>(from r in _context.TblRequisition
@@ -794,11 +805,12 @@ namespace LILI_IMS.Controllers
             //                                         ProductName = p.ProductName
             //                                     });
 
-            var requisitionNoParam = new SqlParameter("@requisitionNo", searchKey == null ? "" : searchKey);
-            var plantIdParam = new SqlParameter("@plantId", GlobalVariable.PlantId);
+            var requisitionNoParam = new SqlParameter("@requisitionNo", searchKey == null?"": searchKey);
+            var plantIdParam = new SqlParameter("@plantId",GlobalVariable.PlantId);
             var model = _context.GetSearchRequisitionList
                                .FromSql("EXEC sp_SearchRequisition @requisitionNo, @plantId", requisitionNoParam, plantIdParam)
                                .ToList();
+
 
             return PartialView("_RequisitionPartial", model);
         }
@@ -806,9 +818,11 @@ namespace LILI_IMS.Controllers
         [HttpPost]
         public JsonResult SetRequisition(string requisitionNo)
         {
+           
+
             //var check= from c in _context.TblProductWiseSectionSetupDetail
 
-            var prevSecProdQty = (decimal)0;
+            var prevSecProdQty =(decimal)0;
             var keyVal = _context.TblRequisition.Where(c => c.RequisitionNo == requisitionNo).ToList();
             if (keyVal != null)
             {
@@ -820,25 +834,31 @@ namespace LILI_IMS.Controllers
                              select c.ProcessNo).FirstOrDefault();
             if (productCode != null)
             {
-                var qcRequired = (from pw in _context.TblProductWiseSectionSetup
-                                  from pwd in _context.TblProductWiseSectionSetupDetail
-                                  where pw.Id == pwd.ProductSectionSetupId && pw.ProductCode == productCode && pwd.Section == SECTION_CODE
-                                  select pwd.IsQcrequired.First()).ToString();
+              var  qcRequired = (from pw in _context.TblProductWiseSectionSetup
+                             from pwd in _context.TblProductWiseSectionSetupDetail
+                             where pw.Id == pwd.ProductSectionSetupId && pw.ProductCode == productCode && pwd.Section == SECTION_CODE
+                             select pwd.IsQcrequired.First()).ToString();
                 if (qcRequired == "yes")
                 {
-                    prevSecProdQty = (from c in _context.TblQc
-                                      where c.ProcessNo == processNo
-                                      orderby c.ProcessNo descending
-                                      select c.QcpassQty).FirstOrDefault();
+                    
+                 
+
+                  prevSecProdQty= (from c in _context.TblQc
+                                   where c.ProcessNo == processNo
+                                   orderby c.ProcessNo descending
+                                   select c.QcpassQty).FirstOrDefault();
                 }
-                else
+                else 
                 {
-                    prevSecProdQty = (from c in _context.TblProductionProcess
-                                      where c.RequisitionNo == requisitionNo
-                                      orderby c.Id descending
-                                      select c.ProductionQty).FirstOrDefault();
+                   
+                    prevSecProdQty =    (from c in _context.TblProductionProcess
+                                         where c.RequisitionNo == requisitionNo
+                                         orderby c.Id descending
+                                         select c.ProductionQty).FirstOrDefault();
+                                          
                 }
             }
+
 
             if (requisitionNo.Length >= 0)
             {
@@ -859,9 +879,10 @@ namespace LILI_IMS.Controllers
                                           PreviousProcessedBatchNo = _context.TblProductionProcess.Where(x => x.RequisitionNo == requisitionNo).Sum(x => x.NumberOfBatch),
                                           NoOfBatchInRequisition = r.NumberOfBatch,
                                           PreviousProcessedProductionQty = _context.TblProductionProcess.Where(x => x.RequisitionNo == requisitionNo).Sum(x => x.ProductionQty),
-                                          PrevSecProductionQty = prevSecProdQty
+                                          PrevSecProductionQty=prevSecProdQty
                                       };
 
+  
                 return Json(requisitionInfo, sa);
             }
             else
@@ -869,32 +890,37 @@ namespace LILI_IMS.Controllers
                 return Json("");
             }
         }
-
         public JsonResult SetDetailByProcessNo(string ProcessNo)
         {
             //var check= from c in _context.TblProductWiseSectionSetupDetail
             var requisitionNo = "";
             var sectionCode = "";
             var prevSeq = 0;
-
+           
             var prevSecProdQty = (decimal)0;
             if (ProcessNo != null)
             {
+
+                
                 var keyVal = _context.TblProductionProcess.Where(c => c.ProcessNo == ProcessNo).ToList();
                 if (keyVal != null)
                 {
                     requisitionNo = keyVal.FirstOrDefault().RequisitionNo;
                     sectionCode = keyVal.FirstOrDefault().SectionCode;
+                  
+                       
                 }
                 var productCode = _context.TblRequisition.Where(c => c.RequisitionNo == requisitionNo).Select(c => c.ProductCode).FirstOrDefault();
                 var sequence = _context.TblProductWiseSectionSetupDetail.Where(x => x.Section == sectionCode).Select(x => x.Sequence).FirstOrDefault();
                 prevSeq = (sequence - 1);
-                // var prevSeqstr = prevSeq.ToString();
-
+               // var prevSeqstr = prevSeq.ToString();
+                 
                 var prevSectionCode = _context.TblProductWiseSectionSetupDetail.Where(x => x.Sequence == prevSeq).Select(x => x.Sequence).FirstOrDefault();
+
 
                 if (productCode != null)
                 {
+
                     var productCodeparam = new SqlParameter("@productCode", productCode);
                     var sectionCodeparam = new SqlParameter("@sectionCode", sectionCode);
                     var plantIdparam = new SqlParameter("@plantId", GlobalVariable.PlantId);
@@ -913,12 +939,14 @@ namespace LILI_IMS.Controllers
                     }
                     else
                     {
+
                         prevSecProdQty = (from c in _context.TblProductionProcess
                                           where c.ProcessNo == ProcessNo
                                           orderby c.Id descending
                                           select c.ProductionQty).FirstOrDefault();
                     }
                 }
+
 
                 if (requisitionNo.Length >= 0)
                 {
@@ -942,6 +970,8 @@ namespace LILI_IMS.Controllers
                                               PrevSecProductionQty = prevSecProdQty
                                           };
 
+
+
                     return Json(requisitionInfo, sa);
                 }
                 else
@@ -949,13 +979,13 @@ namespace LILI_IMS.Controllers
                     return Json("");
                 }
             }
-            else
-            {
+            else {
                 return Json("");
             }
-        }
 
-        [HttpPost]
+        }
+        [HttpPost]       
+
         public JsonResult GetRequisitionDetails(string requisitionNo, decimal productionQty)
         {
             var errorViewModel = new ErrorViewModel();
@@ -1032,13 +1062,13 @@ namespace LILI_IMS.Controllers
         {
             var productCode = _context.TblRequisition.Where(x => x.RequisitionNo == RequisitionNo).FirstOrDefault().ProductCode;
             var model = new List<TblMachineName>(from ms in _context.TblMachineSetup
-                                                 from m in _context.TblMachineName
-                                                 where (ms.MachineCode == m.MachineCode && (ms.ProductCode == productCode))
-                                                 select new TblMachineName
-                                                 {
-                                                     MachineCode = ms.MachineCode,
-                                                     MachineName = m.MachineName
-                                                 });
+                                                       from m in _context.TblMachineName
+                                                       where (ms.MachineCode == m.MachineCode && (ms.ProductCode == productCode))
+                                                       select new TblMachineName
+                                                       {
+                                                           MachineCode = ms.MachineCode,
+                                                           MachineName = m.MachineName
+                                                       });
 
             //var requisitionNoParam = new SqlParameter("@requisitionNo", RequisitionNo == null ? "" : RequisitionNo);
             //var model = _context.GetRequisitionWiseProcessList
@@ -1051,8 +1081,10 @@ namespace LILI_IMS.Controllers
 
         public JsonResult GetShiftDetail(string ShiftCode)
         {
-            var sa = new JsonSerializerSettings();
 
+           
+            var sa = new JsonSerializerSettings();
+          
             var model = new List<TblShiftSetup>(from s in _context.TblShiftSetup
                                                 where (s.ShiftCode == ShiftCode)
                                                 select new TblShiftSetup
@@ -1060,7 +1092,7 @@ namespace LILI_IMS.Controllers
                                                     ShiftStartTime = s.ShiftStartTime,
                                                     ShiftEndTime = s.ShiftEndTime
                                                 });
-
+         
             return Json(model, sa);
         }
 
@@ -1072,7 +1104,8 @@ namespace LILI_IMS.Controllers
 
         public ActionResult GetProcessNoList(string SectionCode)
         {
-            var sa = new JsonSerializerSettings();
+            
+            var sa= new JsonSerializerSettings();
             var sectionCodeParam = new SqlParameter("@SectionCode", SectionCode);
             var plantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
             var model = _context.GetProcessNoList.FromSql("EXEC sp_GetSectionWiseProcessNoListForPP @SectionCode, @PlantId", sectionCodeParam, plantIdParam).ToList();
@@ -1087,10 +1120,10 @@ namespace LILI_IMS.Controllers
                 var sa = new JsonSerializerSettings();
                 var productIdParam = new SqlParameter("@productId", productId);
                 var processNoParam = new SqlParameter("@qcNo", processNo);
-                var plantIdParam = new SqlParameter("@plantId", GlobalVariable.PlantId);
+                var plantIdParam = new SqlParameter("@plantId",GlobalVariable.PlantId);
                 var QtyParam = new SqlParameter("@qcQuantity", Qty);
 
-                var productList = _context.UpdateFloorScockFromForductionQC
+                var productList =   _context.UpdateFloorScockFromForductionQC
                                     .FromSql("EXEC sp_UpdateFloorStockFromProduction @productId, @qcNo, @qcQuantity,@plantId", productIdParam, processNoParam, QtyParam, plantIdParam)
                                     .ToList();
 
@@ -1099,9 +1132,10 @@ namespace LILI_IMS.Controllers
             catch (Exception ex)
             {
                 return false;
+                
             }
+           
         }
-
         //public JsonResult GetPackMachineCapacity(string machineCode)
         //{
         //    if (machineCode.Length > 0)

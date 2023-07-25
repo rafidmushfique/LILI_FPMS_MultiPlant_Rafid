@@ -42,8 +42,8 @@ namespace LILI_FPMS.Controllers
                         select new Models.TblProductWiseSectionSetup
                         {
                             Id = s.Id,
-                            ProductCode= s.ProductCode,
-                            ProductName=s.ProductName,
+                            ProductCode= s.ProductCode=="0"?"All": s.ProductCode,
+                            ProductName= s.ProductName=="0"?"All": s.ProductName,
                             PlantId=s.PlantId,
                         };
 
@@ -70,11 +70,13 @@ namespace LILI_FPMS.Controllers
         {
             var model = new TblProductWiseSectionSetup();
                var list = new List<SelectListItem> {
-               new SelectListItem{ Text="1", Value = "1" },
+               new SelectListItem{ Text="1", Value = "1", Selected = true },
                new SelectListItem{ Text="2", Value = "2" },
-               new SelectListItem{ Text="3", Value = "3", Selected = true },
+               new SelectListItem{ Text="3", Value = "3" },
+               new SelectListItem{ Text="4", Value = "4"},
+               new SelectListItem{ Text="5", Value = "5"},
             };
-            var sectionList = from c in _context.TblSection
+            var sectionList = from c in _context.TblSection.Where(c => c.PlantId == GlobalVariable.PlantId).OrderBy(c => c.Id)
                               select
                               new TblSection
                               {
@@ -138,11 +140,13 @@ namespace LILI_FPMS.Controllers
             model.PlantId= data.PlantId;
             model.tblProductWiseSectionSetupDetails=detalTbl.ToList();
             var list = new List<SelectListItem> {
-               new SelectListItem{ Text="1", Value = "1" },
+               new SelectListItem{ Text="1", Value = "1", Selected = true },
                new SelectListItem{ Text="2", Value = "2" },
-               new SelectListItem{ Text="3", Value = "3", Selected = true },
+               new SelectListItem{ Text="3", Value = "3" },
+               new SelectListItem{ Text="4", Value = "4"},
+               new SelectListItem{ Text="5", Value = "5"},
             };
-            var sectionList = from c in _context.TblSection
+            var sectionList = from c in _context.TblSection.Where(c => c.PlantId == GlobalVariable.PlantId).OrderBy(c => c.Id)
                               select
                               new TblSection
                               {
