@@ -1156,7 +1156,22 @@ namespace LILI_IMS.Controllers
                                 SequenceNo= pwd.Sequence
                                }
                            ).ToList();
-
+            if (sectionList.Count() == 0)
+            {
+                sectionList = (
+                  from pw in _context.TblProductWiseSectionSetup
+                  from pwd in _context.TblProductWiseSectionSetupDetail
+                  from c in _context.TblSection
+                  where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode  && pw.PlantId == plantId
+                  select new TblSection
+                  {
+                      Id = c.Id,
+                      SectionCode = c.SectionCode,
+                      SectionName = c.SectionName,
+                      SequenceNo = pwd.Sequence
+                  }
+                  ).ToList();
+            }
             ViewBag.ListofSection = sectionList;
             return Json(sectionList, sa);
         }

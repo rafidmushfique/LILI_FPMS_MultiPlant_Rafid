@@ -495,12 +495,14 @@
 
             //    }
             //});
+        
+        var processNo= this.value;
         var x = () => {
             return new Promise(resolve => {
                 $.ajax({
                     type: "POST",
-                    url: "/QC/GetQCQuantity",
-                    data: { ProcessNo: this.value },
+                    url: "/QC/SetRequisitionInfomationByProcessNo",
+                    data: { ProcessNo: processNo },
                     success: function (msg) {
                         $('#js_requisition_no').val('');
                         $('#BatchNo').val('');
@@ -544,6 +546,27 @@
         var y = () => {
             return new Promise((resolve) => {
                 setTimeout(function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "/QC/GetQCQuantity",
+                        data: { ProcessNo: processNo },
+                        success: function (result) {
+                            
+                            $('#Qcqty').val('');
+                            for (var i = 0; i < result.length; i++) {
+                                $('#FGQCQtyBeforeConversion').val((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)));
+                                //$('#Qcqty').val(result[i].ProductionQty);
+                                var conversionFactor = $('#FGQCQtyConversionFactor').val();
+                                $('#Qcqty').val(((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)) / parseFloat(conversionFactor)).toFixed(5));
+                                $('#SFGQcqty').val(result[i].SFGProductionQty);
+                                $('#BatchNo').val(result[i].BatchNo);
+
+                            }
+                        },
+                        error: function () {
+
+                        }
+                    });
                     var productCode = $("#ProductCode").val();
                     GetTypeWiseQCParameter(productCode);
                     resolve();
@@ -557,7 +580,6 @@
             //var productCode = $("#ProductCode").val();
             //GetTypeWiseQCParameter(productCode);
         });
-
 
     function setSectionCode(sectioncode)
     {
