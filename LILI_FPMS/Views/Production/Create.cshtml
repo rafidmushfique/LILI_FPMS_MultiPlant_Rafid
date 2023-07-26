@@ -1831,13 +1831,18 @@
             if (sequenceNo == 1) {
 
                 alert("Maximum Processable No of Batch is :" + processableNoOfBatch)
-                document.getElementById("NumberOfBatch").value = processableNoOfBatch;
                 document.getElementById("ProductionQty").value = Number(processableNoOfBatch) * Number(standardOutput);
-            } 
+            }
+            document.getElementById("NumberOfBatch").value = processableNoOfBatch;
+           
+           
            
         }
 
-
+        console.log("standardOutput " + standardOutput);
+        console.log("previousProcessedNoOfBatch " + previousProcessedNoOfBatch);
+        console.log("currentProcessNoOfBatch " + currentProcessNoOfBatch);
+        console.log("processableNoOfBatch " + processableNoOfBatch);
 
         var productionQty = $('#NumberOfBatch').val();
         $.ajax({
