@@ -115,6 +115,14 @@ namespace LILI_IMS.Controllers
             entities.Qcdate = DateTime.Now;
             entities.Qcno = GetAutoNumber();
 
+            var businessCode = (from c in _context.TblUserWiseBusinessAndPlantCode
+                                where c.PlantId == GlobalVariable.PlantId
+                                select c.BusinessCode
+                              ).FirstOrDefault();
+
+            var productList = (from c in _context.View_Product.Where(c => c.Business == businessCode) select c).ToList();
+            ViewBag.ListOfProduct = productList;
+
             List<TblQcparameterType> typeList = new List<TblQcparameterType>();
             typeList = (from c in _context.TblQcparameterType
                         select c).ToList();
@@ -668,12 +676,14 @@ namespace LILI_IMS.Controllers
         //    return Json(model, sa);
         //}
 
-        public ActionResult GetProcessNoList(string SectionCode)
+        public ActionResult GetProcessNoList(string SectionCode,string ProductCode)
         {
             var sa = new JsonSerializerSettings();
             var sectionCodeParam = new SqlParameter("@SectionCode", SectionCode);
-            var PlantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
-            var model = _context.GetProcessNoListQC.FromSql("EXEC sp_GetProcessNoListForQC  @SectionCode, @PlantId", sectionCodeParam, PlantIdParam).ToList();
+            var plantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
+            var productCodeParam = new SqlParameter("@ProductCodeNo", ProductCode);
+
+            var model = _context.GetProcessNoListQC.FromSql("EXEC sp_GetProcessNoListForQC  @SectionCode, @PlantId,@ProductCodeNo", sectionCodeParam, plantIdParam, productCodeParam).ToList();
             
             return Json(model, sa);
         }

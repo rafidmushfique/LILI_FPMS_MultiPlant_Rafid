@@ -35,14 +35,31 @@
         <form class="form-horizontal" asp-controller="QC" method="post" asp-action="CreateQC">
             <div class="box-body">
                 <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Products</label>
+                    <div class="col-sm-4">
+                        <select id="ProductCodeSrch" class="form-control select2" @* asp-items="@(new SelectList(ViewBag.ListOfProduct,"ProductCode","ProductName"))"*@>
+                            <option value=""> Select Product </option>
+                            @{
+                                foreach (var item in ViewBag.ListOfProduct)
+                                {
+                                    <option value="@item.ProductCode"> @item.ProductCode || @item.ProductName</option>
+
+                                }
+                            }
+
+                        </select>
+                        @*  <span asp-validation-for="ProductCodeSrch"></span>*@
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Section</label>
                     <div class="col-sm-4">
                         <select  name="SectionCode" id="sectionCode" class="form-control">
-                            @foreach(var item in ViewBag.ListofSection)
+               @*             @foreach(var item in ViewBag.ListofSection)
                             {
                                  <option value="@item.SectionCode">@item.SectionName</option>
                             }
-                           
+                           *@
                       </select>
                     </div>
 
@@ -337,10 +354,41 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        setSectionCode("S0001");
+        $('.select2').select2();
+        //setSectionCode("S0001");
+        $("#ProductCodeSrch").on('select2:select', function () {
+            var productcode = $("#ProductCodeSrch option:selected").val();
+            getSectionList(productcode);
 
+        });
     });
+    function getSectionList(productcode) {
+        $.ajax({
 
+            url: '@Url.Action("GetSectionData", "Production")',
+            data: {
+                ProductCode: productcode
+            },
+            error: function (result) {
+                alert("error");
+            },
+            success: function (result) {
+                var formoption = "<option value='" + 0 + "'>" + "-- Select Section --" + "</option>";
+                var hiddenSequence = "";
+                for (var i = 0; i < result.length; i++) {
+                    if (result[i].SectionCode != '' && result[i].SectionCode != undefined) {
+
+                        formoption += "<option value='" + result[i].SectionCode + "'>" + result[i].SectionName + "</option>";
+                        hiddenSequence += "<input type='hidden' id='SequenceNo_" + result[i].SectionCode + "' value='" + result[i].SequenceNo + "'>"
+                    }
+                }
+                $('#sectionCode').html(formoption);
+                $('#hiddenSequenceNo').html(hiddenSequence);
+
+            }
+        });
+
+    }
     $('#QcpassQty, #QcholdQty').keyup(function () {
         var Qcqty = Number($('#Qcqty').val());
         //var QcpassQty = Number(this.value);
@@ -401,12 +449,14 @@
     $("#sectionCode").on('change', function () {
         var formoption = "<option value='0'>Select Process No</option>";
         var sectioncode = $("#sectionCode option:selected").val();
+        var productcode = $("#ProductCodeSrch option:selected").val();
         setSectionCode(sectioncode);
         $.ajax({
 
             url: '@Url.Action("GetProcessNoList", "QC")',
             data: {
-                SectionCode: sectioncode
+                SectionCode: sectioncode,
+                ProductCode: productcode,
             },
             error: function (result) {
                 alert("error");
