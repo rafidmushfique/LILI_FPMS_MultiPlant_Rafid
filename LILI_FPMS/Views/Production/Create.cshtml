@@ -41,7 +41,17 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Products</label>
                     <div class="col-sm-4">
-                        <select id="ProductCodeSrch" class="form-control select2" asp-items="@(new SelectList(ViewBag.ListOfProduct,"ProductCode","ProductName"))"></select>
+                        <select id="ProductCodeSrch" class="form-control select2"@* asp-items="@(new SelectList(ViewBag.ListOfProduct,"ProductCode","ProductName"))"*@>
+                            <option value=""> Select Product </option>
+                            @{
+                                foreach (var item in ViewBag.ListOfProduct)
+                                {
+                                    <option value="@item.ProductCode"> @item.ProductCode || @item.ProductName</option>
+
+                                }
+                            }
+
+                        </select>
                       @*  <span asp-validation-for="ProductCodeSrch"></span>*@
                     </div>
                 </div>
@@ -1291,18 +1301,18 @@
            
         });
 
-        if($("#Section").val() != null)
-        {
-          var text= $("#Section option:selected").text();
-            $("#sectionHeader").text(text);
-            $("#processNoField").prop("disabled", "true")
+        //if($("#Section").val() != null)
+        //{
+        //  var text= $("#Section option:selected").text();
+        //    $("#sectionHeader").text(text);
+        //    $("#processNoField").prop("disabled", "true")
 
-        }
-        else{
-          $("#ManuFactaringDetail").hide();
-            $("#submitBtn").prop("disabled", "true");
-            $("#processNoField").prop("disabled", "true")
-        }
+        //}
+        //else{
+        //  $("#ManuFactaringDetail").hide();
+        //    $("#submitBtn").prop("disabled", "true");
+        //    $("#processNoField").prop("disabled", "true")
+        //}
          
 
 

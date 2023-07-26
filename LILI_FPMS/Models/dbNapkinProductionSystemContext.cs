@@ -73,6 +73,7 @@ namespace LILI_IMS.Models
 
         public virtual DbSet<GetProcessNoList> GetProcessNoList { get; set; }        
         public virtual DbSet<GetProcessNoListQC> GetProcessNoListQC { get; set; }
+        public virtual DbSet<GetFinalSetupSectionCode> GetFinalSetupSectionCode { get; set; }
 
         public virtual DbSet<TblManufacturingBreakDownCause> TblManufacturingBreakDownCause { get; set; }
         public virtual DbSet<TblManufacturingLine> TblManufacturingLine { get; set; }

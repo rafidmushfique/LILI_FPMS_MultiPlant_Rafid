@@ -145,14 +145,7 @@ namespace LILI_IMS.Controllers
                            select c).ToList();
             machineList.Insert(0, new TblMachineName { MachineCode = "", MachineName = "Select Machine" });
             ViewBag.ListofMachine = machineList;
-            var productList = (from c in _context.View_Product
-                               select new
-                               {
-                                   ProductCode = c.ProductCode,
-                                   ProductName = c.ProductName,
-                                   Business = c.Business
-                               }).Where(c => c.Business == businessCode).ToList();
-            productList.Insert(0, new { ProductCode = "0", ProductName = "-- Select Product --", Business = "A" });
+            var productList = (from c in _context.View_Product.Where(c => c.Business == businessCode) select c).ToList();
             ViewBag.ListOfProduct = productList;
 
             List<TblManufacturingBreakDownCause> ManufacturingBreakDownCauseList = new List<TblManufacturingBreakDownCause>();
@@ -818,6 +811,12 @@ namespace LILI_IMS.Controllers
                 requisitionNo = keyVal.FirstOrDefault().RequisitionNo;
             }
             var productCode = _context.TblRequisition.Where(c => c.RequisitionNo == requisitionNo).Select(c => c.ProductCode).FirstOrDefault();
+
+            var productCodeParam = new SqlParameter("@ProductCode", productCode);
+
+            var finalSetupSectionCode= _context.GetFinalSetupSectionCode
+                               .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode", productCodeParam).FirstOrDefault();
+            var fsectionCode = finalSetupSectionCode.SectionCode;
             var processNo = (from c in _context.TblProductionProcess
                              where c.RequisitionNo == requisitionNo
                              select c.ProcessNo).FirstOrDefault();
@@ -865,7 +864,7 @@ namespace LILI_IMS.Controllers
                                           BatchSize = _context.View_BOM.Where(s => s.ProductCode == p.ProductCode).FirstOrDefault().BatchSize,
                                           NumberOfBatch = r.NumberOfBatch,
                                           ProductionQty = 0,
-                                          PreviousProcessedBatchNo = _context.TblProductionProcess.Where(x => x.RequisitionNo == requisitionNo).Sum(x => x.NumberOfBatch),
+                                          PreviousProcessedBatchNo = _context.TblProductionProcess.Where(x => x.RequisitionNo == requisitionNo).Where(x=>x.SectionCode==fsectionCode).Sum(x => x.NumberOfBatch),
                                           NoOfBatchInRequisition = r.NumberOfBatch,
                                           PreviousProcessedProductionQty = _context.TblProductionProcess.Where(x => x.RequisitionNo == requisitionNo).Sum(x => x.ProductionQty),
                                           PrevSecProductionQty=prevSecProdQty
@@ -901,6 +900,12 @@ namespace LILI_IMS.Controllers
                 }
                 var productCode = _context.TblRequisition.Where(c => c.RequisitionNo == requisitionNo).Select(c => c.ProductCode).FirstOrDefault();
                 var sequence = _context.TblProductWiseSectionSetupDetail.Where(x => x.Section == sectionCode).Select(x => x.Sequence).FirstOrDefault();
+                
+                var productCodeParam = new SqlParameter("@ProductCode", productCode);
+                var finalSetupSectionCode = _context.GetFinalSetupSectionCode
+                   .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode", productCodeParam).FirstOrDefault();
+                var fsectionCode = finalSetupSectionCode.SectionCode;
+
                 prevSeq = (sequence - 1);
                // var prevSeqstr = prevSeq.ToString();
                  
@@ -953,7 +958,7 @@ namespace LILI_IMS.Controllers
                                               BatchSize = _context.View_BOM.Where(s => s.ProductCode == p.ProductCode).FirstOrDefault().BatchSize,
                                               NumberOfBatch = r.NumberOfBatch,
                                               ProductionQty = 0,
-                                              PreviousProcessedBatchNo = _context.TblProductionProcess.Where(x => x.RequisitionNo == requisitionNo).Sum(x => x.NumberOfBatch),
+                                              PreviousProcessedBatchNo = _context.TblProductionProcess.Where(x => x.RequisitionNo == requisitionNo).Where(x=> x.SectionCode== fsectionCode).Sum(x => x.NumberOfBatch),
                                               NoOfBatchInRequisition = r.NumberOfBatch,
                                               PreviousProcessedProductionQty = _context.TblProductionProcess.Where(x => x.RequisitionNo == requisitionNo).Sum(x => x.ProductionQty),
                                               PrevSecProductionQty = prevSecProdQty
