@@ -55,11 +55,11 @@
                     <label for="inputEmail3" class="col-sm-2 control-label">Section</label>
                     <div class="col-sm-4">
                         <select  name="SectionCode" id="sectionCode" class="form-control">
-               @*             @foreach(var item in ViewBag.ListofSection)
+                          @*  @foreach(var item in ViewBag.ListofSection)
                             {
                                  <option value="@item.SectionCode">@item.SectionName</option>
-                            }
-                           *@
+                            }*@
+                           
                       </select>
                     </div>
 
@@ -354,7 +354,8 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('.select2').select2();
+        //setSectionCode("S0001");
+                $('.select2').select2();
         //setSectionCode("S0001");
         $("#ProductCodeSrch").on('select2:select', function () {
             var productcode = $("#ProductCodeSrch option:selected").val();
@@ -495,14 +496,12 @@
 
             //    }
             //});
-        
-        var processNo= this.value;
         var x = () => {
             return new Promise(resolve => {
                 $.ajax({
                     type: "POST",
-                    url: "/QC/SetRequisitionInfomationByProcessNo",
-                    data: { ProcessNo: processNo },
+                    url: "/QC/GetQCQuantity",
+                    data: { ProcessNo: this.value },
                     success: function (msg) {
                         $('#js_requisition_no').val('');
                         $('#BatchNo').val('');
@@ -546,27 +545,6 @@
         var y = () => {
             return new Promise((resolve) => {
                 setTimeout(function () {
-                    $.ajax({
-                        type: "POST",
-                        url: "/QC/GetQCQuantity",
-                        data: { ProcessNo: processNo },
-                        success: function (result) {
-                            
-                            $('#Qcqty').val('');
-                            for (var i = 0; i < result.length; i++) {
-                                $('#FGQCQtyBeforeConversion').val((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)));
-                                //$('#Qcqty').val(result[i].ProductionQty);
-                                var conversionFactor = $('#FGQCQtyConversionFactor').val();
-                                $('#Qcqty').val(((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)) / parseFloat(conversionFactor)).toFixed(5));
-                                $('#SFGQcqty').val(result[i].SFGProductionQty);
-                                $('#BatchNo').val(result[i].BatchNo);
-
-                            }
-                        },
-                        error: function () {
-
-                        }
-                    });
                     var productCode = $("#ProductCode").val();
                     GetTypeWiseQCParameter(productCode);
                     resolve();
@@ -580,6 +558,7 @@
             //var productCode = $("#ProductCode").val();
             //GetTypeWiseQCParameter(productCode);
         });
+
 
     function setSectionCode(sectioncode)
     {

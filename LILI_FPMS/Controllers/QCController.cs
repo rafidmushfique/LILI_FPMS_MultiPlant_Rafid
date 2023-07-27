@@ -25,7 +25,7 @@ namespace LILI_IMS.Controllers
     public class QCController : Controller
     {
         private readonly dbFormulationProductionSystemContext _context;
-        private string SECTION_CODE;
+        private static string SECTION_CODE;
         public QCController(dbFormulationProductionSystemContext context)
         {
             _context = context;
@@ -118,7 +118,7 @@ namespace LILI_IMS.Controllers
             var businessCode = (from c in _context.TblUserWiseBusinessAndPlantCode
                                 where c.PlantId == GlobalVariable.PlantId
                                 select c.BusinessCode
-                              ).FirstOrDefault();
+                  ).FirstOrDefault();
 
             var productList = (from c in _context.View_Product.Where(c => c.Business == businessCode) select c).ToList();
             ViewBag.ListOfProduct = productList;
@@ -676,15 +676,14 @@ namespace LILI_IMS.Controllers
         //    return Json(model, sa);
         //}
 
-        public ActionResult GetProcessNoList(string SectionCode,string ProductCode)
+        public ActionResult GetProcessNoList(string SectionCode, string ProductCode)
         {
             var sa = new JsonSerializerSettings();
             var sectionCodeParam = new SqlParameter("@SectionCode", SectionCode);
             var plantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
             var productCodeParam = new SqlParameter("@ProductCodeNo", ProductCode);
-
             var model = _context.GetProcessNoListQC.FromSql("EXEC sp_GetProcessNoListForQC  @SectionCode, @PlantId,@ProductCodeNo", sectionCodeParam, plantIdParam, productCodeParam).ToList();
-            
+
             return Json(model, sa);
         }
     }
