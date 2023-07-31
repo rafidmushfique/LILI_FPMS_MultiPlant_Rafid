@@ -12,7 +12,6 @@ using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NPOI.SS.Formula.Functions;
@@ -814,9 +813,9 @@ namespace LILI_IMS.Controllers
             var productCode = _context.TblRequisition.Where(c => c.RequisitionNo == requisitionNo).Select(c => c.ProductCode).FirstOrDefault();
 
             var productCodeParam = new SqlParameter("@ProductCode", productCode);
-
+            var plantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
             var finalSetupSectionCode= _context.GetFinalSetupSectionCode
-                               .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode", productCodeParam).FirstOrDefault();
+                               .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode,@PlantId", productCodeParam, plantIdParam).FirstOrDefault();
             var fsectionCode = finalSetupSectionCode.SectionCode;
             var processNo = (from c in _context.TblProductionProcess
                              where c.RequisitionNo == requisitionNo
@@ -901,10 +900,13 @@ namespace LILI_IMS.Controllers
                 }
                 var productCode = _context.TblRequisition.Where(c => c.RequisitionNo == requisitionNo).Select(c => c.ProductCode).FirstOrDefault();
                 var sequence = _context.TblProductWiseSectionSetupDetail.Where(x => x.Section == sectionCode).Select(x => x.Sequence).FirstOrDefault();
-                
+
                 var productCodeParam = new SqlParameter("@ProductCode", productCode);
+                var plantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
                 var finalSetupSectionCode = _context.GetFinalSetupSectionCode
-                   .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode", productCodeParam).FirstOrDefault();
+                                   .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode,@PlantId", productCodeParam, plantIdParam).FirstOrDefault();
+               
+          
                 var fsectionCode = finalSetupSectionCode.SectionCode;
 
                 prevSeq = (sequence - 1);

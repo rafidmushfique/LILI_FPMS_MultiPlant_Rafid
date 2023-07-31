@@ -41,9 +41,8 @@ namespace LILI_IMS.Models
         public virtual DbSet<TblProductWiseSectionSetup> TblProductWiseSectionSetup { get; set; }
         public virtual DbSet<TblProductWiseSectionSetupDetail> TblProductWiseSectionSetupDetail { get; set; }
         public virtual DbSet<GetSearchRequisitionList> GetSearchRequisitionList { get; set; }
-        public virtual DbSet<GetRequisitionWiseProcessList> GetRequisitionWiseProcessList { get; set; } 
+        public virtual DbSet<GetRequisitionWiseProcessList> GetRequisitionWiseProcessList { get; set; }
         public virtual DbSet<GetSectionDropdownList> GetSectionDropdownList { get; set; }
-
         public virtual DbSet<TblQcparameter> TblQcparameter { get; set; }
 
         public virtual DbSet<TblQc> TblQc { get; set; }
