@@ -115,8 +115,6 @@
 
         $('#SetRequisition').on('click', function () {
             var requisitionNo = $("input:checked").val();
-
-            console.log("requisitionNo " + requisitionNo);
             if (requisitionNo != '') {
                 var x = () => {
                     return new Promise(resolve => {
@@ -249,10 +247,6 @@
                 document.getElementById("ProductionQty").value = Number(processableNoOfBatch)*Number(standardOutput);
             }
 
-            console.log("standardOutput " + standardOutput);
-            console.log("previousProcessedNoOfBatch " + previousProcessedNoOfBatch);
-            console.log("currentProcessNoOfBatch " + currentProcessNoOfBatch);
-            console.log("processableNoOfBatch " + processableNoOfBatch);
 
 
             var productionQty = $('#NumberOfBatch').val();

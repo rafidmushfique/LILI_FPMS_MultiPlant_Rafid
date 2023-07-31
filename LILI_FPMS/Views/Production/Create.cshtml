@@ -182,7 +182,7 @@
 
                     <label asp-for="ManufacShiftCode" class="col-sm-2 control-label">By-product Name</label>
                     <div class="col-sm-4">
-                        <select asp-for="SFGCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfSFG,"SFGCode","SFGName"))"></select>
+                        <select asp-for="SFGCode" class="form-control select2" asp-items="@(new SelectList(ViewBag.ListOfSFG,"SFGCode","SFGName"))"></select>
                         <span asp-validation-for="SFGCode"></span>
                     </div>
                     <label for="inputEmail3" class="col-sm-2 control-label">By-product Production Quantity</label>
@@ -518,7 +518,7 @@
                         <input type="text" asp-for="ProductionQty" class="form-control" onkeypress='return isNumberKey(event)' >
                     </div>
 
-                <label asp-for="Comments" class="col-sm-2 col-sm-offset-3  control-label"></label>
+                <label asp-for="Comments" class="col-sm-2 control-label"></label>
                 <div class="col-sm-4">
                     <textarea type="text" asp-for="Comments" class="form-control" placeholder="Comments"></textarea>
                 </div>
@@ -1837,18 +1837,13 @@
             if (sequenceNo == 1) {
 
                 alert("Maximum Processable No of Batch is :" + processableNoOfBatch)
+                document.getElementById("NumberOfBatch").value = processableNoOfBatch;
                 document.getElementById("ProductionQty").value = Number(processableNoOfBatch) * Number(standardOutput);
-            }
-            document.getElementById("NumberOfBatch").value = processableNoOfBatch;
-           
-           
+            } 
            
         }
 
-        console.log("standardOutput " + standardOutput);
-        console.log("previousProcessedNoOfBatch " + previousProcessedNoOfBatch);
-        console.log("currentProcessNoOfBatch " + currentProcessNoOfBatch);
-        console.log("processableNoOfBatch " + processableNoOfBatch);
+
 
         var productionQty = $('#NumberOfBatch').val();
         $.ajax({

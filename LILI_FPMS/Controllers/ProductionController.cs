@@ -23,7 +23,7 @@ namespace LILI_IMS.Controllers
     public class ProductionController : Controller
     {
         private readonly dbFormulationProductionSystemContext _context;
-        private static string SECTION_CODE;
+        private string SECTION_CODE;
 
         public ProductionController(dbFormulationProductionSystemContext context)
         {
@@ -810,8 +810,6 @@ namespace LILI_IMS.Controllers
             if (keyVal != null)
             {
                 requisitionNo = keyVal.FirstOrDefault().RequisitionNo;
-               
-
             }
             var productCode = _context.TblRequisition.Where(c => c.RequisitionNo == requisitionNo).Select(c => c.ProductCode).FirstOrDefault();
 
@@ -828,9 +826,8 @@ namespace LILI_IMS.Controllers
               var  qcRequired = (from pw in _context.TblProductWiseSectionSetup
                              from pwd in _context.TblProductWiseSectionSetupDetail
                              where pw.Id == pwd.ProductSectionSetupId && pw.ProductCode == productCode && pwd.Section == SECTION_CODE
-                             select pwd ).FirstOrDefault();
-                
-                if (qcRequired.IsQcrequired == "yes")
+                             select pwd.IsQcrequired.First()).ToString();
+                if (qcRequired == "yes")
                 {
                     
                  
