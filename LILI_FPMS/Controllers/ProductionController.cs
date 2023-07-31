@@ -12,6 +12,7 @@ using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NPOI.SS.Formula.Functions;
@@ -1143,35 +1144,42 @@ namespace LILI_IMS.Controllers
         public JsonResult GetSectionData(string ProductCode) {
             var plantId = GlobalVariable.PlantId;
             var sa = new JsonSerializerSettings();
-            List<TblSection> sectionList = new List<TblSection>();
-            sectionList = (
-                           from pw in _context.TblProductWiseSectionSetup
-                           from pwd in _context.TblProductWiseSectionSetupDetail
-                           from c in _context.TblSection
-                           where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode && pw.ProductCode== ProductCode && pw.PlantId== plantId
-                               select new TblSection { 
-                                Id = c.Id,
-                                SectionCode=c.SectionCode,
-                                SectionName= c.SectionName,
-                                SequenceNo= pwd.Sequence
-                               }
-                           ).ToList();
-            if (sectionList.Count() == 0)
+            if (ProductCode == null || ProductCode == "")
             {
-                sectionList = (
-                  from pw in _context.TblProductWiseSectionSetup
-                  from pwd in _context.TblProductWiseSectionSetupDetail
-                  from c in _context.TblSection
-                  where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode  && pw.PlantId == plantId
-                  select new TblSection
-                  {
-                      Id = c.Id,
-                      SectionCode = c.SectionCode,
-                      SectionName = c.SectionName,
-                      SequenceNo = pwd.Sequence
-                  }
-                  ).ToList();
+                ProductCode = "0";
             }
+            //sectionList = (
+            //               from pw in _context.TblProductWiseSectionSetup
+            //               from pwd in _context.TblProductWiseSectionSetupDetail
+            //               from c in _context.TblSection
+            //               where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode && pw.ProductCode== ProductCode && pw.PlantId== plantId
+            //                   select new TblSection { 
+            //                    Id = c.Id,
+            //                    SectionCode=c.SectionCode,
+            //                    SectionName= c.SectionName,
+            //                    SequenceNo= pwd.Sequence
+            //                   }
+            //               ).ToList();
+            //if (sectionList.Count() == 0)
+            //{
+            //    sectionList = (
+            //      from pw in _context.TblProductWiseSectionSetup
+            //      from pwd in _context.TblProductWiseSectionSetupDetail
+            //      from c in _context.TblSection
+            //      where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode  && pw.PlantId == plantId
+            //      select new TblSection
+            //      {
+            //          Id = c.Id,
+            //          SectionCode = c.SectionCode,
+            //          SectionName = c.SectionName,
+            //          SequenceNo = pwd.Sequence
+            //      }
+            //      ).ToList();
+            //}
+            var productCodeParam = new SqlParameter("@ProductCode", ProductCode);
+            var plantIdParam = new SqlParameter("@plantId", plantId);
+            var sectionList = _context.GetSectionDropdownList.FromSql("EXEC sp_GetSectionDropdownList @ProductCode,@PlantId", productCodeParam, plantIdParam).ToList();
+
             ViewBag.ListofSection = sectionList;
             return Json(sectionList, sa);
         }

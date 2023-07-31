@@ -25,7 +25,7 @@ namespace LILI_IMS.Controllers
     public class QCController : Controller
     {
         private readonly dbFormulationProductionSystemContext _context;
-        private string SECTION_CODE;
+        private static string SECTION_CODE;
         public QCController(dbFormulationProductionSystemContext context)
         {
             _context = context;

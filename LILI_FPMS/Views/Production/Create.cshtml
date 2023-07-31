@@ -674,6 +674,9 @@
         var table = $("#htProductionMaterialDetail tbody");
         
         let productCode = $("#ProductCode").val().substring(0, 3);
+        let productCodeSrch = $("#ProductCodeSrch").val();
+
+        
         let manufacShiftCode = $("#ManufacShiftCode").val();
         let packingShiftCode = $("#PackShiftCode").val();
 
@@ -684,6 +687,8 @@
         let productionQty = $("#ProductionQty").val();
         let currMaxProductionQty = Number(maxProcessableProductionQty)-Number(previousProcessedProductionQty);
         
+
+
         table.find('tr').each(function (i, el) {                
             var $tds = $(this).find('td');                
             var rmpmName = $(this).find("td").eq(2).find(":text").val();
@@ -1280,7 +1285,7 @@
                     if (result[i].SectionCode != '' && result[i].SectionCode != undefined) {
 
                         formoption += "<option value='" + result[i].SectionCode + "'>" + result[i].SectionName + "</option>";
-                        hiddenSequence += "<input type='hidden' id='SequenceNo_" + result[i].SectionCode + "' value='" + result[i].SequenceNo + "'>"
+                        hiddenSequence += "<input type='hidden' id='SequenceNo_" + result[i].SectionCode + "' value='" + result[i].Sequence + "'>"
                     }
                 }
                 $('#Section').html(formoption);
@@ -1293,6 +1298,7 @@
 
     $(document).ready(function () {
         var productcode = $("#ProductCodeSrch option:selected").val();
+
         getSectionList(productcode);
         //$("#prevSecPQty").css("visibility", "hidden");
         $("#ProductCodeSrch").on('select2:select', function () {
