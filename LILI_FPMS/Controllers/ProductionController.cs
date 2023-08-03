@@ -10,12 +10,14 @@ using LILI_FPMS;
 using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NPOI.SS.Formula.Functions;
+using Microsoft.AspNetCore.Http;
 
 namespace LILI_IMS.Controllers
 {
@@ -23,11 +25,20 @@ namespace LILI_IMS.Controllers
     public class ProductionController : Controller
     {
         private readonly dbFormulationProductionSystemContext _context;
-        private string SECTION_CODE;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static string SECTION_CODE;
+        private static long GolablPlantId;
 
-        public ProductionController(dbFormulationProductionSystemContext context)
+        public ProductionController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
+            if (!string.IsNullOrEmpty(plntid))
+            {
+
+                GolablPlantId = long.Parse(plntid);
+            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -50,8 +61,8 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var pross = from s in _context.TblProductionProcess.Where(s=>s.PlantId==GlobalVariable.PlantId)
-                        from r in _context.TblRequisition.Where(r => r.PlantId == GlobalVariable.PlantId)
+            var pross = from s in _context.TblProductionProcess.Where(s=>s.PlantId== GolablPlantId)
+                        from r in _context.TblRequisition.Where(r => r.PlantId == GolablPlantId)
                         from p in _context.View_Product
                         where s.RequisitionNo == r.RequisitionNo && r.ProductCode == p.ProductCode
                         select new TblProductionProcess

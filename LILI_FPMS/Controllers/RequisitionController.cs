@@ -7,6 +7,7 @@ using LILI_FPMS;
 using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -17,10 +18,18 @@ namespace LILI_IMS.Controllers
     public class RequisitionController : Controller
     {
         private readonly dbFormulationProductionSystemContext _context;
-
-        public RequisitionController(dbFormulationProductionSystemContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static long GolablPlantId;
+        public RequisitionController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
+            if (!string.IsNullOrEmpty(plntid))
+            {
+
+                GolablPlantId = long.Parse(plntid);
+            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -42,7 +51,7 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var req = from s in _context.TblRequisition.Where(x=>x.PlantId==GlobalVariable.PlantId)
+            var req = from s in _context.TblRequisition.Where(x=>x.PlantId== GolablPlantId)
                       from p in _context.View_Product
                       where s.ProductCode == p.ProductCode
                       select new TblRequisition

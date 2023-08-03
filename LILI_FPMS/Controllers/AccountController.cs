@@ -14,6 +14,7 @@ using LILI_IMS.Models;
 using LILI_IMS.Models.AccountViewModels;
 using LILI_IMS.Services;
 using LILI_FPMS;
+using Microsoft.AspNetCore.Http;
 
 namespace LILI_IMS.Controllers
 {
@@ -69,7 +70,10 @@ namespace LILI_IMS.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    GlobalVariable.PlantId = _context.TblUserWiseBusinessAndPlantCode.Where(x => x.UserId == model.Email).FirstOrDefault().PlantId;
+                    var PlantId = (_context.TblUserWiseBusinessAndPlantCode.Where(x => x.UserId == model.Email).FirstOrDefault().PlantId).ToString();
+
+                    HttpContext.Session.SetString("PlantId", PlantId);
+
                     _logger.LogInformation("User logged in.");
                     return RedirectToLocal(returnUrl);
                 }
@@ -252,6 +256,7 @@ namespace LILI_IMS.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            HttpContext.Session.Clear();
             _logger.LogInformation("User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }

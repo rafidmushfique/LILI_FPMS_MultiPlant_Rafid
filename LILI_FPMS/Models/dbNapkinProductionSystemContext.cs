@@ -112,7 +112,7 @@ namespace LILI_IMS.Models
             {
                #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
               //optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbFormulationProduction;Persist Security Info=True;User ID=sa;Password=dataport;");
-              optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbToiletriesProduction;Persist Security Info=True;User ID=sa;Password=dataport;");
+              optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbToiletriesProduction_dev;Persist Security Info=True;User ID=sa;Password=dataport;");
             }
         }
 
