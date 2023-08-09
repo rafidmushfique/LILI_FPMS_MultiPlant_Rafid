@@ -34,13 +34,14 @@ namespace LILI_IMS.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
-            dbFormulationProductionSystemContext context)
+            dbFormulationProductionSystemContext contex
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
-            _context = context;
+            _context = contex;
         }
 
         [TempData]
