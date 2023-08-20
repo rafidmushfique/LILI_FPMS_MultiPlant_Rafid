@@ -338,7 +338,7 @@ namespace LILI_IMS.Controllers
             prodModel.ProductionQtyConversionFactor = dt.ProductionQtyConversionFactor;
             prodModel.QCReferenceSampleQty = dt.QCReferenceSampleQty;
             prodModel.LumpQty = dt.LumpQty;
-
+            prodModel.SectionName =  _context.TblSection.Where(s=>s.SectionCode == dt.SectionCode).FirstOrDefault().SectionName;
 
             var sfgList = (from c in _context.View_Product
                            select new

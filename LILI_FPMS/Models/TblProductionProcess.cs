@@ -23,10 +23,10 @@ namespace LILI_FPMS.Models
             TblCodingDetailShift = new List<TblCodingDetailShift>();
             TblCodingDetailLine = new List<TblCodingDetailLine>();
             TblCodingDetailMachine = new List<TblCodingDetailMachine>();
-            
+
             TblProductionProcessDetail = new List<TblProductionProcessDetail>();
-            
-            
+
+
         }
 
         public int Id { get; set; }
@@ -134,6 +134,8 @@ namespace LILI_FPMS.Models
         public decimal CodingQty { get; set; }
         public decimal PackingQty { get; set; }
         public string SectionCode { get; set; }
+        [NotMapped]
+        public string SectionName { get; set; }
         [NotMapped]
         public string CodeMachineCapacity { get; set; }
        
