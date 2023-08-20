@@ -368,3 +368,5 @@ FodyWeavers.xsd
 /LILI_FPMS/appsettings.json
 /.gitignore
 /LILI_FPMS/appsettings.json
+/LILI_FPMS/Models/dbNapkinProductionSystemContext.cs
+/LILI_FPMS/appsettings.json
