@@ -77,7 +77,7 @@ namespace LILI_IMS.Controllers
             //                ProductionQty = s.ProductionQty,
             //                Comments = s.Comments
             //            };sp_GetAllProductionProcessData
-            var plantId = new SqlParameter("@PlantId", GloablPlantId);
+            var plantId = new SqlParameter("@PlantId", GlobalPlantId);
 
             var pross = _context.GetProductionProcessIndex
                                 .FromSql("EXEC sp_GetAllProductionProcessData @PlantId", plantId);

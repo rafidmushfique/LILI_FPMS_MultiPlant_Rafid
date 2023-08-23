@@ -37,7 +37,7 @@ namespace LILI_IMS
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-            services.AddScoped<BaseController>();
+           
             //Set form post limit
             //services.Configure<FormOptions>(x => x.ValueCountLimit = 2048);
             services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);

@@ -17,6 +17,8 @@ namespace LILI_FPMS.Models
         public string ProductName { get; set; }
         public decimal ProductionQty { get; set; }
         public string Comments { get; set; }
-        
+        public string SectionName { get; set; }
+
+
     }
 }
