@@ -1,4 +1,4 @@
-﻿@model PaginatedList<LILI_FPMS.Models.TblProductionProcess>
+﻿@model PaginatedList<LILI_FPMS.Models.GetProductionProcessIndex>
 
 <section class="content-header">
     @*<h1>
@@ -60,12 +60,12 @@
                             <th style="text-align:center; width:10%">
                                 <a style="color:white;" asp-action="Index" asp-route-sortOrder="@ViewData["ProductCodeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">FG Code <i class="fa fa-sort" style="font-size:20px;color:sandybrown"></i></a>
                             </th>
+
                             <th style="text-align:center; width:17%">
                                 <a style="color:white;" asp-action="Index" asp-route-sortOrder="@ViewData["ProductNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">FG Name <i class="fa fa-sort" style="font-size:20px;color:sandybrown"></i></a>
                             </th>
 
                             <th style="text-align:center;  width:10%">Production Quantity</th>
-                            <th style="text-align:center;  width:10%">Section</th>
                             <th style="text-align:center;  width:10%">Comments</th>
                             <th style="text-align:center; width:10%">Action</th>
                         </tr>
@@ -82,7 +82,6 @@
                             <td>@Html.DisplayFor(modelItem => item.ProductCode)</td>
                             <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
                             <td>@Html.DisplayFor(modelItem => item.ProductionQty)</td>
-                            <td>@Html.DisplayFor(modelItem => item.SectionName)</td>
                             <td>@Html.DisplayFor(modelItem => item.Comments)</td>
                             @*<td style="text-align:center;"><a href="/Production/Update/@item.Id"><i class="fa fa-edit" aria-hidden="true" style="font-size:20px;color:#4d4a45"></i></a> | <a href="#" onclick="Delete('@item.Id')"><i class="fa fa-trash" aria-hidden="true" style="font-size:20px;color:#4d4a45"></i></a></td>*@
                                 <td style="text-align:center;"><a href="/Production/Update/@item.Id"><i class="fa fa-edit" aria-hidden="true" style="font-size:20px;color:#4d4a45"></i></a></td>

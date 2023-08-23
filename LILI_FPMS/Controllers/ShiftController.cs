@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using LILI_FPMS;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,17 +16,9 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private static long GlobalPlantId;
-        public ShiftController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
+        public ShiftController(dbFormulationProductionSystemContext context)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
-            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
-            if (!string.IsNullOrEmpty(plntid))
-            {
-                GlobalPlantId = long.Parse(plntid);
-            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -51,7 +42,7 @@ namespace LILI_IMS.Controllers
 
             var shifts = from s in _context.TblShiftSetup
                             select s;
-            shifts = shifts.Where(s => s.PlantId == GlobalPlantId);
+            shifts = shifts.Where(s => s.PlantId == GlobalVariable.PlantId);
             if (!String.IsNullOrEmpty(searchString))
             {
                 shifts = shifts.Where(s => s.ShiftName.Contains(searchString));
@@ -90,7 +81,7 @@ namespace LILI_IMS.Controllers
                 {
                     shift.Iuser = User.Identity.Name;
                     shift.Idate = DateTime.Now;
-                    shift.PlantId = GlobalPlantId;
+                    shift.PlantId = GlobalVariable.PlantId;
                     _context.Add(shift);
                     await _context.SaveChangesAsync();
                 }

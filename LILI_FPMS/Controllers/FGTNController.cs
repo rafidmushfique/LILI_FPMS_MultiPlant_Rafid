@@ -10,7 +10,6 @@ using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -26,18 +25,9 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private static long GlobalPlantId;
-
-        public FGTNController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
+        public FGTNController(dbFormulationProductionSystemContext context)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
-            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
-            if (!string.IsNullOrEmpty(plntid))
-            {
-                GlobalPlantId = long.Parse(plntid);
-            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -63,7 +53,7 @@ namespace LILI_IMS.Controllers
             //            where (s.PlanningNo == d.PlanningNo)
             //            select new {s.PlanningNo,s.Year,s.Month,d.Fgcode};
 
-            var fgtn_data = from master in _context.TblFgtn.Where(master => master.PlantId == GlobalPlantId)
+            var fgtn_data = from master in _context.TblFgtn.Where(master => master.PlantId == GlobalVariable.PlantId)
                           select new TblFgtn {
                               Id = master.Id,
                               Fgtnno = master.Fgtnno,
@@ -118,7 +108,7 @@ namespace LILI_IMS.Controllers
             locationList.Insert(0, new TblFgtransferLocation { LocationCode = "0", LocationName = "Select Location" });
             ViewBag.ListOfLocation = locationList;
 
-            var plantIdParam = new SqlParameter("@plantId", GlobalPlantId);
+            var plantIdParam = new SqlParameter("@plantId", GlobalVariable.PlantId);
             var pendingList = _context.GetFGTNPendingList
                                 .FromSql("EXEC sp_GetFGTNPendingList @plantId", plantIdParam)
                                 .ToList();
@@ -183,7 +173,7 @@ namespace LILI_IMS.Controllers
                     fgtn_data.Iuser = User.Identity.Name;
                     fgtn_data.Idate = DateTime.Now;
                     fgtn_data.Fgtnno = GetAutoNumber();
-                    fgtn_data.PlantId = GlobalPlantId;
+                    fgtn_data.PlantId = GlobalVariable.PlantId;
                     _context.Add(fgtn_data);
                     await _context.SaveChangesAsync();
                 }

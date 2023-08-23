@@ -6,7 +6,6 @@ using LILI_FPMS;
 using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -18,18 +17,9 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private static long GlobalPlantId;
-
-        public MachineController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
+        public MachineController(dbFormulationProductionSystemContext context)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
-            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
-            if (!string.IsNullOrEmpty(plntid))
-            {
-                GlobalPlantId = long.Parse(plntid);
-            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -50,7 +40,7 @@ namespace LILI_IMS.Controllers
             var machines = from s in _context.TblMachineSetup
                            from m in _context.TblMachineName
                            from p in _context.View_Product
-                           where s.ProductCode == p.ProductCode && s.MachineCode == m.MachineCode && s.PlantId == GlobalPlantId
+                           where s.ProductCode == p.ProductCode && s.MachineCode == m.MachineCode && s.PlantId == GlobalVariable.PlantId
                            select new TblMachineSetup
                            { 
                             Id= s.Id,   
@@ -87,7 +77,7 @@ namespace LILI_IMS.Controllers
         {
             TblMachineSetup entities = new TblMachineSetup();
             List<TblMachineName> machineList = new List<TblMachineName>();
-            machineList = (from c in _context.TblMachineName.Where(c=>c.PlantId == GlobalPlantId)
+            machineList = (from c in _context.TblMachineName.Where(c=>c.PlantId == GlobalVariable.PlantId)
                            select c).ToList();
             machineList.Insert(0, new TblMachineName { MachineCode = "", MachineName = "Select Machine" });
             ViewBag.ListofMachine = machineList;
@@ -104,7 +94,7 @@ namespace LILI_IMS.Controllers
                 {
                     machine.Iuser = User.Identity.Name;
                     machine.Idate = DateTime.Now;
-                    machine.PlantId = GlobalPlantId;
+                    machine.PlantId = GlobalVariable.PlantId;
                     _context.Add(machine);
                     await _context.SaveChangesAsync();
                 }

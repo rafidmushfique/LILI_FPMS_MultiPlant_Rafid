@@ -102,7 +102,7 @@
 
                             <div class="col-sm-1 ">
                             <input type="checkbox"  id="isQCrequired">
-                            <input type="hidden" id="checkboxValue" value="no">
+                            <input type="hidden" id="checkboxValue" value="yes">
                             <label for=""> QC Required</label>
                             </div>
 
@@ -121,7 +121,6 @@
                                 <th style="width:7%; display:none">Prdouct Code</th>
                                 <th style="width:15%;display:none">Prdouct Name</th>
                                 <th style="width:7%">Section</th>
-                                <th style="width:7%">Section Name</th>
                                 <th style="width:7%">Sequence</th>
                                 <th style="width:7%">QC Required</th> 
                                 <th style="width:7%">Setup Completed</th>
@@ -192,7 +191,6 @@
       
         var productName = $("#ProductName").val();
         var section= $("#Section").val();
-        var sectionName = $("#Section option:selected").text();
         var sequence = $("#Sequence").val();
         var isQcrequired = $("#checkboxValue").val();
         var isSetupCompleted = $("#checkboxValue1").val();
@@ -212,16 +210,15 @@
         var productCodeCell = "<td style='display:none'><input style='border:none'  type='text' value='" + productCode + "' readonly/></td>";
         var productNameCell = "<td  style='display:none'><input style='border:none' type='text' value='" + productName + "' readonly/></td>";
 
-        var sectionCell =      "<td><input style='text-align:left; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Section' name='TblProductWiseSectionSetupDetails[" + index + "].Section' type='text' value='" + section + "' /></td>";
-        var sectionNameCell = "<td><input style='text-align:left; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_SectionName' name='TblProductWiseSectionSetupDetails[" + index + "].SectionName' type='text' value='" + sectionName + "' /></td>";
+        var sectionCell =      "<td><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Section' name='TblProductWiseSectionSetupDetails[" + index + "].Section' type='text' value='" + section + "' /></td>";
         var sequnceCell =      "<td><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Sequence' name='TblProductWiseSectionSetupDetails[" + index + "].Sequence' type='text' value='" + sequence + "' /></td>";
-        var isQcrequiredCell = "<td><input style='text-align:left; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_IsQcrequired' name='TblProductWiseSectionSetupDetails[" + index + "].IsQcrequired' type='text' value='" + isQcrequired + "' /></td>";
-        var isSetupCompletedCell = "<td><input style='text-align:left; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_IsQcrequired' name='TblProductWiseSectionSetupDetails[" + index + "].IsSetupCompleted' type='text' value='" + isSetupCompleted + "' /></td>";
+        var isQcrequiredCell = "<td><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_IsQcrequired' name='TblProductWiseSectionSetupDetails[" + index + "].IsQcrequired' type='text' value='" + isQcrequired + "' /></td>";
+        var isSetupCompletedCell = "<td><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_IsQcrequired' name='TblProductWiseSectionSetupDetails[" + index + "].IsSetupCompleted' type='text' value='" + isSetupCompleted + "' /></td>";
 
-        var commentsCell =     "<td><input style='text-align:left; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Comments' name='TblProductWiseSectionSetupDetails[" + index + "].Comments' type='text' value='" + comment + "' /></td>";
+        var commentsCell =     "<td><input style='text-align:right; width:100%; border: none;' id='TblProductWiseSectionSetupDetails" + index + "_Comments' name='TblProductWiseSectionSetupDetails[" + index + "].Comments' type='text' value='" + comment + "' /></td>";
         var removeCell =       "<td><input id='addRow' type='button' class='btn btn-sm btn-danger' value='X' onclick='removeProductWiseSectionSetupDetial(" + index + ");' /></td>";
 
-        var newRow = "<tr id='tblProductWiseSectionSetupDetials" + index + "'>" + productCodeCell + productNameCell + sectionCell + sectionNameCell + sequnceCell + isQcrequiredCell + isSetupCompletedCell + commentsCell + removeCell + "</tr>";
+        var newRow = "<tr id='tblProductWiseSectionSetupDetials" + index + "'>" + productCodeCell + productNameCell + sectionCell + sequnceCell + isQcrequiredCell + isSetupCompletedCell + commentsCell + removeCell + "</tr>";
         console.log(newRow);
         $("#tblProductWiseSectionSetupDetials").append(newRow);
    

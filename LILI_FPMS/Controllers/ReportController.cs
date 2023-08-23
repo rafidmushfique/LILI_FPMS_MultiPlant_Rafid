@@ -25,12 +25,8 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
         private readonly IConfiguration _configuration;
-
-
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private static long GlobalPlantId;
-
-
+        private static long GloablPlantId;
         public ReportController(dbFormulationProductionSystemContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -39,7 +35,8 @@ namespace LILI_IMS.Controllers
             var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
             if (!string.IsNullOrEmpty(plntid))
             {
-                GlobalPlantId = long.Parse(plntid);
+
+                GloablPlantId = long.Parse(plntid);
             }
         }
 
@@ -73,7 +70,7 @@ namespace LILI_IMS.Controllers
                             new SqlParameter("@month", month),
                             new SqlParameter("@code", code),
                             new SqlParameter("@batch", batch),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                         };
                         cmd.Parameters.AddRange(parameters);
                         conn.Open();
@@ -148,7 +145,7 @@ namespace LILI_IMS.Controllers
                             new SqlParameter("@month", month),
                             new SqlParameter("@code", code),
                             new SqlParameter("@batch", batch),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                         };
                         cmd.Parameters.AddRange(parameters);
                         conn.Open();
@@ -223,7 +220,7 @@ namespace LILI_IMS.Controllers
                             new SqlParameter("@month", month),
                             new SqlParameter("@code", code),
                             new SqlParameter("@batch", batch),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                         };
                         cmd.Parameters.AddRange(parameters);
                         conn.Open();
@@ -391,7 +388,7 @@ namespace LILI_IMS.Controllers
                         {
                             new SqlParameter("@year", year),
                             new SqlParameter("@month", month),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                             //new SqlParameter("@code", code),
                             //new SqlParameter("@batch", batch)
                         };
@@ -472,7 +469,7 @@ namespace LILI_IMS.Controllers
                             new SqlParameter("@year", year),
                             new SqlParameter("@month", month),
                             new SqlParameter("@code", code),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                             //new SqlParameter("@batch", batch)
                         };
                         cmd.Parameters.AddRange(parameters);
@@ -561,7 +558,7 @@ namespace LILI_IMS.Controllers
                             new SqlParameter("@year", year),
                             new SqlParameter("@month", month),
                             new SqlParameter("@code", code),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                             //new SqlParameter("@batch", batch)
                         };
                         cmd.Parameters.AddRange(parameters);
@@ -736,7 +733,7 @@ namespace LILI_IMS.Controllers
             TblRequisition entities = new TblRequisition();
             List<TblRequisition> requisitionList = new List<TblRequisition>();
             requisitionList = (from c in _context.TblRequisition
-                               where c.PlantId == GlobalPlantId
+                               where c.PlantId ==GloablPlantId
                                orderby c.RequisitionDate descending
                                select new TblRequisition
                                {
@@ -760,7 +757,7 @@ namespace LILI_IMS.Controllers
                         {
                             new SqlParameter("@CompanyId", 1),
                             //new SqlParameter("@PlantId", 3),
-                            new SqlParameter("@plantId", GlobalPlantId),
+                            new SqlParameter("@plantId",GloablPlantId),
                             new SqlParameter("@RequisitionNo", RequisitionNo)
 
                         };
@@ -882,7 +879,7 @@ namespace LILI_IMS.Controllers
                             new SqlParameter("@subBusiness", subBusiness),
                             new SqlParameter("@dateFrom", dateFrom),
                             new SqlParameter("@dateTo", dateTo),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                         };
                         cmd.Parameters.AddRange(parameters);
                         conn.Open();
@@ -977,7 +974,7 @@ namespace LILI_IMS.Controllers
                             new SqlParameter("@subBusiness", subBusiness),
                             new SqlParameter("@dateFrom", dateFrom),
                             new SqlParameter("@dateTo", dateTo),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                         };
                         cmd.Parameters.AddRange(parameters);
                         conn.Open();
@@ -1062,7 +1059,7 @@ namespace LILI_IMS.Controllers
                             new SqlParameter("@subBusiness", subBusiness),
                             new SqlParameter("@dateFrom", dateFrom),
                             new SqlParameter("@dateTo", dateTo),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                         };
                         cmd.Parameters.AddRange(parameters);
                         conn.Open();
@@ -1197,7 +1194,7 @@ namespace LILI_IMS.Controllers
                         {
                             new SqlParameter("@dateFrom", dateFrom),
                             new SqlParameter("@dateTo", dateTo),
-                            new SqlParameter("@plantId", GlobalPlantId)
+                            new SqlParameter("@plantId",GloablPlantId)
                         };
                         cmd.Parameters.AddRange(parameters);
                         conn.Open();
