@@ -10,16 +10,19 @@ using LILI_FPMS;
 using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NPOI.SS.Formula.Functions;
+using Microsoft.AspNetCore.Http;
+using LILI_FPMS.Controllers;
 
 namespace LILI_IMS.Controllers
 {
     [Authorize]
-    public class ProductionController : Controller
+    public class ProductionController : BaseController
     {
         private readonly dbFormulationProductionSystemContext _context;
         private string SECTION_CODE;
@@ -58,24 +61,27 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var pross = from s in _context.TblProductionProcess.Where(s=>s.PlantId==GlobalPlantId)
-                        from r in _context.TblRequisition.Where(r => r.PlantId == GlobalPlantId)
-                        from p in _context.View_Product
-                        from sec in _context.TblSection.Where(r => r.PlantId == GlobalPlantId)
-                        where s.RequisitionNo == r.RequisitionNo && r.ProductCode == p.ProductCode && s.SectionCode==sec.SectionCode
-                        select new TblProductionProcess
-                        {
-                            Id = s.Id,
-                            ProcessNo = s.ProcessNo,
-                            ProcessDate = s.ProcessDate,
-                            BatchNo = s.BatchNo,    
-                            RequisitionNo = s.RequisitionNo,
-                            ProductCode = r.ProductCode,
-                            ProductName = p.ProductName,
-                            ProductionQty = s.ProductionQty,
-                            Comments = s.Comments,
-                            SectionName= sec.SectionName
-                        };
+            //var pross = from s in _context.TblProductionProcess.Where(s=>s.PlantId== GloablPlantId)
+            //            from r in _context.TblRequisition.Where(r => r.PlantId == GloablPlantId)
+            //            from p in _context.View_Product
+            //            where s.RequisitionNo == r.RequisitionNo && r.ProductCode == p.ProductCode
+            //            select new TblProductionProcess
+            //            {
+            //                Id = s.Id,
+            //                ProcessNo = s.ProcessNo,
+            //                ProcessDate = s.ProcessDate,
+            //                BatchNo = s.BatchNo,    
+            //                RequisitionNo = s.RequisitionNo,
+            //                ProductCode = r.ProductCode,
+            //                ProductName = p.ProductName,
+            //                ProductionQty = s.ProductionQty,
+            //                Comments = s.Comments
+            //            };sp_GetAllProductionProcessData
+            var plantId = new SqlParameter("@PlantId", GloablPlantId);
+
+            var pross = _context.GetProductionProcessIndex
+                                .FromSql("EXEC sp_GetAllProductionProcessData @PlantId", plantId);
+
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -107,7 +113,7 @@ namespace LILI_IMS.Controllers
                     break;
             }
             int pageSize = 10;
-            return View(await PaginatedList<TblProductionProcess>.CreateAsync(pross.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<GetProductionProcessIndex>.CreateAsync(pross.AsNoTracking(), pageNumber ?? 1, pageSize));
 
         }
 
@@ -337,7 +343,7 @@ namespace LILI_IMS.Controllers
             prodModel.ProductionQtyConversionFactor = dt.ProductionQtyConversionFactor;
             prodModel.QCReferenceSampleQty = dt.QCReferenceSampleQty;
             prodModel.LumpQty = dt.LumpQty;
-
+            prodModel.SectionName =  _context.TblSection.Where(s=>s.SectionCode == dt.SectionCode).FirstOrDefault().SectionName;
 
             var sfgList = (from c in _context.View_Product
                            select new
@@ -829,7 +835,7 @@ namespace LILI_IMS.Controllers
             var productCodeParam = new SqlParameter("@ProductCode", productCode);
             var plantIdParam = new SqlParameter("@PlantId", GlobalPlantId);
             var finalSetupSectionCode= _context.GetFinalSetupSectionCode
-                               .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode", productCodeParam).FirstOrDefault();
+                               .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode,@PlantId", productCodeParam, plantIdParam).FirstOrDefault();
             var fsectionCode = finalSetupSectionCode.SectionCode;
             var processNo = (from c in _context.TblProductionProcess
                              where c.RequisitionNo == requisitionNo
@@ -914,11 +920,13 @@ namespace LILI_IMS.Controllers
                 }
                 var productCode = _context.TblRequisition.Where(c => c.RequisitionNo == requisitionNo).Select(c => c.ProductCode).FirstOrDefault();
                 var sequence = _context.TblProductWiseSectionSetupDetail.Where(x => x.Section == sectionCode).Select(x => x.Sequence).FirstOrDefault();
-                
+
                 var productCodeParam = new SqlParameter("@ProductCode", productCode);
                 var plantIdParam = new SqlParameter("@PlantId", GlobalPlantId);
                 var finalSetupSectionCode = _context.GetFinalSetupSectionCode
-                   .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode", productCodeParam).FirstOrDefault();
+                                   .FromSql("EXEC sp_GetFinalSetupSectionCode @ProductCode,@PlantId", productCodeParam, plantIdParam).FirstOrDefault();
+               
+          
                 var fsectionCode = finalSetupSectionCode.SectionCode;
 
                 prevSeq = (sequence - 1);
@@ -1007,7 +1015,45 @@ namespace LILI_IMS.Controllers
 
             return Json(productList, sa);
         }
+        public JsonResult GetRecipeDetails(string productCode, decimal productionQty)
+        {
+            
+            var errorViewModel = new ErrorViewModel();
+            var sa = new JsonSerializerSettings();
+            var productCodeParam = new SqlParameter("@productCode", productCode);
+            var productionQtyParam = new SqlParameter("@productionQty", productionQty);
+            var detailList = _context.GetTblProductionProcessDetail
+                                .FromSql("EXEC sp_GetRecipeDetailForProductionProcess @productCode, @productionQty", productCodeParam, productionQtyParam)
+                                .ToList();
+           
+            return Json(detailList, sa);
+        }
 
+        public JsonResult GetRecipeInfo(string productCode)
+        {
+            var sa = new JsonSerializerSettings();
+            var recipeInfo =      from b in _context.View_BOM
+                                  from p in _context.View_Product
+                                  where (b.ProductCode == productCode && b.ProductCode == p.ProductCode && b.IsActive=="Y")
+                                  select new TblProductionProcess
+                                  {
+                                      RequisitionNo = "",
+                                      BatchNo = "",
+                                      ProductCode = p.ProductCode,
+                                      ProductName = p.ProductName,
+                                      StandardOutput = b.StandardOutput,
+                                      BatchSize = b.BatchSize,
+                                      NumberOfBatch = 0,
+                                      ProductionQty = 0,
+                                      PreviousProcessedBatchNo = 0,
+                                      NoOfBatchInRequisition = 0,
+                                      PreviousProcessedProductionQty = 0,
+                                      PrevSecProductionQty = 0
+                                  };
+
+
+            return Json(recipeInfo, sa);
+        }
         [HttpPost]
         public JsonResult SearchRequisitionByKey(string searchKey)
         {
@@ -1037,12 +1083,16 @@ namespace LILI_IMS.Controllers
             return Json(model, sa);
         }
 
-        public JsonResult GetMachineCapacity(string machineCode, string requisitionNo)
+        public JsonResult GetMachineCapacity(string machineCode, string requisitionNo,string productCode)
         {
             if (machineCode.Length > 0)
             {
                 var sa = new JsonSerializerSettings();
-                var productCode = _context.TblRequisition.Where(x => x.RequisitionNo == requisitionNo).FirstOrDefault().ProductCode;
+                if (requisitionNo != null && requisitionNo != "")
+                {
+                     productCode = _context.TblRequisition.Where(x => x.RequisitionNo == requisitionNo).FirstOrDefault().ProductCode;
+
+                }
                 var capacity = from c in _context.TblMachineSetup.Where(s => s.MachineCode == machineCode && s.ProductCode == productCode) select c.Capacity;
                 return Json(capacity, sa);
             }
@@ -1155,40 +1205,47 @@ namespace LILI_IMS.Controllers
         public JsonResult GetSectionData(string ProductCode) {
             var plantId = GlobalPlantId;
             var sa = new JsonSerializerSettings();
-
-            
-            List<TblSection> sectionList = new List<TblSection>();
-            sectionList = (
-                           from pw in _context.TblProductWiseSectionSetup
-                           from pwd in _context.TblProductWiseSectionSetupDetail
-                           from c in _context.TblSection
-                           where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode && pw.ProductCode== ProductCode && pw.PlantId== plantId
-                               select new TblSection { 
-                                Id = c.Id,
-                                SectionCode=c.SectionCode,
-                                SectionName= c.SectionName,
-                                SequenceNo= pwd.Sequence
-                               }
-                           ).ToList();
-            if (sectionList.Count() == 0)
+            if (ProductCode == null || ProductCode == "")
             {
-                sectionList = (
-                             from pw in _context.TblProductWiseSectionSetup
-                             from pwd in _context.TblProductWiseSectionSetupDetail
-                             from c in _context.TblSection
-                             where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode && pw.PlantId == plantId
-                             select new TblSection
-                             {
-                                 Id = c.Id,
-                                 SectionCode = c.SectionCode,
-                                 SectionName = c.SectionName,
-                                 SequenceNo = pwd.Sequence
-                             }
-                             ).ToList();
+                ProductCode = "0";
             }
+            //sectionList = (
+            //               from pw in _context.TblProductWiseSectionSetup
+            //               from pwd in _context.TblProductWiseSectionSetupDetail
+            //               from c in _context.TblSection
+            //               where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode && pw.ProductCode== ProductCode && pw.PlantId== plantId
+            //                   select new TblSection { 
+            //                    Id = c.Id,
+            //                    SectionCode=c.SectionCode,
+            //                    SectionName= c.SectionName,
+            //                    SequenceNo= pwd.Sequence
+            //                   }
+            //               ).ToList();
+            //if (sectionList.Count() == 0)
+            //{
+            //    sectionList = (
+            //      from pw in _context.TblProductWiseSectionSetup
+            //      from pwd in _context.TblProductWiseSectionSetupDetail
+            //      from c in _context.TblSection
+            //      where pw.Id == pwd.ProductSectionSetupId && pwd.Section == c.SectionCode  && pw.PlantId == plantId
+            //      select new TblSection
+            //      {
+            //          Id = c.Id,
+            //          SectionCode = c.SectionCode,
+            //          SectionName = c.SectionName,
+            //          SequenceNo = pwd.Sequence
+            //      }
+            //      ).ToList();
+            //}
+            var productCodeParam = new SqlParameter("@ProductCode", ProductCode);
+            var plantIdParam = new SqlParameter("@plantId", plantId);
+            var sectionList = _context.GetSectionDropdownList.FromSql("EXEC sp_GetSectionDropdownList @ProductCode,@PlantId", productCodeParam, plantIdParam).ToList();
+
             ViewBag.ListofSection = sectionList;
             return Json(sectionList, sa);
         }
+
+
         //public JsonResult GetPackMachineCapacity(string machineCode)
         //{
         //    if (machineCode.Length > 0)

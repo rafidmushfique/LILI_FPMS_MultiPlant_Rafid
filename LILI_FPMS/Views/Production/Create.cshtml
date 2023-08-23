@@ -46,7 +46,7 @@
                             @{
                                 foreach (var item in ViewBag.ListOfProduct)
                                 {
-                                    <option value="@item.ProductCode"> @item.ProductCode || @item.ProductName</option>
+                                                <option value="@item.ProductCode"> @item.ProductCode || @item.ProductName</option>
 
                                 }
                             }
@@ -184,7 +184,7 @@
 
                     <label asp-for="ManufacShiftCode" class="col-sm-2 control-label">Bulk/By-Product Name</label>
                     <div class="col-sm-4">
-                        <select asp-for="SFGCode" class="form-control select2" asp-items="@(new SelectList(ViewBag.ListOfSFG,"SFGCode","SFGName"))"></select>
+                        <select asp-for="SFGCode" class="form-control" asp-items="@(new SelectList(ViewBag.ListOfSFG,"SFGCode","SFGName"))"></select>
                         <span asp-validation-for="SFGCode"></span>
                     </div>
                     <label for="inputEmail3" class="col-sm-2 control-label">Bulk/By-Product Production Quantity</label>
@@ -421,7 +421,7 @@
                                                 @{
                                                     foreach (var staff in ViewBag.ListofStaff)
                                                     {
-                                                            <option value="@staff.StaffId"> @staff.StaffId || @staff.Name</option>
+                                                                        <option value="@staff.StaffId"> @staff.StaffId || @staff.Name</option>
 
                                                     }
                                                 }
@@ -520,7 +520,7 @@
                         <input type="text" asp-for="ProductionQty" class="form-control" onkeypress='return isNumberKey(event)' >
                     </div>
 
-                <label asp-for="Comments" class="col-sm-2 control-label"></label>
+                <label asp-for="Comments" class="col-sm-2 col-sm-offset-3  control-label"></label>
                 <div class="col-sm-4">
                     <textarea type="text" asp-for="Comments" class="form-control" placeholder="Comments"></textarea>
                 </div>
@@ -1302,7 +1302,7 @@
                     if (result[i].SectionCode != '' && result[i].SectionCode != undefined) {
 
                         formoption += "<option value='" + result[i].SectionCode + "'>" + result[i].SectionName + "</option>";
-                        hiddenSequence += "<input type='hidden' id='SequenceNo_" + result[i].SectionCode + "' value='" + result[i].SequenceNo + "'>"
+                        hiddenSequence += "<input type='hidden' id='SequenceNo_" + result[i].SectionCode + "' value='" + result[i].Sequence + "'>"
                     }
                 }
                 $('#Section').html(formoption);
@@ -1315,10 +1315,81 @@
 
     $(document).ready(function () {
         var productcode = $("#ProductCodeSrch option:selected").val();
+
         getSectionList(productcode);
-        //$("#prevSecPQty").css("visibility", "hidden");
+        //$("#prevSecPQty").css("visibility", "hidden");    
         $("#ProductCodeSrch").on('select2:select', function () {
+            
             var productcode = $("#ProductCodeSrch option:selected").val();
+            $("#ProductCode").val(productcode);
+            var x = () => {
+                return new Promise(resolve => {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Production/GetRecipeInfo",
+                        data: { productCode: productcode },
+                        success: function (msg) {
+                            $('#RequisitionNo').val('');
+                            $('#ProductCode').val('')
+                            $('#BatchNo').val('');
+                            $('#ProductName').val('');
+                            $('#StandardOutput').val('');
+                            $('#BatchSize').val('');
+                            $('#NumberOfBatch').val();
+                            $('#PreviousProcessedBatchNo').val('');
+                            $('#NoOfBatchInRequisition').val('');
+                            $('#ProductionQty').val('');
+                            $('#PreviousProcessedProductionQty').val('');
+                            $('#PrevSecProductionQty').val('');
+                            for (var i = 0; i < msg.length; i++) {
+                                $('#RequisitionNo').val(msg[i].RequisitionNo);
+
+                                $('#ProductCode').val(msg[i].ProductCode).trigger('change');
+                                $('#BatchNo').val(msg[i].BatchNo);
+                                $('#ProductName').val(msg[i].ProductName);
+                                $('#StandardOutput').val(msg[i].StandardOutput);
+                                $('#BatchSize').val(msg[i].BatchSize);
+                                $('#NumberOfBatch').val(msg[i].NumberOfBatch);
+                                $('#PreviousProcessedBatchNo').val(msg[i].PreviousProcessedBatchNo);
+                                $('#ProductionQty').val(msg[i].ProductionQty);
+                                $('#NoOfBatchInRequisition').val(msg[i].NoOfBatchInRequisition);
+                                $('#PreviousProcessedProductionQty').val(msg[i].PreviousProcessedProductionQty);
+                                $('#PrevSecProductionQty').val(msg[i].PrevSecProductionQty)
+                            }
+                        },
+                        error: function () {
+                            $('#RequisitionNo').val('');
+                            $('#ProductCode').val('').trigger('change');
+                            $('#BatchNo').val('');
+                            $('#ProductName').val('');
+                            $('#StandardOutput').val('');
+                            $('#BatchSize').val('');
+                            $('#NumberOfBatch').val();
+                            $('#PreviousProcessedBatchNo').val('');
+                            $('#NoOfBatchInRequisition').val('');
+                            $('#ProductionQty').val('');
+                            $('#PreviousProcessedProductionQty').val('');
+                            $('#PrevSecProductionQty').val('');
+                        }
+                    })
+                    resolve()
+                });
+            }
+
+            var y = () => {
+                return new Promise((resolve) => {
+                    setTimeout(function () {
+                        GetRecipeDetails(productcode);
+                        resolve();
+                    }, 2000);
+                });
+            };
+
+            x().then(y);
+
+
+
+
             getSectionList(productcode);
            
         });
@@ -1832,12 +1903,17 @@
         let numberOfBatch = $("#NumberOfBatch").val();
         let processableProductQty = Number(numberOfBatch) * Number(standardOutput);
         document.getElementById("ProductionQty").value = processableProductQty;
+
+        let productCode = $("#ProductCodeSrch").val();
+
         var sequenceNo = $("#SequenceNo_" + sectionCode).val();
         if (requisitionNo.length > 0 && sequenceNo != 1) {
                 GetRequisitionDetails(requisitionNo);
             }
+        if (productCode.length > 0) { 
+            GetRecipeDetails(productCode);
+        }
         });
-
 
 
     function GetRequisitionDetails(requisitionNo) {
@@ -1853,13 +1929,18 @@
             if (sequenceNo == 1) {
 
                 alert("Maximum Processable No of Batch is :" + processableNoOfBatch)
-                document.getElementById("NumberOfBatch").value = processableNoOfBatch;
                 document.getElementById("ProductionQty").value = Number(processableNoOfBatch) * Number(standardOutput);
-            } 
+            }
+            document.getElementById("NumberOfBatch").value = processableNoOfBatch;
+           
+           
            
         }
 
-
+        console.log("standardOutput " + standardOutput);
+        console.log("previousProcessedNoOfBatch " + previousProcessedNoOfBatch);
+        console.log("currentProcessNoOfBatch " + currentProcessNoOfBatch);
+        console.log("processableNoOfBatch " + processableNoOfBatch);
 
         var productionQty = $('#NumberOfBatch').val();
         $.ajax({
@@ -1904,6 +1985,66 @@
         });
     }
 
+    function GetRecipeDetails(productcode) {
+        
+        //var requisitionNoOfBatch = document.getElementById("NoOfBatchInRequisition").value;
+        var standardOutput = document.getElementById("StandardOutput").value;
+        //var previousProcessedNoOfBatch = document.getElementById("PreviousProcessedBatchNo").value;
+        var currentProcessNoOfBatch = document.getElementById("NumberOfBatch").value;
+        var sectionCode = $("#Section option:selected").val();
+        var sequenceNo = $("#SequenceNo_" + sectionCode).val();
+
+            //var processableNoOfBatch = parseFloat(requisitionNoOfBatch)
+
+ 
+
+            document.getElementById("ProductionQty").value = Number(currentProcessNoOfBatch) * Number(standardOutput);
+
+
+
+        var productionQty = $('#NumberOfBatch').val();
+        $.ajax({
+            type: "POST",
+            url: "/Production/GetRecipeDetails",
+            data: { productCode: productcode, productionQty: productionQty },
+            success: function (result) {
+                $('#tblProductionBOMDtl').empty(); //Clear table body
+                var table = $("#htProductionMaterialDetail tbody");
+                $.each(result, function (idx, elem) {
+                    elem.CurrentUseQty = 0;
+                    var index = $("#tblProductionBOMDtl").children("tr").length;
+                    var indexCell = "<td style='display:none'><input name='tblProductionProcessDetail.Index' type='hidden' value='" + index + "' /></td>";
+                    var materialCodeCell = "<td><input style='width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_MaterialCode' name='tblProductionProcessDetail[" + index + "].MaterialCode' type='text' value='" + elem.MaterialCode + "' /></td>";
+                    var materialNameCell = "<td><input style='width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_MaterialName' name='tblProductionProcessDetail[" + index + "].MaterialName' type='text' value='" + elem.MaterialName + "' /></td>";
+                    var unitCell = "<td><input style='width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_Unit' name='tblProductionProcessDetail[" + index + "].Unit' type='text' value='" + elem.Unit + "' /></td>";
+                    var requiredQtyCell = "<td><input style='text-align:right; width:100%' class='nothing' readonly  id='tblProductionProcessDetail_" + index + "_ReqQuantity' name='tblProductionProcessDetail[" + index + "].ReqQuantity' type='text' value='" + elem.ReqQuantity + "' /></td>";
+                    //var issuedQtyCell = "<td><input style='text-align:right; width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_IssuedQty' name='tblProductionProcessDetail[" + index + "].IssuedQty' type='text' value='" + elem.IssuedQty + "' /></td>";
+                    var issuedQtyCell = "<td style='display:none';><input style='text-align:right; width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_IssuedQty' name='tblProductionProcessDetail[" + index + "].IssuedQty' type='text' value='" + elem.IssuedQty + "' /></td>";
+                    var previousUsedQtyCell = "<td style='display:none;' ><input text-align:right; width:100%' class='nothing' readonly id='tblProductionProcessDetail_" + index + "_PreviousUsedQty' name='tblProductionProcessDetail[" + index + "].PreviousUsedQty' type='text' value='" + elem.PreviousUsedQty + "' /></td>";
+                    //var stdConsumptionQtyCell = "<td><input class='nothing' style='text-align:right; width:100%' readonly id='tblProductionProcessDetail_" + index + "_StdConsumptionQty' name='tblProductionProcessDetail[" + index + "].StdConsumptionQty' type='text' value='" + elem.StdConsumptionQty + "' /></td>";
+                    var stdConsumptionQtyCell = "<td><input class='nothing calStdConsum' style='text-align:right; width:100%' readonly id='tblProductionProcessDetail_" + index + "_StdConsumptionQty' name='tblProductionProcessDetail[" + index + "].StdConsumptionQty' type='text' value='" + elem.StdConsumptionQty + "' /></td>";
+
+                    var currentUseQtyCell = "<td><input class='calTotalCon' onkeypress='return isNumberKey(event)' style='text-align:right; width:100%' id='tblProductionProcessDetail_" + index + "_CurrentUseQty' name='tblProductionProcessDetail[" + index + "].CurrentUseQty' type='text' value='" + elem.CurrentUseQty + "' /></td>";
+                    var processLossCell = "<td><input onkeypress='return isNumberKey(event)' style='text-align:right; width:100%' readonly class='nothing' id='tblProductionProcessDetail_" + index + "_ProcessLoss' name='tblProductionProcessDetail[" + index + "].ProcessLoss' type='text' value='" + elem.ProcessLoss + "' /></td>";
+                    //var wastageCell = "<td><input class='calTotalCon' onkeypress='return isNumberKey(event)' style='text-align:right; width:100%'  id='tblProductionProcessDetail_" + index + "_Wastage' name='tblProductionProcessDetail[" + index + "].Wastage' type='text' value='" + elem.Wastage + "' /></td>";
+                    var wastageCell = "<td><input class='calWastage nothing' readonly onkeypress='return isNumberKey(event)' style='text-align:right; width:100%'  id='tblProductionProcessDetail_" + index + "_Wastage' name='tblProductionProcessDetail[" + index + "].Wastage' type='text' value='" + elem.Wastage + "' /></td>";
+                    var totalConsumptionCell = "<td style='display:none'><input class='totalConsume nothing' onkeypress='return isNumberKey(event)' style='text-align:right; width:100%' readonly id='tblProductionProcessDetail_" + index + "_TotalConsumption' name='tblProductionProcessDetail[" + index + "].TotalConsumption' type='text' value='" + elem.TotalConsumption + "' /></td>";
+                    var floorStockQtyCell = "<td style='display:none'><input class='calFloorStock' onkeypress='return isNumberKey(event)' style='text-align:right; width:100%' id='tblProductionProcessDetail_" + index + "_FloorStock' name='tblProductionProcessDetail[" + index + "].FloorStock' type='text' value='" + elem.FloorStock + "' /></td>";
+
+                    var removeCell = "<td style='display:none'><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
+
+                    var newRow = "<tr id='trtbProductionBOMDtl" + index + "'>" + indexCell + materialCodeCell + materialNameCell + unitCell + requiredQtyCell + issuedQtyCell + previousUsedQtyCell + stdConsumptionQtyCell + currentUseQtyCell + processLossCell + wastageCell + totalConsumptionCell + floorStockQtyCell + removeCell + "</tr>";
+                    table.append(newRow);
+
+                });
+
+            },
+            error: function () {
+                //$('#RequisitionNo').val('');
+            }
+        });
+
+    }
 
     $('#NumberOfBatch').on('focus', function () { $(this).select(); });
     $('#ProductionQty').on('focus', function () { $(this).select(); });
@@ -1911,5 +2052,4 @@
     $('#LumpQty').on('focus', function () { $(this).select(); });
 
 </script>
-
 

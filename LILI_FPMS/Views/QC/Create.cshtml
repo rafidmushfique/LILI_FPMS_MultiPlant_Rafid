@@ -15,8 +15,8 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     @*<h1>
-            Employee
-        </h1>*@
+    Employee
+    </h1>*@
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
         <li class="active">QC</li>
@@ -28,8 +28,8 @@
     <!-- Horizontal Form -->
     <div class="box box-info" style="border:1px solid; border-color:cadetblue; padding:10px">
         @*<div class="box-header with-border">
-                <h3 class="box-title">Add Employee</h3>
-            </div>*@
+        <h3 class="box-title">Add Employee</h3>
+        </div>*@
         <!-- /.box-header -->
         <!-- form start -->
         <form class="form-horizontal" asp-controller="QC" method="post" asp-action="CreateQC">
@@ -54,13 +54,13 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Section</label>
                     <div class="col-sm-4">
-                        <select  name="SectionCode" id="sectionCode" class="form-control">
-                          @*  @foreach(var item in ViewBag.ListofSection)
+                        <select name="SectionCode" id="sectionCode" class="form-control">
+                            @*             @foreach(var item in ViewBag.ListofSection)
                             {
-                                 <option value="@item.SectionCode">@item.SectionName</option>
-                            }*@
-                           
-                      </select>
+                            <option value="@item.SectionCode">@item.SectionName</option>
+                            }
+                            *@
+                        </select>
                     </div>
 
                 </div>
@@ -79,10 +79,10 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+              @*   <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Requisition No.</label>
                     <div class="col-sm-2">
-                        <input type="text"id="js_requisition_no" asp-for="RequisitionNo" class="form-control" placeholder="Requisition No" readonly>
+                        <input type="text" id="js_requisition_no" asp-for="RequisitionNo" class="form-control" placeholder="Requisition No" readonly>
                     </div>
                     <div class="col-sm-2 controls">
                         <button type="button" class="btn btn-info" data-toggle="ajax-modal" data-target="#add-Requisition" data-url="@Url.Action("addRequisition")">
@@ -116,14 +116,14 @@
                         <input type="text" Id="BatchSize" class="form-control" placeholder="BatchSize" readonly>
                     </div>
 
-                   <label for="inputEmail3" class="col-sm-2 control-label">Available Floor Stock</label>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Available Floor Stock</label>
                     <div class="col-sm-4">
                         <input type="text" Id="AvailableStock" class="form-control" placeholder="Available Stock" readonly>
                     </div>
                 </div>
-
+ *@
                 <div class="form-group">
-                     <label for="inputEmail3" class="col-sm-2 control-label">Process No</label>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Process No</label>
                     <div class="col-sm-4">
                         <select name="processNo" asp-for="ProcessNo" id="ProcessNo" required class="form-control"></select>
                     </div>
@@ -147,7 +147,7 @@
 
                     @*<label asp-for="QCReferenceSampleQty" class="col-sm-2 control-label">QC Sample Quantity</label>
                     <div class="col-sm-1">
-                        <input type="text" Id="QCReferenceSampleQty" asp-for="QCReferenceSampleQty" class="form-control" onkeypress='return isNumberKey(event)' >
+                    <input type="text" Id="QCReferenceSampleQty" asp-for="QCReferenceSampleQty" class="form-control" onkeypress='return isNumberKey(event)' >
                     </div>*@
                 </div>
 
@@ -159,7 +159,7 @@
 
                     <label asp-for="IsSendToFloorStockFG" class="col-sm-2 control-label">Send To Floor Stock</label>
                     <div class="col-sm-1">
-                        <input type="checkbox" class="form-control" asp-for="IsSendToFloorStockFG"  name="IsSendToFloorStockFG" id="IsSendToFloorStockFG" />
+                        <input type="checkbox" class="form-control" asp-for="IsSendToFloorStockFG" name="IsSendToFloorStockFG" id="IsSendToFloorStockFG" />
                     </div>
 
                     <label asp-for="QcholdQty" class="col-sm-2 control-label">QC Hold quantity</label>
@@ -234,26 +234,26 @@
                                 </tr>
                             </thead>
                             <tbody id="tblQCParameterGrid">
-                                
 
-                            @{
-                                int i = 0;
-                                foreach (var item in Model.TblQcdetails)
-                                {
-                                    var index = i;
-                                                                        <tr>
-                                                                            <td style="display:none"><input name='TblQcdetails.Index' type="hidden" value=@index /></td>
-                                                                            <td style="display:none">@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].QcparameterCode, new { @id = "QcparameterCode_" + i })</td>
-                                                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterCode, new { @id = "QcparameterCode_" + i })</td>
-                                                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterName, new { @id = "QcparameterName_" + i })</td>
-                                                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterStandardValue, new { @id = "QcparameterStandardValue_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
-                                                                            <td>@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].QcparameterActualValue, new { @id = "QcparameterActualValue_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
-                                                                            <td>@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].Comments, new { @id = "Comments_" + i })</td>
-                                                                            <td><input type="button" value="Remove" onClick="$(this).closest('tr').remove();"></td>
-                                                                        </tr>
-                                    i++;
+
+                                @{
+                                    int i = 0;
+                                    foreach (var item in Model.TblQcdetails)
+                                    {
+                                        var index = i;
+                                        <tr>
+                                            <td style="display:none"><input name='TblQcdetails.Index' type="hidden" value=@index /></td>
+                                            <td style="display:none">@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].QcparameterCode, new { @id = "QcparameterCode_" + i })</td>
+                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterCode, new { @id = "QcparameterCode_" + i })</td>
+                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterName, new { @id = "QcparameterName_" + i })</td>
+                                            <td>@Html.DisplayFor(modelItem => modelItem.TblQcdetails[i].QcparameterStandardValue, new { @id = "QcparameterStandardValue_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                            <td>@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].QcparameterActualValue, new { @id = "QcparameterActualValue_" + i, htmlAttributes = new { @style = "width: 150px; text-align:right;" } })</td>
+                                            <td>@Html.EditorFor(modelItem => modelItem.TblQcdetails[i].Comments, new { @id = "Comments_" + i })</td>
+                                            <td><input type="button" value="Remove" onClick="$(this).closest('tr').remove();"></td>
+                                        </tr>
+                                        i++;
+                                    }
                                 }
-                            }
 
 
                             </tbody>
@@ -263,15 +263,15 @@
             </div>
 
 
-                <!-- /.box-body -->
-                <div class="box-footer">
+            <!-- /.box-body -->
+            <div class="box-footer">
 
-                    <a class="btn btn-mini btn-primary" href='@Url.Content("/QC/Index")'>Cancel</a>
-                    <button type="submit" class="btn btn-info pull-right">Create</button>
+                <a class="btn btn-mini btn-primary" href='@Url.Content("/QC/Index")'>Cancel</a>
+                <button type="submit" class="btn btn-info pull-right">Create</button>
 
-                </div>
-                <!-- /.box-footer -->
-</form>
+            </div>
+            <!-- /.box-footer -->
+        </form>
     </div>
     <!-- /.box -->
 </section>
@@ -280,7 +280,7 @@
 
 
 <script type="text/javascript">
-   
+
     //$('#TypeCode').on('change', function () {
     //    GetTypeWiseQCParameter(this.value);
     //});
@@ -302,7 +302,7 @@
                     var qcparameterStandardValueCell = "<td><input style='width:100%' class='nothing' readonly id='tblQCDetails_" + index + "_QcparameterStandardValue' name='tblQCDetails[" + index + "].QcparameterStandardValue' type='text' value='" + elem.QcparameterStandardValue + "' /></td>";
                     var qcparameterActualValueCell = "<td><input style='text-align:right; width:100%'  id='tblQCDetails_" + index + "_QcparameterActualValue' name='tblQCDetails[" + index + "].QcparameterActualValue' type='text' value='" + elem.QcparameterActualValue + "' /></td>";
                     var commentsCell = "<td><input style='width:100%'  id='tblQCDetails_" + index + "_Comments' name='tblQCDetails[" + index + "].Comments' type='text' value='" + elem.Comments + "' /></td>";
-                    
+
                     var removeCell = "<td><input id='addRowToTable' type='button' value='Remove' onclick='removeRowItem(" + index + ");' /></td>";
 
                     var newRow = "<tr id='trtbProductionBOMDtl" + index + "'>" + indexCell + qcparameterCodeCell + qcparameterNameCell + qcparameterStandardValueCell + qcparameterActualValueCell + commentsCell + removeCell + "</tr>";
@@ -354,8 +354,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        //setSectionCode("S0001");
-                $('.select2').select2();
+        $('.select2').select2();
         //setSectionCode("S0001");
         $("#ProductCodeSrch").on('select2:select', function () {
             var productcode = $("#ProductCodeSrch option:selected").val();
@@ -445,7 +444,7 @@
         }
         var qtyAfterConversion = qtyBeforeConversion / conversionFactor;
         document.getElementById("Qcqty").value = qtyAfterConversion.toFixed(5);
-        
+
     }
     $("#sectionCode").on('change', function () {
         var formoption = "<option value='0'>Select Process No</option>";
@@ -481,7 +480,7 @@
             //    url: "/QC/GetQCQuantity",
             //    data: { ProcessNo: this.value },
             //    success: function (result) {
-            //        $('#Qcqty').val('');    
+            //        $('#Qcqty').val('');
             //        for (var i = 0; i < result.length; i++) {
             //            $('#FGQCQtyBeforeConversion').val((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)));
             //            //$('#Qcqty').val(result[i].ProductionQty);
@@ -489,19 +488,21 @@
             //            $('#Qcqty').val(((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)) / parseFloat(conversionFactor)).toFixed(5));
             //            $('#SFGQcqty').val(result[i].SFGProductionQty);
             //            $('#BatchNo').val(result[i].BatchNo);
-                        
+
             //        }
             //    },
             //    error: function () {
 
             //    }
             //});
+
+        var processNo= this.value;
         var x = () => {
             return new Promise(resolve => {
                 $.ajax({
                     type: "POST",
-                    url: "/QC/GetQCQuantity",
-                    data: { ProcessNo: this.value },
+                    url: "/QC/SetRequisitionInfomationByProcessNo",
+                    data: { ProcessNo: processNo },
                     success: function (msg) {
                         $('#js_requisition_no').val('');
                         $('#BatchNo').val('');
@@ -545,6 +546,27 @@
         var y = () => {
             return new Promise((resolve) => {
                 setTimeout(function () {
+                    $.ajax({
+                        type: "POST",
+                        url: "/QC/GetQCQuantity",
+                        data: { ProcessNo: processNo },
+                        success: function (result) {
+
+                            $('#Qcqty').val('');
+                            for (var i = 0; i < result.length; i++) {
+                                $('#FGQCQtyBeforeConversion').val((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)));
+                                //$('#Qcqty').val(result[i].ProductionQty);
+                                var conversionFactor = $('#FGQCQtyConversionFactor').val();
+                                $('#Qcqty').val(((parseFloat(result[i].ProductionQty) - parseFloat(result[i].QCReferenceSampleQty) - parseFloat(result[i].LumpQty)) / parseFloat(conversionFactor)).toFixed(5));
+                                $('#SFGQcqty').val(result[i].SFGProductionQty);
+                                $('#BatchNo').val(result[i].BatchNo);
+
+                            }
+                        },
+                        error: function () {
+
+                        }
+                    });
                     var productCode = $("#ProductCode").val();
                     GetTypeWiseQCParameter(productCode);
                     resolve();
@@ -558,7 +580,6 @@
             //var productCode = $("#ProductCode").val();
             //GetTypeWiseQCParameter(productCode);
         });
-
 
     function setSectionCode(sectioncode)
     {
@@ -576,12 +597,12 @@
             }
         });
     }
-    
 
 
 
 
-      
+
+
 
 
 
