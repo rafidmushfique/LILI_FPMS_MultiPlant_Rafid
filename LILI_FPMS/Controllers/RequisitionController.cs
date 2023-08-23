@@ -19,7 +19,7 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private static long GolablPlantId;
+        private static long GloablPlantId;
         public RequisitionController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -28,7 +28,7 @@ namespace LILI_IMS.Controllers
             if (!string.IsNullOrEmpty(plntid))
             {
 
-                GolablPlantId = long.Parse(plntid);
+                GloablPlantId = long.Parse(plntid);
             }
         }
 
@@ -51,7 +51,7 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var req = from s in _context.TblRequisition.Where(x=>x.PlantId== GolablPlantId)
+            var req = from s in _context.TblRequisition.Where(x=>x.PlantId== GloablPlantId)
                       from p in _context.View_Product
                       where s.ProductCode == p.ProductCode
                       select new TblRequisition

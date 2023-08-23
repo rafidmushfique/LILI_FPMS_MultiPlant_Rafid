@@ -1,4 +1,4 @@
-﻿@model PaginatedList<LILI_FPMS.Models.TblProductionProcess>
+﻿@model PaginatedList<LILI_FPMS.Models.GetProductionProcessIndex>
 
 <section class="content-header">
     @*<h1>
@@ -60,6 +60,7 @@
                             <th style="text-align:center; width:10%">
                                 <a style="color:white;" asp-action="Index" asp-route-sortOrder="@ViewData["ProductCodeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">FG Code <i class="fa fa-sort" style="font-size:20px;color:sandybrown"></i></a>
                             </th>
+
                             <th style="text-align:center; width:17%">
                                 <a style="color:white;" asp-action="Index" asp-route-sortOrder="@ViewData["ProductNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">FG Name <i class="fa fa-sort" style="font-size:20px;color:sandybrown"></i></a>
                             </th>

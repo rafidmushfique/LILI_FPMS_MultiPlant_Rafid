@@ -36,11 +36,18 @@ $(function () {
     $('#ManufacMachineCode').on('change', function () {
         var machineCode = $('#ManufacMachineCode').val();
         var requisitionNo = $('#RequisitionNo').val();
+        var productCode = $("#ProductCodeSrch option:selected").val();
+        if ( requisitionNo == null) {
+            requisitionNo = '';
+        }
+        if (productCode == null) {
+            productCode = '';
+        }
         if (machineCode != '') {
             $.ajax({
                 type: "POST",
                 url: "/Production/GetMachineCapacity",
-                data: { machineCode: machineCode, requisitionNo: requisitionNo },
+                data: { machineCode: machineCode, requisitionNo: requisitionNo, productCode: productCode },
                 success: function (result) {
                     $('#ManufacMachineCapacity').val();
                     $('#ManufacMachineCapacity').val(result);

@@ -9,7 +9,7 @@ namespace LILI_FPMS.Controllers
     {
         public readonly dbFormulationProductionSystemContext _context;
         public readonly IHttpContextAccessor _httpContextAccessor;
-        public static long GolablPlantId;
+        public static long GloablPlantId;
         public BaseController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -18,7 +18,7 @@ namespace LILI_FPMS.Controllers
             if (!string.IsNullOrEmpty(plntid))
             {
 
-                GolablPlantId = long.Parse(plntid);
+                GloablPlantId = long.Parse(plntid);
             }
         }
     }
