@@ -162,7 +162,7 @@ namespace LILI_IMS.Controllers
                     req.Iuser = User.Identity.Name;
                     req.Idate = DateTime.Now;
                     req.IssueStatus = "Pending";
-                    req.PlantId = GlobalPlantId;
+                    req.PlantId = GloablPlantId;
                     req.RequisitionNo = GenerateRequisitionNo();
                     _context.Add(req);
                     await _context.SaveChangesAsync();

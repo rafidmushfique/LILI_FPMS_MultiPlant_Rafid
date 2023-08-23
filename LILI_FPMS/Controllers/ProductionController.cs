@@ -22,7 +22,7 @@ using LILI_FPMS.Controllers;
 namespace LILI_IMS.Controllers
 {
     [Authorize]
-    public class ProductionController : BaseController
+    public class ProductionController : Controller
     {
         private readonly dbFormulationProductionSystemContext _context;
         private string SECTION_CODE;
