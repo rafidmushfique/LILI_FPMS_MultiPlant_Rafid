@@ -23,17 +23,17 @@ namespace LILI_FPMS.Models
             TblCodingDetailShift = new List<TblCodingDetailShift>();
             TblCodingDetailLine = new List<TblCodingDetailLine>();
             TblCodingDetailMachine = new List<TblCodingDetailMachine>();
-            
+
             TblProductionProcessDetail = new List<TblProductionProcessDetail>();
-            
-            
+
+
         }
 
         public int Id { get; set; }
         public string ProcessNo { get; set; }
         public DateTime ProcessDate { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string RequisitionNo { get; set; }
-        [NotMapped]
         public string ProductCode { get; set; }
         [NotMapped]
         public string ProductName { get; set; }
@@ -43,9 +43,9 @@ namespace LILI_FPMS.Models
         public decimal SFGProductionQty { get; set; }
 
         [NotMapped]
-        public decimal StandardOutput { get; set; }
+        public decimal? StandardOutput { get; set; }
         [NotMapped]
-        public decimal BatchSize { get; set; }
+        public decimal? BatchSize { get; set; }
         public decimal NumberOfBatch { get; set; }
         public string BusinessCode { get; set; }
         public string IssueNo { get; set; }

@@ -15,11 +15,13 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NPOI.SS.Formula.Functions;
+using Microsoft.AspNetCore.Http;
+using LILI_FPMS.Controllers;
 
 namespace LILI_IMS.Controllers
 {
     [Authorize]
-    public class ProductionController : Controller
+    public class ProductionController : BaseController
     {
         private readonly dbFormulationProductionSystemContext _context;
         private string SECTION_CODE;
@@ -323,7 +325,7 @@ namespace LILI_IMS.Controllers
             prodModel.ProductionQtyConversionFactor = dt.ProductionQtyConversionFactor;
             prodModel.QCReferenceSampleQty = dt.QCReferenceSampleQty;
             prodModel.LumpQty = dt.LumpQty;
-
+            prodModel.SectionName =  _context.TblSection.Where(s=>s.SectionCode == dt.SectionCode).FirstOrDefault().SectionName;
 
             var sfgList = (from c in _context.View_Product
                            select new
@@ -992,7 +994,45 @@ namespace LILI_IMS.Controllers
 
             return Json(productList, sa);
         }
+        public JsonResult GetRecipeDetails(string productCode, decimal productionQty)
+        {
+            
+            var errorViewModel = new ErrorViewModel();
+            var sa = new JsonSerializerSettings();
+            var productCodeParam = new SqlParameter("@productCode", productCode);
+            var productionQtyParam = new SqlParameter("@productionQty", productionQty);
+            var detailList = _context.GetTblProductionProcessDetail
+                                .FromSql("EXEC sp_GetRecipeDetailForProductionProcess @productCode, @productionQty", productCodeParam, productionQtyParam)
+                                .ToList();
+           
+            return Json(detailList, sa);
+        }
 
+        public JsonResult GetRecipeInfo(string productCode)
+        {
+            var sa = new JsonSerializerSettings();
+            var recipeInfo =      from b in _context.View_BOM
+                                  from p in _context.View_Product
+                                  where (b.ProductCode == productCode && b.ProductCode == p.ProductCode && b.IsActive=="Y")
+                                  select new TblProductionProcess
+                                  {
+                                      RequisitionNo = "",
+                                      BatchNo = "",
+                                      ProductCode = p.ProductCode,
+                                      ProductName = p.ProductName,
+                                      StandardOutput = b.StandardOutput,
+                                      BatchSize = b.BatchSize,
+                                      NumberOfBatch = 0,
+                                      ProductionQty = 0,
+                                      PreviousProcessedBatchNo = 0,
+                                      NoOfBatchInRequisition = 0,
+                                      PreviousProcessedProductionQty = 0,
+                                      PrevSecProductionQty = 0
+                                  };
+
+
+            return Json(recipeInfo, sa);
+        }
         [HttpPost]
         public JsonResult SearchRequisitionByKey(string searchKey)
         {

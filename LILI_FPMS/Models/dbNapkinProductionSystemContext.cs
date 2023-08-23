@@ -14,7 +14,8 @@ namespace LILI_IMS.Models
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
         public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
-        public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
+        public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }  
+      
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual DbSet<MenuMaster> MenuMaster { get; set; }
@@ -44,7 +45,7 @@ namespace LILI_IMS.Models
         public virtual DbSet<GetRequisitionWiseProcessList> GetRequisitionWiseProcessList { get; set; }
 
         public virtual DbSet<TblQcparameter> TblQcparameter { get; set; }
-
+        public virtual DbSet<GetProductionProcessIndex> GetProductionProcessIndex { get; set; }
         public virtual DbSet<TblQc> TblQc { get; set; }
         public virtual DbSet<TblQcdetails> TblQcdetails { get; set; }
         public virtual DbSet<TblQcparameterType> TblQcparameterType { get; set; }
@@ -109,9 +110,9 @@ namespace LILI_IMS.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-               #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-              //optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbFormulationProduction;Persist Security Info=True;User ID=sa;Password=dataport;");
-              optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbToiletriesProduction;Persist Security Info=True;User ID=sa;Password=dataport;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                //optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbFormulationProduction;Persist Security Info=True;User ID=sa;Password=dataport;");
+                optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbToiletriesProduction_dev;Persist Security Info=True;User ID=sa;Password=dataport;");
             }
         }
 
@@ -1859,6 +1860,10 @@ namespace LILI_IMS.Models
                     .IsRequired()
                     .HasColumnName("IUser")
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductCode)
+                    .HasMaxLength(20)
                     .IsUnicode(false);
 
                 entity.Property(e => e.ManufacBatchEndTime).HasColumnType("datetime");
