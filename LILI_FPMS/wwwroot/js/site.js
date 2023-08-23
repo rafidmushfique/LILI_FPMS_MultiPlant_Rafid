@@ -36,13 +36,6 @@ $(function () {
     $('#ManufacMachineCode').on('change', function () {
         var machineCode = $('#ManufacMachineCode').val();
         var requisitionNo = $('#RequisitionNo').val();
-        var productCode = $("#ProductCodeSrch option:selected").val();
-        if ( requisitionNo == null) {
-            requisitionNo = '';
-        }
-        if (productCode == null) {
-            productCode = '';
-        }
         if (machineCode != '') {
             $.ajax({
                 type: "POST",

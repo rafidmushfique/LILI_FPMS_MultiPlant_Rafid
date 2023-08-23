@@ -15,6 +15,7 @@ using LILI_IMS.Models.AccountViewModels;
 using LILI_IMS.Services;
 using LILI_FPMS;
 using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace LILI_IMS.Controllers
 {
@@ -34,14 +35,13 @@ namespace LILI_IMS.Controllers
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
-            dbFormulationProductionSystemContext contex
-            )
+            dbFormulationProductionSystemContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
-            _context = contex;
+            _context = context;
         }
 
         [TempData]
@@ -71,9 +71,9 @@ namespace LILI_IMS.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    var PlantId = (_context.TblUserWiseBusinessAndPlantCode.Where(x => x.UserId == model.Email).FirstOrDefault().PlantId).ToString();
-
-                    HttpContext.Session.SetString("PlantId", PlantId);
+                    var PlantId = _context.TblUserWiseBusinessAndPlantCode.Where(x => x.UserId == model.Email).FirstOrDefault().PlantId;
+                    HttpContext.Session.SetString("PlantId", PlantId.ToString());
+                    
 
                     _logger.LogInformation("User logged in.");
                     return RedirectToLocal(returnUrl);
@@ -256,8 +256,23 @@ namespace LILI_IMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
+
             await _signInManager.SignOutAsync();
+
+
             HttpContext.Session.Clear();
+      
+            //In case of session is stored in cookies
+            foreach (var cookie in Request.Cookies.Keys)
+
+            {
+                if (cookie == ".AspNetCore.Session")
+                    Response.Cookies.Delete(cookie);
+            }
+
+
+            //HttpContext.Session.Abandon();
+            //HttpContext.Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", ""));
             _logger.LogInformation("User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }

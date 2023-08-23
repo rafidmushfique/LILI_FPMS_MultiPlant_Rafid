@@ -8,6 +8,7 @@ using LILI_FPMS;
 using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,9 +22,18 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
 
-        public RequisitionApprovalController(dbFormulationProductionSystemContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static long GlobalPlantId;
+
+        public RequisitionApprovalController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
+            if (!string.IsNullOrEmpty(plntid))
+            {
+                GlobalPlantId = long.Parse(plntid);
+            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -44,7 +54,7 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var req = from s in _context.TblRequisition.Where(x=>x.PlantId == GlobalVariable.PlantId)
+            var req = from s in _context.TblRequisition.Where(x=>x.PlantId == GlobalPlantId)
                       from p in _context.View_Product
                       where s.ProductCode==p.ProductCode
                       select new TblRequisition
@@ -425,14 +435,14 @@ namespace LILI_IMS.Controllers
 
                     SqlConnection con = new SqlConnection(constring);
 
-                    string queryDel = "DELETE TblRequisitionApprovalStatus WHERE RequisitionNo =" + "'" + ras.RequisitionNo + "' AND PlantId = '"+ GlobalVariable.PlantId +"'";
+                    string queryDel = "DELETE TblRequisitionApprovalStatus WHERE RequisitionNo =" + "'" + ras.RequisitionNo + "' AND PlantId = '"+ GlobalPlantId +"'";
                     SqlCommand cmdDel = new SqlCommand(queryDel, con);
                     con.Open();
                     int d = cmdDel.ExecuteNonQuery();
                     con.Close();
 
                     string query = "INSERT INTO TblRequisitionApprovalStatus(RequisitionNo, RequisitionStatusDate, ApprovalStatus, Approver, PlantId) " +
-                                    "values ('" + ras.RequisitionNo + "','" + ras.RequisitionStatusDate + "','" + ras.ApprovalStatus + "','" + ras.Approver + "', '"+ GlobalVariable.PlantId +"')";
+                                    "values ('" + ras.RequisitionNo + "','" + ras.RequisitionStatusDate + "','" + ras.ApprovalStatus + "','" + ras.Approver + "', '"+ GlobalPlantId +"')";
                     SqlCommand cmd = new SqlCommand(query, con);
                     con.Open();
                     int i = cmd.ExecuteNonQuery();

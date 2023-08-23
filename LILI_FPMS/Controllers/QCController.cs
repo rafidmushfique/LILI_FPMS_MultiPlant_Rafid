@@ -10,6 +10,7 @@ using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +27,18 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
         private static string SECTION_CODE;
-        public QCController(dbFormulationProductionSystemContext context)
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static long GlobalPlantId;
+        public QCController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
+            if (!string.IsNullOrEmpty(plntid))
+            {
+                GlobalPlantId = long.Parse(plntid);
+            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -54,9 +64,9 @@ namespace LILI_IMS.Controllers
             //            where (s.PlanningNo == d.PlanningNo)
             //            select new {s.PlanningNo,s.Year,s.Month,d.Fgcode};
 
-            var qc_data = from master in _context.TblQc.Where(master=>master.PlantId == GlobalVariable.PlantId)
-                          from requisition in _context.TblRequisition.Where(requisition => requisition.PlantId == GlobalVariable.PlantId)
-                          from process in _context.TblProductionProcess.Where(process => process.PlantId == GlobalVariable.PlantId)
+            var qc_data = from master in _context.TblQc.Where(master=>master.PlantId == GlobalPlantId)
+                          from requisition in _context.TblRequisition.Where(requisition => requisition.PlantId == GlobalPlantId)
+                          from process in _context.TblProductionProcess.Where(process => process.PlantId == GlobalPlantId)
                           from bom in _context.View_BOM.Where(bom=> bom.IsActive=="Y")
                           from p in _context.View_Product
                           where(master.RequisitionNo == requisition.RequisitionNo && master.ProcessNo == process.ProcessNo && requisition.ProductCode == bom.ProductCode 
@@ -116,7 +126,7 @@ namespace LILI_IMS.Controllers
             entities.Qcno = GetAutoNumber();
 
             var businessCode = (from c in _context.TblUserWiseBusinessAndPlantCode
-                                where c.PlantId == GlobalVariable.PlantId
+                                where c.PlantId == GlobalPlantId
                                 select c.BusinessCode
                   ).FirstOrDefault();
 
@@ -141,7 +151,7 @@ namespace LILI_IMS.Controllers
             //                                 }).ToList();
             List<TblSection> sectionList= new List<TblSection>();
             //sectionList = _context.TblSection.ToList();
-            sectionList = (from c in _context.TblSection.Where(c => c.PlantId == GlobalVariable.PlantId).OrderBy(c => c.Id) select c).ToList();
+            sectionList = (from c in _context.TblSection.Where(c => c.PlantId == GlobalPlantId).OrderBy(c => c.Id) select c).ToList();
             sectionList.Insert(0, new TblSection { SectionCode = "0", SectionName = "Select Section" });
             ViewBag.ListOfSection = sectionList;
             return View(entities);
@@ -218,7 +228,7 @@ namespace LILI_IMS.Controllers
 
                     qc_data.Iuser = User.Identity.Name;
                     qc_data.Idate = DateTime.Now;
-                    qc_data.PlantId = GlobalVariable.PlantId;
+                    qc_data.PlantId = GlobalPlantId;
                     qc_data.Qcno = GetAutoNumber();
                     _context.Add(qc_data);
                     await _context.SaveChangesAsync();
@@ -460,7 +470,7 @@ namespace LILI_IMS.Controllers
             //                                                });
 
             var requisitionNoParam = new SqlParameter("@requisitionNo", "");
-            var plantIdParam = new SqlParameter("@plantId", GlobalVariable.PlantId);
+            var plantIdParam = new SqlParameter("@plantId", GlobalPlantId);
             var requisitionModel = _context.GetSearchRequisitionList
                                .FromSql("EXEC sp_SearchRequisitionForQC @requisitionNo, @plantId", requisitionNoParam, plantIdParam)
                                .ToList();
@@ -483,7 +493,7 @@ namespace LILI_IMS.Controllers
             //                                     });
 
             var requisitionNoParam = new SqlParameter("@requisitionNo", RequisitionNo == null ? "" : RequisitionNo);
-            var plantIdParam = new SqlParameter("@plantId", GlobalVariable.PlantId);
+            var plantIdParam = new SqlParameter("@plantId", GlobalPlantId);
             var model = _context.GetSearchRequisitionList
                                .FromSql("EXEC sp_SearchRequisitionForQC @requisitionNo, @plantId", requisitionNoParam, plantIdParam)
                                .ToList();
@@ -516,8 +526,8 @@ namespace LILI_IMS.Controllers
         public JsonResult GetQCQuantity(string ProcessNo)
         {
             //int isCodingDetailVisible = 0;
-            //isCodingDetailVisible = _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalVariable.PlantId).Count() > 0 ?
-            //                        _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalVariable.PlantId).FirstOrDefault().Isvisible : 0;
+            //isCodingDetailVisible = _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalPlantId).Count() > 0 ?
+            //                        _context.TblVisibility.Where(x => x.ItemName == "Production Coding Detail" && x.PlantId == GlobalPlantId).FirstOrDefault().Isvisible : 0;
 
             var model = new List<TblProductionProcess>(from prop in _context.TblProductionProcess where prop.ProcessNo==ProcessNo
                                                        select new TblProductionProcess
@@ -641,7 +651,7 @@ namespace LILI_IMS.Controllers
             //                                   });
 
             var model = new List<TblQcdetails>(from para in _context.TblQcparameter
-                                               where (para.ProductCode == type) && (para.PlantId==GlobalVariable.PlantId)
+                                               where (para.ProductCode == type) && (para.PlantId==GlobalPlantId)
                                                select new TblQcdetails
                                                {
                                                    Id = para.Id,
@@ -680,7 +690,7 @@ namespace LILI_IMS.Controllers
         {
             var sa = new JsonSerializerSettings();
             var sectionCodeParam = new SqlParameter("@SectionCode", SectionCode);
-            var plantIdParam = new SqlParameter("@PlantId", GlobalVariable.PlantId);
+            var plantIdParam = new SqlParameter("@PlantId", GlobalPlantId);
             var productCodeParam = new SqlParameter("@ProductCodeNo", ProductCode);
             var model = _context.GetProcessNoListQC.FromSql("EXEC sp_GetProcessNoListForQC  @SectionCode, @PlantId,@ProductCodeNo", sectionCodeParam, plantIdParam, productCodeParam).ToList();
 

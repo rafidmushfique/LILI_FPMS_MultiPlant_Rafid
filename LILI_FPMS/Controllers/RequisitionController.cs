@@ -17,8 +17,10 @@ namespace LILI_IMS.Controllers
     public class RequisitionController : Controller
     {
         private readonly dbFormulationProductionSystemContext _context;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private static long GloablPlantId;
+        private static long GlobalPlantId;
+
         public RequisitionController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
@@ -26,9 +28,10 @@ namespace LILI_IMS.Controllers
             var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
             if (!string.IsNullOrEmpty(plntid))
             {
-
-                GloablPlantId = long.Parse(plntid);
+                GlobalPlantId = long.Parse(plntid);
             }
+
+
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -38,6 +41,7 @@ namespace LILI_IMS.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "requisition_desc" : "";
             ViewData["ProductCodeSortParm"] = String.IsNullOrEmpty(sortOrder) ? "productCode_desc" : "";
             ViewData["ProductNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "productName_desc" : "";
+
 
             if (searchString != null)
             {
@@ -50,7 +54,7 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var req = from s in _context.TblRequisition.Where(x=>x.PlantId== GloablPlantId)
+            var req = from s in _context.TblRequisition.Where(x=>x.PlantId== GlobalPlantId)
                       from p in _context.View_Product
                       where s.ProductCode == p.ProductCode
                       select new TblRequisition
@@ -160,7 +164,7 @@ namespace LILI_IMS.Controllers
                     req.Iuser = User.Identity.Name;
                     req.Idate = DateTime.Now;
                     req.IssueStatus = "Pending";
-                    req.PlantId = GlobalVariable.PlantId;
+                    req.PlantId = GlobalPlantId;
                     req.RequisitionNo = GenerateRequisitionNo();
                     _context.Add(req);
                     await _context.SaveChangesAsync();

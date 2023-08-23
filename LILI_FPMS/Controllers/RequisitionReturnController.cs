@@ -9,6 +9,7 @@ using LILI_FPMS.Models;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +22,18 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
 
-        public RequisitionReturnController(dbFormulationProductionSystemContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static long GlobalPlantId;
+
+        public RequisitionReturnController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
+            if (!string.IsNullOrEmpty(plntid))
+            {
+                GlobalPlantId = long.Parse(plntid);
+            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -44,8 +54,8 @@ namespace LILI_IMS.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var return_data = from master in _context.TblReturn.Where(master=>master.PlantId == GlobalVariable.PlantId)
-                          from requisition in _context.TblRequisition.Where(requisition => requisition.PlantId == GlobalVariable.PlantId)
+            var return_data = from master in _context.TblReturn.Where(master=>master.PlantId == GlobalPlantId)
+                          from requisition in _context.TblRequisition.Where(requisition => requisition.PlantId == GlobalPlantId)
                           from bom in _context.View_BOM
                           from p in _context.View_Product
                           where(master.RequisitionNo == requisition.RequisitionNo && requisition.ProductCode == bom.ProductCode && bom.ProductCode== p.ProductCode)
@@ -157,7 +167,7 @@ namespace LILI_IMS.Controllers
                         IssueNo = "000",
                         Comments = return_data.Comments,
                         Iuser = User.Identity.Name,
-                        PlantId = GlobalVariable.PlantId,
+                        PlantId = GlobalPlantId,
                         Idate = DateTime.Now
                     };
                     _context.TblReturn.Add(return_entity);
@@ -334,7 +344,7 @@ namespace LILI_IMS.Controllers
         [HttpPost]
         public JsonResult SearchRequisition(string RequisitionNo)
         {            
-            var model = new List<TblRequisition>(from req in _context.TblRequisition.Where(req=>req.PlantId == GlobalVariable.PlantId)
+            var model = new List<TblRequisition>(from req in _context.TblRequisition.Where(req=>req.PlantId == GlobalPlantId)
                                                  from b in _context.View_BOM
                                                  from p in _context.View_Product
                                                  where (req.ProductCode == b.ProductCode && b.ProductCode == p.ProductCode && (req.RequisitionNo.ToUpper().Contains(RequisitionNo.ToUpper())))
