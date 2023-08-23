@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LILI_FPMS;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +16,17 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
 
-        public LineController(dbFormulationProductionSystemContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static long GlobalPlantId;
+        public LineController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
+            if (!string.IsNullOrEmpty(plntid))
+            {
+                GlobalPlantId = long.Parse(plntid);
+            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -35,7 +44,7 @@ namespace LILI_IMS.Controllers
             }
 
             ViewData["CurrentFilter"] = searchString;
-            var Lines = from s in _context.TblLineSetup.Where(s => s.PlantId == GlobalVariable.PlantId) select s;
+            var Lines = from s in _context.TblLineSetup.Where(s => s.PlantId == GlobalPlantId) select s;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -72,7 +81,7 @@ namespace LILI_IMS.Controllers
                 {
                     line.Iuser = User.Identity.Name;
                     line.Idate = DateTime.Now;
-                    line.PlantId = GlobalVariable.PlantId;
+                    line.PlantId = GlobalPlantId;
                     _context.Add(line);
                     await _context.SaveChangesAsync();
                 }

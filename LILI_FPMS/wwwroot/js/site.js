@@ -37,7 +37,7 @@ $(function () {
         var machineCode = $('#ManufacMachineCode').val();
         var requisitionNo = $('#RequisitionNo').val();
         var productCode = $("#ProductCodeSrch option:selected").val();
-        if ( requisitionNo == null) {
+        if (requisitionNo == null) {
             requisitionNo = '';
         }
         if (productCode == null) {

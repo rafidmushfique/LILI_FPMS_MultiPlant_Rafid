@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LILI_FPMS;
 using LILI_IMS.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +16,18 @@ namespace LILI_IMS.Controllers
     {
         private readonly dbFormulationProductionSystemContext _context;
 
-        public QCParameterController(dbFormulationProductionSystemContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static long GlobalPlantId;
+
+        public QCParameterController(dbFormulationProductionSystemContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
+            if (!string.IsNullOrEmpty(plntid))
+            {
+                GlobalPlantId = long.Parse(plntid);
+            }
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -38,7 +48,7 @@ namespace LILI_IMS.Controllers
 
             //var parameters = from s in _context.TblQcparameter select s;
 
-            var parameters = from s in _context.TblQcparameter.Where(s=>s.PlantId == GlobalVariable.PlantId)
+            var parameters = from s in _context.TblQcparameter.Where(s=>s.PlantId == GlobalPlantId)
                       from p in _context.View_Product
                       where s.ProductCode == p.ProductCode
                       select new TblQcparameter
@@ -96,7 +106,7 @@ namespace LILI_IMS.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    parameter.PlantId = GlobalVariable.PlantId;
+                    parameter.PlantId = GlobalPlantId;
                     _context.Add(parameter);
                     await _context.SaveChangesAsync();
                 }
