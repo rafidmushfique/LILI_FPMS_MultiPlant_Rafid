@@ -995,6 +995,10 @@ namespace LILI_IMS.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.ProductCode)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Idate)
                     .HasColumnName("IDate")
                     .HasColumnType("datetime");
