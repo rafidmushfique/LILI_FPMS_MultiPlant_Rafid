@@ -293,7 +293,7 @@ namespace LILI_IMS.Controllers
             prodModel.ProcessDate = dt.ProcessDate;
             prodModel.SectionCode = dt.SectionCode;
             prodModel.RequisitionNo = dt.RequisitionNo;
-            prodModel.ProductCode = _context.TblRequisition.Where(s => s.RequisitionNo == dt.RequisitionNo).FirstOrDefault().ProductCode;
+            prodModel.ProductCode = dt.ProductCode;
             prodModel.ProductName = _context.View_Product.Where(s => s.ProductCode == prodModel.ProductCode).FirstOrDefault().ProductName;
             prodModel.BatchNo = dt.BatchNo; //_context.TblRequisition.Where(s => s.RequisitionNo == dt.RequisitionNo).FirstOrDefault().BatchNo;
             prodModel.StandardOutput = _context.View_BOM.Where(s => s.ProductCode == prodModel.ProductCode).FirstOrDefault().StandardOutput;

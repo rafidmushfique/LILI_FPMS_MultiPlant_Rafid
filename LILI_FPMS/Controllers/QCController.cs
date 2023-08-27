@@ -120,7 +120,7 @@ namespace LILI_IMS.Controllers
                                 select c.BusinessCode
                   ).FirstOrDefault();
 
-            var productList = (from c in _context.View_Product.Where(c => c.Business == businessCode) select c).ToList();
+            var productList = (from c in _context.View_Product select c).ToList();
             ViewBag.ListOfProduct = productList;
 
             List<TblQcparameterType> typeList = new List<TblQcparameterType>();
