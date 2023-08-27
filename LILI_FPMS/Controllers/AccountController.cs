@@ -256,6 +256,7 @@ namespace LILI_IMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
+
             await _signInManager.SignOutAsync();
             HttpContext.Session.Clear();
             _logger.LogInformation("User logged out.");

@@ -40,6 +40,7 @@ namespace LILI_IMS.Controllers
             ViewData["ProductCodeSortParm"] = String.IsNullOrEmpty(sortOrder) ? "productCode_desc" : "";
             ViewData["ProductNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "productName_desc" : "";
 
+
             if (searchString != null)
             {
                 pageNumber = 1;
@@ -161,7 +162,7 @@ namespace LILI_IMS.Controllers
                     req.Iuser = User.Identity.Name;
                     req.Idate = DateTime.Now;
                     req.IssueStatus = "Pending";
-                    req.PlantId = GlobalVariable.PlantId;
+                    req.PlantId = GloablPlantId;
                     req.RequisitionNo = GenerateRequisitionNo();
                     _context.Add(req);
                     await _context.SaveChangesAsync();

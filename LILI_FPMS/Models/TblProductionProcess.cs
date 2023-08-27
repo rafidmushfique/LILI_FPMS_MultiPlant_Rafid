@@ -133,6 +133,7 @@ namespace LILI_FPMS.Models
         public decimal? CodeMachineManHour { get; set; }
         public decimal CodingQty { get; set; }
         public decimal PackingQty { get; set; }
+        [Required]
         public string SectionCode { get; set; }
         [NotMapped]
         public string SectionName { get; set; }

@@ -106,6 +106,7 @@ namespace LILI_IMS.Models
         public virtual DbSet<TblManufacturingManPower> TblManufacturingManPower { get; set; }
         public virtual DbSet<TblPackingManPower> TblPackingManPower { get; set; }
         public virtual DbSet<TblUserWiseBusinessAndPlantCode> TblUserWiseBusinessAndPlantCode { get; set; }
+        public virtual DbSet<TblBulkByProductMaterial> TblBulkByProductMaterial { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -992,6 +993,10 @@ namespace LILI_IMS.Models
                 entity.Property(e => e.Euser)
                     .HasColumnName("EUser")
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProductCode)
+                    .HasMaxLength(20)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Idate)
@@ -2350,6 +2355,35 @@ namespace LILI_IMS.Models
                     .HasMaxLength(50);
 
                 entity.Property(e => e.SectionName).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<TblBulkByProductMaterial>(entity =>
+            {
+                entity.ToTable("tblBulkByProductMaterial");
+
+                entity.Property(e => e.BaseUnit)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BusinessCode)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MaterialCode)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MaterialName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PlantId)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
             });
         }
     }
