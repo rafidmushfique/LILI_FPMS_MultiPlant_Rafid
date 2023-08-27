@@ -16,11 +16,6 @@
     <Compile Remove="Models\dbFormulationProductionSystemContext - Copy.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="Temp_Models\TblQc.cs" />
-    <Compile Include="Temp_Models\Temp_ApplicationDbContext.cs" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
