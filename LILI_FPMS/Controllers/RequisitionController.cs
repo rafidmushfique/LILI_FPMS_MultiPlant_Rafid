@@ -222,8 +222,8 @@ namespace LILI_IMS.Controllers
             reqModel.RequisitionDate = dt.RequisitionDate;
             reqModel.BatchNo = dt.BatchNo;
             reqModel.NumberOfBatch = dt.NumberOfBatch;
-            reqModel.BatchSize = _context.View_BOM.Where(s => s.ProductCode == dt.ProductCode).FirstOrDefault().BatchSize;
-            reqModel.StandardOutput = _context.View_BOM.Where(s => s.ProductCode == dt.ProductCode).FirstOrDefault().StandardOutput;
+            reqModel.BatchSize = 0;
+            reqModel.StandardOutput = 0;
             reqModel.ProductCode = dt.ProductCode;
             reqModel.ProductName = _context.View_Product.Where(s => s.ProductCode == dt.ProductCode).FirstOrDefault().ProductName;
             reqModel.Comments = dt.Comments;

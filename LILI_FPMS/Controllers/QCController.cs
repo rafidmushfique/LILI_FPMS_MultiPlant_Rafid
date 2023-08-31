@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using NPOI.SS.Formula.Eval;
 using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using Org.BouncyCastle.Ocsp;
@@ -65,15 +66,14 @@ namespace LILI_IMS.Controllers
             //            select new {s.PlanningNo,s.Year,s.Month,d.Fgcode};
 
             var qc_data = from master in _context.TblQc.Where(master=>master.PlantId == GlobalPlantId)
-                          from requisition in _context.TblRequisition.Where(requisition => requisition.PlantId == GlobalPlantId)
                           from process in _context.TblProductionProcess.Where(process => process.PlantId == GlobalPlantId)
                           from bom in _context.View_BOM.Where(bom=> bom.IsActive=="Y")
                           from p in _context.View_Product
-                          where(master.RequisitionNo == requisition.RequisitionNo && master.ProcessNo == process.ProcessNo && requisition.ProductCode == bom.ProductCode 
+                          where( master.ProcessNo == process.ProcessNo && process.ProductCode == bom.ProductCode 
                           && bom.ProductCode== p.ProductCode)
                           select new TblQc {
                               Id = master.Id,
-                              ProductCode = requisition.ProductCode,
+                              ProductCode = process.ProductCode,
                               ProductName = p.ProductName,
                               Qcno = master.Qcno,
                               Qcdate = master.Qcdate,
@@ -242,11 +242,11 @@ namespace LILI_IMS.Controllers
 
 
                 // Update tblFloorStock Table
-                var fgCodeQuery = from p in _context.TblProductionProcess
-                             join r in _context.TblRequisition on p.RequisitionNo equals r.RequisitionNo
-                             where p.ProcessNo == qc_data.ProcessNo
-                             select new { ProductCode  = r.ProductCode };
-                string fgCode = fgCodeQuery.FirstOrDefault().ProductCode.ToString();
+                //var fgCodeQuery = from p in _context.TblProductionProcess
+                //             join r in _context.TblRequisition on p.RequisitionNo equals r.RequisitionNo
+                //             where p.ProcessNo == qc_data.ProcessNo
+                //             select new { ProductCode  = r.ProductCode };
+                string fgCode = qc_data.ProductCode;
 
                 var sfgCode = _context.TblProductionProcess.Where(c=>c.ProcessNo==qc_data.ProcessNo).FirstOrDefault().SFGCode;
 
@@ -326,7 +326,7 @@ namespace LILI_IMS.Controllers
             QCModel.Comments = dt.Comments;
             QCModel.RequisitionNo = dt.RequisitionNo;
             QCModel.BatchNo = _context.TblProductionProcess.Where(pro => pro.ProcessNo == dt.ProcessNo).FirstOrDefault().BatchNo;            
-            var productCode =  _context.TblRequisition.Where(req => req.RequisitionNo == dt.RequisitionNo).FirstOrDefault().ProductCode;
+            var productCode = dt.ProductCode;
             QCModel.ProductName = _context.View_Product.Where(req => req.ProductCode == productCode).FirstOrDefault().ProductName;
             QCModel.PackSize = _context.View_Product.Where(req => req.ProductCode == productCode).FirstOrDefault().PackSize;
             QCModel.BatchSize = _context.View_BOM.Where(req => req.ProductCode == productCode).FirstOrDefault().BatchSize;
@@ -426,9 +426,8 @@ namespace LILI_IMS.Controllers
 
                 // Update tblFloorStock Table
                 var fgCodeQuery = from p in _context.TblProductionProcess
-                                  join r in _context.TblRequisition on p.RequisitionNo equals r.RequisitionNo
                                   where p.ProcessNo == qc_data.ProcessNo
-                                  select new { ProductCode = r.ProductCode };
+                                  select new { ProductCode = p.ProductCode };
                 string fgCode = fgCodeQuery.FirstOrDefault().ProductCode.ToString();
 
                 var sfgCode = _context.TblProductionProcess.Where(c => c.ProcessNo == qc_data.ProcessNo).FirstOrDefault().SFGCode;
@@ -632,7 +631,40 @@ namespace LILI_IMS.Controllers
             }
             else
             {
-                return Json("");
+                var productCode = "";
+                if (keyVal != null)
+                {
+                    productCode = keyVal.FirstOrDefault().ProductCode;
+                }
+                var floorStockByProductCode = from pp in _context.TblProductionProcess
+                                              join fs in _context.TblFloorStock on pp.ProductCode equals fs.MaterialCode into ps
+                                              from f in ps.DefaultIfEmpty()
+                                              where (pp.ProductCode == productCode)
+                                              select new
+                                              {
+                                                  AvailableStock = (ps != null ? ps.Sum(x => x.AvailableStock) : 0)
+                                              };
+
+
+                var sa = new JsonSerializerSettings();
+                var expertiesInfo = from pp in _context.TblProductionProcess
+                                    from b in _context.View_BOM
+                                    from p in _context.View_Product
+                                    where ( pp.ProductCode == b.ProductCode && b.ProductCode == p.ProductCode)
+                                    select new
+                                    {
+                                        pp.RequisitionNo,
+                                        pp.BatchNo,
+                                        pp.ProductCode,
+                                        pp.ProductionQty,
+                                        p.ProductName,
+                                        p.PackSize,
+                                        b.BatchSize,
+                                        b.ConversionValue,
+                                        AvailableStock = floorStockByProductCode.FirstOrDefault().AvailableStock   // (ps != null ? ps.Sum(x=>x.AvailableStock) : 0) // ps.Sum(x=> (double)x.AvailableStock ?? 0.00).Sum() 
+                                    };
+                return Json(expertiesInfo, sa);
+                //return Json("");
             }
         }
 

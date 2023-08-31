@@ -23,7 +23,7 @@ namespace LILI_IMS.Models
         public string BusiSumGroupCode { get; set; }
         public decimal Carton { get; set; }
         public decimal RatePerCarton { get; set; }
-        public DateTime EffectedDate { get; set; }
+        public DateTime? EffectedDate { get; set; }
         public string SubBusinessCode { get; set; }
         public string ProductName1 { get; set; }
         public string Show { get; set; }

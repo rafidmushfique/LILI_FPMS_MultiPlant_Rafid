@@ -51,8 +51,8 @@ namespace LILI_FPMS.Controllers
                         select new Models.TblProductWiseSectionSetup
                         {
                             Id = s.Id,
-                            ProductCode= s.ProductCode=="0"?"All": s.ProductCode,
-                            ProductName= s.ProductName=="0"?"All": s.ProductName,
+                            ProductCode= s.ProductCode=="0" || s.ProductCode == null?"All": s.ProductCode,
+                            ProductName= s.ProductName=="0" || s.ProductCode == null? "All": s.ProductName,
                             PlantId=s.PlantId,
                         };
 
@@ -103,6 +103,11 @@ namespace LILI_FPMS.Controllers
             try {
                 if (ModelState.IsValid)
                 {
+                    //if (prodwisesetup.ProductCode == null || prodwisesetup.ProductCode == "")
+                    //{
+                    //    prodwisesetup.ProductCode = "All";
+                    //    prodwisesetup.ProductName = "All";
+                    //}
                     prodwisesetup.Iuser = User.Identity.Name;
                     prodwisesetup.Idate = DateTime.Now;
                     prodwisesetup.PlantId= GlobalPlantId; 

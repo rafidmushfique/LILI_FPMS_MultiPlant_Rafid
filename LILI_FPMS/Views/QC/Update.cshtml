@@ -91,7 +91,8 @@
                     <div class="col-sm-4">
                         @*<select name="processNo" asp-for="ProcessNo" required class="form-control"></select>*@
                         @*@Html.DropDownList("ProcessNo", new SelectList(ViewBag.ddlProcessList), new { @class = "form-control" })*@
-                        @Html.DropDownList("ProcessNo", ViewBag.ddlProcessList as SelectList, new { @class = "form-control" })
+                    @*     @Html.DropDownList("ProcessNo", ViewBag.ddlProcessList as SelectList, new { @class = "form-control" }) *@
+                     <input type="text"  Id="ProcessNo" asp-for="ProcessNo" class="form-control" placeholder="ProcessNo" readonly>
                     </div>
 
                     <label asp-for="Qcqty" class="col-sm-2 control-label">FG QC quantity Before Conversion</label>
