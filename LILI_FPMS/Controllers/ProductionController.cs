@@ -38,6 +38,10 @@ namespace LILI_IMS.Controllers
             {
                 GlobalPlantId = long.Parse(plntid);
             }
+
+            //GlobalPlantId=_context.
+            //var user ="admin@yahoo.com";
+            //GlobalPlantId = (_context.TblUserWiseBusinessAndPlantCode.Where(x => x.UserId == user).FirstOrDefault().PlantId);
         }
 
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
@@ -120,8 +124,8 @@ namespace LILI_IMS.Controllers
         public ActionResult Create()
         {
 
-             
 
+            TempData["msg"] = "";
             TblProductionProcess entities = new TblProductionProcess();
             entities.ProcessNo = GenerateProcessNo();
             entities.ProcessDate = DateTime.Now;
@@ -198,6 +202,11 @@ namespace LILI_IMS.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    if (DoesProcessNoExists(prod.ProcessNo)) {
+                        prod.ProcessNo = GenerateProcessNo();
+                        
+                    }
+                    
                     if (prod.SFGCode != null && prod.SFGCode != "")
                     {
                             var sfgCode=prod.SFGCode;
@@ -215,8 +224,10 @@ namespace LILI_IMS.Controllers
                     prod.IssueNo = prod.IssueNo == null ? "0" : prod.IssueNo;
                     prod.ProcessNo = GenerateProcessNo();
                     prod.PlantId = GlobalPlantId;
+                    TempData["msg"] = "Data Saved with Process No: " + prod.ProcessNo;
                     _context.Add(prod);
                     await _context.SaveChangesAsync();
+                   
                 }
                 else
                 {
@@ -1245,6 +1256,14 @@ namespace LILI_IMS.Controllers
             return Json(sectionList, sa);
         }
 
+        private Boolean DoesProcessNoExists(string vProcessNo)
+        {
+            
+            return _context.TblProductionProcess.Any(e => e.ProcessNo == vProcessNo);
+
+        }
+
+      
 
         //public JsonResult GetPackMachineCapacity(string machineCode)
         //{

@@ -4,11 +4,21 @@
 <!-- Modal placeholder -->
 <div id="modal-placeholder">
     @{
-      
-            //string str = ViewData["Error"].ToString();
-            //<script>alert(@str);</script>
+
+        //string str = ViewData["Error"].ToString();
+        //<script>alert(@str);</script>
+        var str = TempData["msg"].ToString();
+
+        if (!string.IsNullOrEmpty(str))
         
-      
+        {
+
+            <script>
+                alert('@Html.Raw(@str)');
+            </script>
+        
+        }
+
     }
 </div>
 
@@ -161,7 +171,7 @@
 
                     <label for="inputEmail3" class="col-sm-2 control-label">No Of Batch</label>
                     <div class="col-sm-1">
-                        <input type="text" asp-for="NumberOfBatch" class="form-control" >
+                        <input type="text" asp-for="NumberOfBatch" class="form-control" onchange="EventNumberOfBatchChange()" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();">
                     </div>
                     <div id="prevSecPQty" style="visibility:hidden">
                     <label for="inputEmail3" class="col-sm-2 control-label" >Previous Section Produced Quantity</label>
@@ -1895,7 +1905,9 @@
             }
         });
 
-        $('#NumberOfBatch').on('change', function () {
+        // $('#NumberOfBatch').on('change',)
+        
+        function EventNumberOfBatchChange() {
         var requisitionNo = $('#RequisitionNo').val();
 
         let sectionCode = $("#Section option:selected").val();
@@ -1913,7 +1925,7 @@
         if (productCode.length > 0) { 
             GetRecipeDetails(productCode);
         }
-        });
+        };
 
 
     function GetRequisitionDetails(requisitionNo) {
