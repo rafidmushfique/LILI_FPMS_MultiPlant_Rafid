@@ -1,0 +1,176 @@
+﻿@model IEnumerable<LILI_FPMS.Models.ReportsViewModels.ConsumptionReportViewModel>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h2>Monthly Consumption Report</h2>
+            </div>
+            <div class="ibox-content" style="min-height: 6em;padding: .5em 0 0 0;">
+                <form action="/Report/ConsumptionReportPreview" method="get">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <label>Year</label>
+                            <div class="col-sm-12 date input-group ">
+                                <input type='text' class="form-control" name="year" id="year" onchange="ReportParameterCheck()" />
+
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Month</label>
+                            @Html.DropDownList("month", new SelectList(ViewBag.ddlMonth, "Text", "Value"), new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label>Category</label>
+                            @Html.DropDownList("materialCategory", new SelectList(ViewBag.ddlCategory, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label>Unit/Sub-Business</label>
+                            @Html.DropDownList("subBusiness", new SelectList(ViewBag.ddlSubBusiness, "SubBusinessCode", "SubBusinessName"), new { @class = "form-control" })
+                        </div>
+                        <div class="col-sm-2">
+                            <label>From Date</label>
+                            <div class="col-sm-12 date input-group ">
+                                <input type='date' class="form-control" name="dateFrom" id="dateFrom" onchange="ReportParameterCheck()" />
+
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>To Date</label>
+                            <div class="col-sm-12 date input-group ">
+                                <input type='date' class="form-control" name="dateTo" id="dateTo" onchange="ReportParameterCheck()" />
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 2.2em;height: 2.1em;margin-bottom:2.2em ">Search</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section css
+{
+    <link rel="stylesheet" href="~/lib/datatable/datatable.min.css" />
+
+
+    <style>
+        table thead tr th {
+            /*background-color: #8b8c9d;*/
+        }
+    </style>
+}
+
+@section Scripts
+{
+
+    <script src="~/lib/datatable/datatables.min.js"></script>
+    <script src="~/lib/datatable/pdfmake.min.js"></script>
+    <script src="~/lib/datatable/vfs_fonts.js"></script>
+
+
+    <script>
+
+
+        $(document).ready(function () {
+            //$("#FromDateDTP").datetimepicker();
+            //$("#ToDateDTP").datetimepicker();
+            $('#myTable').DataTable({
+                fixedHeader: true,
+                "scrollY": true,
+                scrollY: 450,
+                paging: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5'
+                    },
+
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        title: function () {
+                            return "Monthly Consumption"
+                        },
+                        pageSize: 'LEGAL',
+                        text: '<i class="fa fa-file-pdf-o"> PDF</i>',
+                        titleAttr: 'PDF'
+                    }
+                ],
+
+                //"pageLength": 50
+            });
+        });
+    </script>
+    <script>
+
+
+        function MergeGridCells() {
+            var dimension_cells = new Array();
+            var dimension_col = null;
+            var columnCount = $("#myTable tr:first th").length;
+            //for (dimension_col = 0; dimension_col <= columnCount; dimension_col++) {
+            for (dimension_col = 0; dimension_col <= 5; dimension_col++) {
+                // first_instance holds the first instance of identical td
+                var first_instance = null;
+                var rowspan = 1;
+                // iterate through rows
+                $("#myTable").find('tr').each(function () {
+
+                    // find the td of the correct column (determined by the dimension_col set above)
+                    var dimension_td = $(this).find('td:nth-child(' + dimension_col + ')');
+
+
+
+                    if (first_instance === null) {
+                        // must be the first row
+                        first_instance = dimension_td;
+                    } else if (dimension_td.text() === first_instance.text()) {
+                        // the current td is identical to the previous
+                        // remove the current td
+                        // dimension_td.remove();
+                        dimension_td.attr('hidden', true);
+                        ++rowspan;
+                        // increment the rowspan attribute of the first instance
+                        first_instance.attr('rowspan', rowspan);
+                    } else {
+                        // this cell is different from the last
+                        first_instance = dimension_td;
+                        rowspan = 1;
+                    }
+                });
+            }
+        }
+        function ReportParameterCheck() {
+            let dateFrom = $("#dateFrom").val();
+            let dateTo = $("#dateTo").val();
+            if (dateFrom != '' && dateTo != '') {
+                var FromDate = new Date(dateFrom);
+                var ToDate = new Date(dateTo);
+
+                if (FromDate.getMonth() != ToDate.getMonth()) {
+                    $("#dateFrom").val('');
+                    $("#dateTo").val('');
+                    alert("Invalid Date Range!");
+                }
+
+            }
+
+
+        }
+
+
+
+    </script>
+}

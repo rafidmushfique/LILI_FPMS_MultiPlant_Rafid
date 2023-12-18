@@ -2,11 +2,17 @@
 using LILI_FPMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace LILI_IMS.Models
 {
     public partial class dbFormulationProductionSystemContext : DbContext
     {
+        private readonly IConfiguration _configuration;
+        public dbFormulationProductionSystemContext(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public virtual DbSet<TblEmployee> TblEmployee { get; set; }
         public virtual DbSet<TblEmployeeEducationalDetail> TblEmployeeEducationalDetail { get; set; }
         public virtual DbSet<QCRequiredCheck> QCRequiredCheck { get; set; }
@@ -113,7 +119,9 @@ namespace LILI_IMS.Models
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 //optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbFormulationProduction;Persist Security Info=True;User ID=sa;Password=dataport;");
-                optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbToiletriesProduction_dev;Persist Security Info=True;User ID=sa;Password=dataport;");
+                //optionsBuilder.UseSqlServer(@"Server=192.168.100.60;Database=dbToiletriesProduction_dev;Persist Security Info=True;User ID=sa;Password=dataport;");
+                var connectionString = _configuration.GetConnectionString("DefaultConnection");
+                optionsBuilder.UseSqlServer(connectionString);
             }
         }
 

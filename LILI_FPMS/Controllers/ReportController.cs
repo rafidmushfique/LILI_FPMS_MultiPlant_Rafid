@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
 using NPOI.SS.Formula.Functions;
 using System.Linq;
 using LILI_FPMS.Models;
@@ -17,6 +18,8 @@ using Newtonsoft.Json;
 using System.Web.Helpers;
 using System.Xml;
 using Microsoft.AspNetCore.Http;
+using AspNetCore.Reporting;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LILI_IMS.Controllers
 {
@@ -26,12 +29,14 @@ namespace LILI_IMS.Controllers
         private readonly dbFormulationProductionSystemContext _context;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHostingEnvironment _IWebHostEnvironment;
         private static long GloablPlantId;
-        public ReportController(dbFormulationProductionSystemContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public ReportController(dbFormulationProductionSystemContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IHostingEnvironment IWebHostEnvironment)
         {
             _context = context;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
+            _IWebHostEnvironment= IWebHostEnvironment;
             var plntid = _httpContextAccessor.HttpContext.Session.GetString("PlantId");
             if (!string.IsNullOrEmpty(plntid))
             {
@@ -733,7 +738,7 @@ namespace LILI_IMS.Controllers
             TblRequisition entities = new TblRequisition();
             List<TblRequisition> requisitionList = new List<TblRequisition>();
             requisitionList = (from c in _context.TblRequisition
-                               where c.PlantId ==GloablPlantId
+                               where c.PlantId == GloablPlantId
                                orderby c.RequisitionDate descending
                                select new TblRequisition
                                {
@@ -810,10 +815,10 @@ namespace LILI_IMS.Controllers
             return View(data);
         }
 
-        public ActionResult MonthlyConsumptionReport(string year = "", string month = "", long materialCategory = 0, string subBusiness = "",string dateFrom = "",string dateTo = "")
+        public ActionResult MonthlyConsumptionReport(string year = "", string month = "", long materialCategory = 0, string subBusiness = "", string dateFrom = "", string dateTo = "")
         {
-            if (!string.IsNullOrEmpty(dateFrom) || !string.IsNullOrEmpty(dateTo)) { 
-              month="";
+            if (!string.IsNullOrEmpty(dateFrom) || !string.IsNullOrEmpty(dateTo)) {
+                month = "";
             }
             List<SelectListItem> monthList = new List<SelectListItem>();
             monthList.Add(new SelectListItem { Value = "<--Select Month-->", Text = "00" });
@@ -916,9 +921,9 @@ namespace LILI_IMS.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
             }
-            foreach(var item in data)
+            foreach (var item in data)
             {
-                
+
             }
 
             return View(data);
@@ -1179,7 +1184,7 @@ namespace LILI_IMS.Controllers
             return View(data);
         }
 
-        public ActionResult DailyConsumptionReport(string dateFrom , string dateTo) 
+        public ActionResult DailyConsumptionReport(string dateFrom, string dateTo)
         {
             var data = new List<DailyConsumptionViewModel>();
             DataTable dt = new DataTable();
@@ -1201,7 +1206,7 @@ namespace LILI_IMS.Controllers
 
                         cmd.CommandType = CommandType.StoredProcedure;
                         SqlDataReader dr = cmd.ExecuteReader();
-                        
+
                         if (dr.HasRows)
                         {
                             while (dr.Read())
@@ -1209,25 +1214,25 @@ namespace LILI_IMS.Controllers
                                 var dc = new DailyConsumptionViewModel();
 
                                 dc.ProcessDate = dr.GetDateTime(0);
-                                dc.ManufacturingShift=dr.GetString(1);
-                                dc.CodingDetailShift=dr.GetString(2);
-                                dc.PackingDeatialShift=dr.GetString(3);
-                                dc.RequisitionNo=dr.GetString(4);
-                                dc.ProcessNo=dr.GetString(5);
-                                dc.FGName=dr.GetString(6);
-                                dc.MaterialCode=dr.GetString(7);
-                                dc.MaterialName=dr.GetString(8);
+                                dc.ManufacturingShift = dr.GetString(1);
+                                dc.CodingDetailShift = dr.GetString(2);
+                                dc.PackingDeatialShift = dr.GetString(3);
+                                dc.RequisitionNo = dr.GetString(4);
+                                dc.ProcessNo = dr.GetString(5);
+                                dc.FGName = dr.GetString(6);
+                                dc.MaterialCode = dr.GetString(7);
+                                dc.MaterialName = dr.GetString(8);
 
-                                dc.BaseUnit=dr.GetString(9);
-                                dc.StdConsumptionQty=dr.GetDecimal(10);
+                                dc.BaseUnit = dr.GetString(9);
+                                dc.StdConsumptionQty = dr.GetDecimal(10);
                                 dc.OpeningStock = dr.GetDecimal(11);
-                                dc.IssueQty=dr.GetDecimal(12);
-                                dc.ReturnQty=dr.GetDecimal(13);
-                                dc.TotalConsumption=dr.GetDecimal(14);
-                                dc.ClosingStock=dr.GetDecimal(15);
-                                dc.LossAccess=dr.GetDecimal(16);
-                                dc.Yield=dr.GetDecimal(17);
-                                
+                                dc.IssueQty = dr.GetDecimal(12);
+                                dc.ReturnQty = dr.GetDecimal(13);
+                                dc.TotalConsumption = dr.GetDecimal(14);
+                                dc.ClosingStock = dr.GetDecimal(15);
+                                dc.LossAccess = dr.GetDecimal(16);
+                                dc.Yield = dr.GetDecimal(17);
+
                                 data.Add(dc);
                             }
                         }
@@ -1241,7 +1246,98 @@ namespace LILI_IMS.Controllers
 
             return View(data);
         }
-        
+        public IActionResult ConsumptionReport()
+        {
+           
+            List<SelectListItem> monthList = new List<SelectListItem>();
+            monthList.Add(new SelectListItem { Value = "<--Select Month-->", Text = "00" });
+            monthList.Add(new SelectListItem { Value = "January", Text = "January" });
+            monthList.Add(new SelectListItem { Value = "February", Text = "February" });
+            monthList.Add(new SelectListItem { Value = "March", Text = "March" });
+            monthList.Add(new SelectListItem { Value = "April", Text = "April" });
+            monthList.Add(new SelectListItem { Value = "May", Text = "May" });
+            monthList.Add(new SelectListItem { Value = "June", Text = "June" });
+            monthList.Add(new SelectListItem { Value = "July", Text = "July" });
+            monthList.Add(new SelectListItem { Value = "August", Text = "August" });
+            monthList.Add(new SelectListItem { Value = "September", Text = "September" });
+            monthList.Add(new SelectListItem { Value = "October", Text = "October" });
+            monthList.Add(new SelectListItem { Value = "November", Text = "November" });
+            monthList.Add(new SelectListItem { Value = "December", Text = "December" });
+            ViewData["ddlMonth"] = monthList;
+
+
+           
+
+
+            List<SelectListItem> materialCategoryList = new List<SelectListItem>();
+            materialCategoryList.Add(new SelectListItem { Value = "0", Text = "<--All-->" });
+            materialCategoryList.Add(new SelectListItem { Value = "1", Text = "Raw Materials" });
+            materialCategoryList.Add(new SelectListItem { Value = "2", Text = "Packing Materials" });
+            materialCategoryList.Add(new SelectListItem { Value = "4", Text = "Semi-Finished Goods" });
+            ViewData["ddlCategory"] = materialCategoryList;
+
+            ViewBag.materialCategory = materialCategoryList;
+
+
+            List<TblSubBusiness> subBusinessList = new List<TblSubBusiness>();
+            subBusinessList = (from c in _context.TblSubBusiness
+                               select c).ToList();
+            subBusinessList.Insert(0, new TblSubBusiness { SubBusinessCode = "", SubBusinessName = "<--Select Sub-Business-->" });
+            ViewData["ddlSubBusiness"] = subBusinessList;
+            ViewBag.subBusiness = subBusinessList;
+
+            return View();
+        }
+        public IActionResult ConsumptionReportPreview(string year,string month, string materialCategory, string subBusiness, string dateFrom, string dateTo)
+        {
+
+            try
+            {
+
+                var connString = _configuration.GetConnectionString("DefaultConnection");
+                 var conn = new SqlConnection(connString);
+                 var cmd = new SqlCommand(@"sp_Consumption_Report_InANutSheel", conn);
+                var parameters = new[]
+                {
+                    new SqlParameter("@year",month),
+                    new SqlParameter("@month",month),
+                    new SqlParameter("@MaterialCategory", materialCategory),
+                    new SqlParameter("@subBusiness", subBusiness),
+                    new SqlParameter("@dateFrom", dateFrom),
+                    new SqlParameter("@dateTo", dateTo),
+                    new SqlParameter("@plantId", GloablPlantId)
+                };
+                cmd.Parameters.AddRange(parameters);
+                conn.Open();
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                var ds = new DataSet();
+                var da = new SqlDataAdapter(cmd);
+                da.Fill(ds);
+                conn.Close();
+                var consumptionReportData = ds.Tables[0].Copy();
+
+                var path = $"{this._IWebHostEnvironment.WebRootPath}\\Report\\ConsumptionReport.rdlc";
+                var localReport = new LocalReport(path);
+                localReport.AddDataSource("DFConsumptionReport", consumptionReportData);
+                //var parameters = new Dictionary<string, string>
+                //{
+                //    {"dateFromParameter", vm.FromDate.ToString("dd-MMMM-yyyy", CultureInfo.CurrentCulture)},
+                //    {"dateToParameter", vm.ToDate.ToString("dd-MMMM-yyyy", CultureInfo.CurrentCulture)}
+                //};s
+
+                var result = localReport.Execute(RenderType.Pdf, 0, null, "");
+                return File(result.MainStream, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+     
+        }
+   
+
     }
 
 }
